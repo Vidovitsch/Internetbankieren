@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ib_client;
 
 import javafx.application.Application;
@@ -15,12 +10,14 @@ import javafx.stage.Stage;
  *
  * @author David
  */
-public class IB_Client extends Application
+public class GUI extends Application
 {
+    private GUIController controller;
     
     @Override
-    public void start(Stage stage) throws Exception
-    {
+    public void start(Stage stage) throws Exception {
+        controller = new GUIController(this);
+        
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         
         Scene scene = new Scene(root);
