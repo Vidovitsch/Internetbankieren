@@ -2,8 +2,8 @@ package Models;
 
 import Shared_Centrale.ICentrale;
 import Shared_Centrale.ITransactie;
-import Shared_Server.IAdminCheck;
-import Shared_Server.IBankTrans;
+import Shared_Centrale.IAdminCheck;
+import Shared_Centrale.IBankTrans;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;

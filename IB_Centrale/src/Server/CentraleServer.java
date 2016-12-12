@@ -2,8 +2,8 @@ package Server;
 
 import Models.Centrale;
 import Shared_Centrale.ICentrale;
-import Shared_Server.IAdminCheck;
-import Shared_Server.IBankTrans;
+import Shared_Centrale.IAdminCheck;
+import Shared_Centrale.IBankTrans;
 import java.rmi.AccessException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
@@ -51,6 +51,8 @@ public class CentraleServer
             bank = (IBankTrans) serverRegistry.lookup("bankTrans");
         } catch (RemoteException | NotBoundException ex)
         {
+            System.out.println("Server: Cannot locate registry");
+            System.out.println("Server: RemoteException: " + ex.getMessage());
             Logger.getLogger(CentraleServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
