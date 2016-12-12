@@ -33,11 +33,9 @@ public class Server
          try {
             System.setProperty("java.rmi.server.hostname", "localhost");
             serverRegistry = LocateRegistry.createRegistry(1099);
-            getServerRegistryBinds();
+            //getServerRegistryBinds();
             setCentraleRegistryBinds();
         } catch (RemoteException ex) {
-            System.out.println("Server: Cannot create registry");
-            System.out.println("Server: RemoteException: " + ex.getMessage());
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -51,8 +49,6 @@ public class Server
             centrale = (ICentrale) serverRegistry.lookup("centrale");
         } catch (RemoteException | NotBoundException ex)
         {
-            System.out.println("Server: Cannot locate registry");
-            System.out.println("Server: RemoteException: " + ex.getMessage());
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -66,7 +62,7 @@ public class Server
             Bank bank = new Bank();
             admin = new Administratie(centrale, bank);
             serverRegistry.bind("admin", (IAdmin) admin);
-            serverRegistry.bind("bank", (IBank) admin);
+            serverRegistry.bind("bank", (IBank) bank);
             serverRegistry.bind("adminCheck", (IAdminCheck) admin);
             serverRegistry.bind("bankTrans", (IBankTrans) bank);
             serverRegistry.bind("serverPublisher", publisher);
