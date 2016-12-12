@@ -29,6 +29,9 @@ public class Server
     private ICentrale centrale;
     private Administratie admin;
     
+    /**
+     * Handles all RMI-based processes.
+     */
     public Server() {
          try {
             System.setProperty("java.rmi.server.hostname", "localhost");
