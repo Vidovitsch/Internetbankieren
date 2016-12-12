@@ -32,7 +32,7 @@ public class CentraleServer
         try {
             System.setProperty("java.rmi.server.hostname", "localhost");
             centraleRegistry = LocateRegistry.createRegistry(1100);
-            getServerRegistryBinds();
+            //getServerRegistryBinds();
             setCentraleRegistryBinds();
         } catch (RemoteException ex) {
             System.out.println("Server: Cannot create registry");
@@ -62,7 +62,7 @@ public class CentraleServer
      */
     private void setCentraleRegistryBinds() {
         try {
-            centrale = new Centrale(adminCheck, bank);
+            centrale = new Centrale();
             centraleRegistry.bind("centrale", centrale);
         } catch (RemoteException | AlreadyBoundException ex)
         {

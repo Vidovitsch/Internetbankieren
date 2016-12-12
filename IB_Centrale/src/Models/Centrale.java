@@ -18,8 +18,11 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     private IAdminCheck adminCheck;
     private IBankTrans bank;
     
-    public Centrale(IAdminCheck adminCheck, IBankTrans bank) throws RemoteException {
+    public Centrale() throws RemoteException {
         transacties = new ArrayList();
+    }
+    
+    public void setServerInterfaces(IAdminCheck adminCheck, IBankTrans bank) {
         this.adminCheck = adminCheck;
         this.bank = bank;
     }
