@@ -16,10 +16,12 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
 
     private ArrayList<ITransactie> transacties;
     private IAdminCheck adminCheck;
+    private IBankTrans bank;
     
-    public Centrale(IAdminCheck adminCheck) throws RemoteException {
+    public Centrale(IAdminCheck adminCheck, IBankTrans bank) throws RemoteException {
         transacties = new ArrayList();
         this.adminCheck = adminCheck;
+        this.bank = bank;
     }
     
     @Override
