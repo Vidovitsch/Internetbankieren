@@ -32,8 +32,10 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         try {
             Registry serverRegistry = LocateRegistry.getRegistry("localhost", 1099);
             admin = (IAdmin) serverRegistry.lookup("admin");
+            System.out.println("Admin lookup completed");
+            
             publisher = (IRemotePublisherForListener) serverRegistry.lookup("serverPublisher");
-            System.out.println("Lookup succesful");
+            System.out.println("Publisher lookup completed");
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
