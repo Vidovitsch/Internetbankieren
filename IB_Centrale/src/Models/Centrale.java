@@ -25,12 +25,12 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     }
 
     @Override
-    public void startTransaction(int IBAN1, int IBAN2, IBankTrans bank, double value) throws RemoteException {
+    public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value) throws RemoteException {
 
     }
 
     @Override
-    public void getTransactions(int IBAN) throws RemoteException {
+    public void getTransactions(String IBAN) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
