@@ -49,7 +49,7 @@ public interface IBank extends Remote {
      * @return True if succesful, else false.
      * @throws RemoteException
      */
-    boolean removeAccount(int IBAN) throws RemoteException;
+    boolean removeAccount(String IBAN) throws RemoteException;
     
     /**
      * Starts a transaction between two bank accounts.
@@ -59,5 +59,5 @@ public interface IBank extends Remote {
      * @return True if succesful, else false.
      * @throws RemoteException
      */
-    boolean startTransaction(int IBAN1, int IBAN2, double value) throws IllegalArgumentException, RemoteException;
+    boolean startTransaction(String IBAN1, String IBAN2, double value) throws IllegalArgumentException, RemoteException;
 }

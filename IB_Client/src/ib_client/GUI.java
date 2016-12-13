@@ -1,3 +1,10 @@
+//Aanpassing t.o.v. architectuurdocument
+//IAdminCheck bestaat niet meer, wordt nu lokaal geregeld op de Server
+//Klant heeft geen attribuut password
+//
+
+
+
 package ib_client;
 
 import javafx.application.Application;
