@@ -30,7 +30,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     }
 
     @Override
-    public ArrayList<String> getTransactions(int IBAN) throws RemoteException {
+    public ArrayList<String> getTransactions(String IBAN) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -40,27 +40,27 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     }
 
     @Override
-    public boolean removeAccount(int IBAN) throws RemoteException {
+    public boolean removeAccount(String IBAN) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean startTransaction(int IBAN1, int IBAN2, double value) throws IllegalArgumentException, RemoteException {
+    public boolean startTransaction(String IBAN1, String IBAN2, double value) throws IllegalArgumentException, RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void addSaldo(int IBAN, double value) throws RemoteException {
+    public void addSaldo(String IBAN, double value) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void removeSaldo(int IBAN, double value) throws RemoteException {
+    public void removeSaldo(String IBAN, double value) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void addTransactie(int IBAN, ITransactie transactie) throws RemoteException {
+    public void addTransactie(String IBAN, ITransactie transactie) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

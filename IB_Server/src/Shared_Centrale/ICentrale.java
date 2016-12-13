@@ -18,7 +18,7 @@ public interface ICentrale extends Remote {
      * @param value in money to be transferred.
      * @throws RemoteException 
      */
-    void startTransaction(int IBAN1, int IBAN2, IBankTrans bank, double value) throws RemoteException;
+    void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value) throws RemoteException;
     
     /**
      * Gives all the transaction of the bank account
@@ -26,5 +26,5 @@ public interface ICentrale extends Remote {
      * @param IBAN linked with a bank account.
      * @throws RemoteException 
      */
-    void getTransactions(int IBAN) throws RemoteException;
+    void getTransactions(String IBAN) throws RemoteException;
 }

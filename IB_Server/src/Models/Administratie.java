@@ -42,7 +42,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private boolean checkIBAN(int IBAN) {
+    private boolean checkIBAN(String IBAN) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
