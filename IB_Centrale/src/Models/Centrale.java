@@ -1,35 +1,32 @@
 package Models;
 
+import Server.CentraleServer;
 import Shared_Centrale.ICentrale;
 import Shared_Centrale.ITransactie;
-import Shared_Centrale.IAdminCheck;
 import Shared_Centrale.IBankTrans;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author David
  */
 public class Centrale extends UnicastRemoteObject implements ICentrale {
-
     private ArrayList<ITransactie> transacties;
-    private IAdminCheck adminCheck;
-    private IBankTrans bank;
     
     public Centrale() throws RemoteException {
         transacties = new ArrayList();
     }
-    
-    public void setServerInterfaces(IAdminCheck adminCheck, IBankTrans bank) {
-        this.adminCheck = adminCheck;
-        this.bank = bank;
-    }
-    
+
     @Override
     public void startTransaction(int IBAN1, int IBAN2, IBankTrans bank, double value) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     @Override
