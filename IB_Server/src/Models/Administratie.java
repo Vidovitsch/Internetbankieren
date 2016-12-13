@@ -1,6 +1,5 @@
 package Models;
 
-import Shared_Centrale.IAdminCheck;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
@@ -13,7 +12,7 @@ import java.rmi.server.UnicastRemoteObject;
  *
  * @author David
  */
-public class Administratie extends UnicastRemoteObject implements IAdmin, IAdminCheck{
+public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     private ICentrale centrale;
     private Bank bank;
@@ -43,8 +42,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin, IAdmin
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public boolean checkIBAN(int IBAN) throws RemoteException {
+    private boolean checkIBAN(int IBAN) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -2,8 +2,6 @@ package ib_server;
 
 import Models.Administratie;
 import Models.Bank;
-import Shared_Centrale.IAdminCheck;
-import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
@@ -36,8 +34,8 @@ public class Server
          try {
             System.setProperty("java.rmi.server.hostname", "localhost");
             serverRegistry = LocateRegistry.createRegistry(1099);
-            //getServerRegistryBinds();
             setCentraleRegistryBinds();
+            getCentraleRegistryBinds();
         } catch (RemoteException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -46,10 +44,13 @@ public class Server
     /**
      * Gets the registry of the Server and its binds.
      */
-    private void getServerRegistryBinds() {
+    private void getCentraleRegistryBinds() {
         try {
             centraleRegistry = LocateRegistry.getRegistry("localhost", 1100);
-            centrale = (ICentrale) serverRegistry.lookup("centrale");
+            System.out.println("Centrale registry found");
+            
+            centrale = (ICentrale) centraleRegistry.lookup("centrale");
+            System.out.println("Centrale lookup completed");
         } catch (RemoteException | NotBoundException ex)
         {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,11 +65,15 @@ public class Server
             publisher = new RemotePublisher();
             Bank bank = new Bank();
             admin = new Administratie(centrale, bank);
+            
             serverRegistry.bind("admin", (IAdmin) admin);
+            System.out.println("Centrale bound");
+            
             serverRegistry.bind("bank", (IBank) bank);
-            serverRegistry.bind("adminCheck", (IAdminCheck) admin);
-            serverRegistry.bind("bankTrans", (IBankTrans) bank);
+            System.out.println("Bank bound");
+            
             serverRegistry.bind("serverPublisher", publisher);
+            System.out.println("Publisher bound");
         } catch (RemoteException | AlreadyBoundException ex)
         {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
