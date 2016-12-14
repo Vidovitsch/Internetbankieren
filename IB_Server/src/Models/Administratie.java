@@ -50,10 +50,6 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     public void logout(Klant klant) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    public boolean checkSession(Klant klant) {
-        return true;
-    }
             
     /**
      * Adds a session on this server.
@@ -74,11 +70,32 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     /**
-     * Checks if a IBAN is a valid and existing one.
+     * Checks if a client has still a session running.
+     * @param klant
+     * @return True if session is running, else false.
+     */
+    public boolean checkSession(Klant klant) throws IllegalArgumentException {
+        return true;
+    }
+    
+    /**
+     * Checks if a IBAN is an existing one.
+     * Gets calles when you want to check an IBAN but don't have a client.
      * @param IBAN
      * @return True if it exists, else false.
      */
-    private boolean checkIBAN(String IBAN) {
+    public boolean checkIBANExists(String IBAN) throws IllegalArgumentException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+     /**
+     * Checks if a IBAN is an and existing one.
+     * Gets called when you want to know if a IBAN is property of a client.
+     * @param IBAN
+     * @param klant
+     * @return True if it exists, else false.
+     */
+    public boolean checkIBANProperty(String IBAN, Klant klant) throws IllegalArgumentException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
