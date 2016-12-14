@@ -17,6 +17,14 @@ public class Transactie extends UnicastRemoteObject implements ITransactie {
     private String description;
     private IBankTrans bank;
     
+    /**
+     * This class is used to represent the made transaction
+     * @param date
+     * @param amount
+     * @param description
+     * @param bank
+     * @throws RemoteException 
+     */
     public Transactie(String date, double amount, String description, IBankTrans bank) throws RemoteException {
         this.date = date;
         this.amount = amount;
@@ -38,5 +46,4 @@ public class Transactie extends UnicastRemoteObject implements ITransactie {
     public String getDescription() throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
 }
