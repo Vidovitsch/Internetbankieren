@@ -1,17 +1,11 @@
 package Models;
 
-import Server.CentraleServer;
 import Shared_Centrale.ICentrale;
 import Shared_Centrale.ITransactie;
 import Shared_Centrale.IBankTrans;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

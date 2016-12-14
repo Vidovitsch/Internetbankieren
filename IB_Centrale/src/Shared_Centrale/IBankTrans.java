@@ -1,6 +1,5 @@
 package Shared_Centrale;
 
-import Shared_Centrale.ITransactie;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
