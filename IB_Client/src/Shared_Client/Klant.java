@@ -1,7 +1,10 @@
 package Shared_Client;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -18,24 +21,73 @@ public class Klant implements Serializable {
         this.residence = residence;
     }
     
-    public void addBankAccount(IBank bank) {
-        
+    /**
+     * Adds a bank account on the server linked with this Client.
+     * @param bank 
+     * @return Sting representing the new bankaccount
+     */
+    public String addBankAccount(IBank bank) {
+        try {
+            return bank.addAccount(this);
+        } catch (RemoteException ex) {
+            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
     
-    public void removeBankAccount(String IBAN) {
-        
+    /**
+     * Removes a bank account on the server linked with this Client.
+     * @param IBAN
+     * @param bank
+     * @return True if succesful, else false
+     */
+    public boolean removeBankAccount(String IBAN, IBank bank) {
+        try {
+            return bank.removeAccount(IBAN);
+        } catch (RemoteException ex) {
+            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
     
+    /**
+     * Returns the username of this Client.
+     * The username is a combination of this user's name and residence.
+     * @return The user's username
+     */
     public String getUsername() {
         return name + residence;
     }
     
-    public ArrayList<String> getBankAccounts() {
-        return null;
+    /**
+     * Returns a list of Strings. Every String is
+     * representing a bank account.
+     * @param bank
+     * @return A list of Strings representing a bank account.
+     */
+    public ArrayList<String> getBankAccounts(IBank bank) {
+        try {
+            return bank.getAccounts(this);
+        } catch (RemoteException ex) {
+            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
     
-    public ArrayList<String> getTransactions() {
-        return null;
+    /**
+     * Returns a list of Strings. Every String is
+     * representing a transaction.
+     * @param IBAN
+     * @param bank
+     * @return A list of Strings representing a transaction.
+     */
+    public ArrayList<String> getTransactions(String IBAN, IBank bank) {
+        try {
+            return bank.getTransactions(IBAN);
+        } catch (RemoteException ex) {
+            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }
 

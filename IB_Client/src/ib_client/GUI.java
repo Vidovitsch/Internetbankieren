@@ -1,7 +1,9 @@
-//Aanpassing t.o.v. architectuurdocument
+//Aanpassing t.o.v. architectuurdocument:
 //IAdminCheck bestaat niet meer, wordt nu lokaal geregeld op de Server
 //Klant heeft geen attribuut password
-//
+//IAdmin heeft een extra methode logout
+//Bank heeft een extra parameter in constructor: double credit
+//Bank heeft geen addTransactie meer (transacties worden opgeslagen op de overboekcentrale)
 
 
 
