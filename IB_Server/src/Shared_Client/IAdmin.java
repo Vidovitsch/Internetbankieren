@@ -46,4 +46,12 @@ public interface IAdmin extends Remote {
      * @throws RemoteException 
      */
     boolean removeKlant(Klant klant) throws RemoteException;
+    
+    /**
+     * Logs out a user.
+     * Gets called when a user wants to log out, or a session has expired.
+     * @param klant
+     * @throws RemoteException 
+     */
+    void logout(Klant klant) throws RemoteException;
 }

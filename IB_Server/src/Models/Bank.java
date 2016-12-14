@@ -15,8 +15,10 @@ import java.util.ArrayList;
  */
 public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
 
+    private ArrayList<Bankrekening> bankAccounts;
+    
     public Bank() throws RemoteException {
-        
+        bankAccounts = new ArrayList();
     }
     
     @Override
