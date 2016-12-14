@@ -1,6 +1,7 @@
 package Shared_Client;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 
 /**
@@ -21,5 +22,20 @@ public class Klant implements Serializable {
         
     }
     
+    public void removeBankAccount(String IBAN) {
+        
+    }
+    
+    public String getUsername() {
+        return name + residence;
+    }
+    
+    public ArrayList<String> getBankAccounts() {
+        return null;
+    }
+    
+    public ArrayList<String> getTransactions() {
+        return null;
+    }
 }
 

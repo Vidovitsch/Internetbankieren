@@ -33,7 +33,7 @@ public interface IBank extends Remote {
      * @return A list of Strings representing a transaction.
      * @throws RemoteException
      */
-    ArrayList<String> getTransactions(int IBAN) throws RemoteException;
+    ArrayList<String> getTransactions(String IBAN) throws RemoteException;
     
     /**
      * Adds a bank account for a user.
