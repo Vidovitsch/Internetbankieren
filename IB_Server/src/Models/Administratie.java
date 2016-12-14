@@ -20,9 +20,8 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     private ICentrale centrale;
     private Bank bank;
     
-    public Administratie(ICentrale centrale, Bank bank) throws RemoteException {
+    public Administratie(ICentrale centrale) throws RemoteException {
         this.centrale = centrale;
-        this.bank = bank;
         sessies = new ArrayList();
         clients = new ArrayList();
     }
@@ -37,7 +36,6 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
     @Override
     public IBank getBank(Klant klant) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -53,12 +51,16 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
+    public boolean checkSession(Klant klant) {
+        return true;
+    }
+            
     /**
      * Adds a session on this server.
      * A session is added if a client is logged in.
      * @param klant 
      */
-    private void addSessie(Klant klant) {
+    private void addSession(Klant klant) {
         
     }
     
@@ -67,7 +69,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * A session is removed if a client is inactive for too long.
      * @param klant 
      */
-    private void removeSessie(Klant klant) {
+    private void removeSession(Klant klant) {
         
     }
     

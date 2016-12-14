@@ -8,11 +8,13 @@ package Models;
 public class Bankrekening {
     
     private String IBAN;
-    private double balance;
+    private double balance = 0;
     private double credit = 100;
     
-    public Bankrekening(String IBAN, double balance, double credit, Bank bank) {
-        
+    public Bankrekening(String IBAN ,double balance, double credit, Bank bank) {
+        this.IBAN = IBAN;
+        this.balance = balance;
+        this.credit = credit;
     }
     
     /**
@@ -31,5 +33,10 @@ public class Bankrekening {
      */
     public boolean removeFromBalance(double value) {
         return true;
+    }
+    
+    @Override
+    public String toString() {
+        return IBAN + ";"  + String.valueOf(balance);
     }
 }

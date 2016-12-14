@@ -1,5 +1,6 @@
 package Shared_Client;
 
+import Exceptions.SessionExpiredException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -32,6 +33,9 @@ public class Klant implements Serializable {
         } catch (RemoteException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
+            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
     
@@ -43,8 +47,11 @@ public class Klant implements Serializable {
      */
     public boolean removeBankAccount(String IBAN, IBank bank) {
         try {
-            return bank.removeAccount(IBAN);
+            return bank.removeAccount(IBAN, this);
         } catch (RemoteException ex) {
+            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -71,6 +78,9 @@ public class Klant implements Serializable {
         } catch (RemoteException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
     }
     
@@ -83,8 +93,11 @@ public class Klant implements Serializable {
      */
     public ArrayList<String> getTransactions(String IBAN, IBank bank) {
         try {
-            return bank.getTransactions(IBAN);
+            return bank.getTransactions(IBAN, this);
         } catch (RemoteException ex) {
+            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (IllegalArgumentException | SessionExpiredException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }

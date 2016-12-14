@@ -21,7 +21,7 @@ public interface IAdmin extends Remote {
     Klant register(String name, String residence, String password) throws IllegalArgumentException, RemoteException;
     
     /**
-     * Logs in a user.
+     * Logs in a user and creating a session if succesful.
      * @param name not null, else IllegalArgumentException.
      * @param residence not null, else IllegalArgumentException.
      * @param password not null, else IllegalArgumentException.
