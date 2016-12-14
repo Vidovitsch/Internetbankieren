@@ -37,7 +37,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     }
 
     @Override
-    public ArrayList<String> getAccounts(Klant klant) throws IllegalArgumentException, RemoteException {
+    public ArrayList<String> getAccounts(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -70,13 +70,4 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     public void removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    @Override
-    public void addTransactie(String IBAN, ITransactie transactie) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    
-
-    
 }
