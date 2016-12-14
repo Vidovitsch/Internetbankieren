@@ -2,8 +2,10 @@
 //IAdminCheck bestaat niet meer, wordt nu lokaal geregeld op de Server
 //Klant heeft geen attribuut password
 //IAdmin heeft een extra methode logout
-//Bank heeft een extra parameter in constructor: double credit
+//BankAccount heeft een extra parameter in constructor: double credit
 //Bank heeft geen addTransactie meer (transacties worden opgeslagen op de overboekcentrale)
+//IBank illegalargumentexceptions toegevoegd
+//Bank heeft een extra parameter in constructor Administratie admin
 
 
 
@@ -42,5 +44,4 @@ public class GUI extends Application
     {
         launch(args);
     }
-    
 }
