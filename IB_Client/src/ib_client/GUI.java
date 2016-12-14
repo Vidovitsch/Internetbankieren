@@ -6,6 +6,8 @@
 //Bank heeft geen addTransactie meer (transacties worden opgeslagen op de overboekcentrale)
 //IBank illegalargumentexceptions toegevoegd
 //Bank heeft een extra parameter in constructor Administratie admin
+//Transacties 2 IBAN's toegevoegd
+//IBankTrans heeft geen addTransactie meer (transacties worden opgeslagen op de overboekcentrale)
 
 
 

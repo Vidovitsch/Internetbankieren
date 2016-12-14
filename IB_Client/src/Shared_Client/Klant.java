@@ -75,10 +75,7 @@ public class Klant implements Serializable {
     public ArrayList<String> getBankAccounts(IBank bank) {
         try {
             return bank.getAccounts(this);
-        } catch (RemoteException ex) {
-            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (IllegalArgumentException ex) {
+        } catch (RemoteException | IllegalArgumentException | SessionExpiredException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }

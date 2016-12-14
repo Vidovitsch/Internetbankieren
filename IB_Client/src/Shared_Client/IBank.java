@@ -24,9 +24,10 @@ public interface IBank extends Remote {
      * NoDataFounException when client has no bank accounts.
      * @param klant, if null throws IllegalArgumentException.
      * @return A list of Strings representing a bank account.
+     * @throws Exceptions.SessionExpiredException
      * @throws RemoteException
      */
-    ArrayList<String> getAccounts(Klant klant) throws IllegalArgumentException, RemoteException;
+    ArrayList<String> getAccounts(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException;
     
     /**
      * Returns a list of Strings. Every String is
