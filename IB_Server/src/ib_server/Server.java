@@ -34,8 +34,8 @@ public class Server
          try {
             System.setProperty("java.rmi.server.hostname", "localhost");
             serverRegistry = LocateRegistry.createRegistry(1099);
-            setCentraleRegistryBinds();
             getCentraleRegistryBinds();
+            setCentraleRegistryBinds();
         } catch (RemoteException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }

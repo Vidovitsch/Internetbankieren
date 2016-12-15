@@ -2,7 +2,6 @@ package Models;
 
 import Exceptions.SessionExpiredException;
 import Shared_Centrale.IBankTrans;
-import Shared_Centrale.ITransactie;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
 import java.rmi.RemoteException;
@@ -70,8 +69,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     }
 
     @Override
-    public String addAccount(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
-        String account = "";
+    public void addAccount(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         if (klant == null) {
             throw new IllegalArgumentException("Client can't be null");
         }
@@ -81,7 +79,6 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
         else {
             //Code here
         }
-        return account;
     }
 
     @Override

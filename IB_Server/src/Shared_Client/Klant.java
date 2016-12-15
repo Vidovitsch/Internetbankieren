@@ -24,18 +24,15 @@ public class Klant implements Serializable {
     
     /**
      * Adds a bank account on the server linked with this Client.
-     * @param bank 
-     * @return Sting representing the new bankaccount
+     * @param bank
      */
-    public String addBankAccount(IBank bank) {
+    public void addBankAccount(IBank bank) {
         try {
-            return bank.addAccount(this);
+            bank.addAccount(this);
         } catch (RemoteException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         }
     }
     
