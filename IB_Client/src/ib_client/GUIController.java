@@ -1,6 +1,9 @@
 package ib_client;
 
+import Exceptions.SessionExpiredException;
 import Shared_Client.IAdmin;
+import Shared_Client.IBank;
+import Shared_Client.Klant;
 import fontyspublisher.IRemotePropertyListener;
 import fontyspublisher.IRemotePublisherForListener;
 import java.beans.PropertyChangeEvent;
@@ -9,6 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +24,9 @@ import java.util.logging.Logger;
 public class GUIController extends UnicastRemoteObject implements IRemotePropertyListener {
 
     private GUI gui;
+    private Klant klant;
     private IAdmin admin;
+    private IBank bank;
     private IRemotePublisherForListener publisher;
     
     /**
@@ -41,6 +47,107 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
+    public void login(String name, String residence, String password) {
+        try {
+            klant = admin.login(name, residence, password);
+        } catch (IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            gui.initErrorMessage(ex.getMessage());
+        }
+    }
+    
+    public void logout() {
+        try {
+            admin.logout(klant);
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void register(String name, String residence, String password) {
+        try {
+            klant = admin.register(name, residence, password);
+        } catch (IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            gui.initErrorMessage(ex.getMessage());
+        }
+    }
+    
+    public void getBank() {
+        try {
+            bank = admin.getBank(klant);
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+        
+    public void removeKlant() {
+        try {
+            admin.removeKlant(klant);
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public String getBankName() {
+        try {
+            return bank.getName();
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public String getUsername() {
+        return klant.getUsername();
+    }
+    
+    public void getAccounts() {
+        try {
+            gui.setAccountList(klant.getBankAccounts(bank));
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            gui.initErrorMessage(ex.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void getTransactions(String IBAN) {
+        try {
+            gui.setTransactionList(klant.getTransactions(IBAN, bank));
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            gui.initErrorMessage(ex.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void addBankAccount() {
+        try {
+            klant.addBankAccount(bank);
+            getAccounts();
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            gui.initErrorMessage(ex.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void removeBankAccount(String IBAN) {
+        try {
+            klant.removeBankAccount(IBAN, bank);
+            getAccounts();
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            gui.initErrorMessage(ex.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     @Override
     public void propertyChange(PropertyChangeEvent pce) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

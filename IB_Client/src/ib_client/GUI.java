@@ -13,6 +13,7 @@
 
 package ib_client;
 
+import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -39,6 +40,18 @@ public class GUI extends Application
         stage.show();
     }
 
+    public void setAccountList(ArrayList<String> accounts) {
+        
+    }
+    
+    public void setTransactionList(ArrayList<String> transactions) {
+        
+    }
+    
+    public void initErrorMessage(String message) {
+        
+    }
+    
     /**
      * @param args the command line arguments
      */

@@ -46,11 +46,10 @@ public interface IBank extends Remote {
      * Adds a bank account for a user.
      * If session is over, SessionExpiredException.
      * @param klant, if empty throws IllegalArgumentException.
-     * @return A String representing the new bank account.
      * @throws Exceptions.SessionExpiredException
      * @throws RemoteException
      */
-    String addAccount(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException;
+    void addAccount(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException;
     
     /**
      * Removes a account from a user.
