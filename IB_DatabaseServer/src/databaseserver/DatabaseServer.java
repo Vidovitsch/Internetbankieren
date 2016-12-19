@@ -30,25 +30,25 @@ public class DatabaseServer
     public DatabaseServer()
     {
         // Print port number for registry
-        System.out.println("Server: Port number " + portNumber);
+        System.out.println("DatabaseServer: Port number " + portNumber);
 
         // Create student administration
         try {
             database = new DatabaseMediator();
-            System.out.println("Server: Database created");
+            System.out.println("DatabaseServer: Database created");
         } catch (RemoteException ex) {
-            System.out.println("Server: Cannot create student administration");
-            System.out.println("Server: RemoteException: " + ex.getMessage());
+            System.out.println("DatabaseServer: Cannot create Database");
+            System.out.println("DatabaseServer: RemoteException: " + ex.getMessage());
             database = null;
         }
 
         // Create registry at port number
         try {
             registry = LocateRegistry.createRegistry(portNumber);
-            System.out.println("Server: Registry created on port number " + portNumber);
+            System.out.println("DatabaseServer: Registry created on port number " + portNumber);
         } catch (RemoteException ex) {
-            System.out.println("Server: Cannot create registry");
-            System.out.println("Server: RemoteException: " + ex.getMessage());
+            System.out.println("DatabaseServer: Cannot create registry");
+            System.out.println("DatabaseServer: RemoteException: " + ex.getMessage());
             registry = null;
         }
 
@@ -56,8 +56,8 @@ public class DatabaseServer
         try {
             registry.rebind(bindingName, database);
         } catch (RemoteException ex) {
-            System.out.println("Server: Cannot bind student administration");
-            System.out.println("Server: RemoteException: " + ex.getMessage());
+            System.out.println("DatabaseServer: Cannot bind Databse");
+            System.out.println("DatabaseServer: RemoteException: " + ex.getMessage());
         }
     }
     /**
