@@ -71,21 +71,30 @@ public class Server
      */
     private void setCentraleRegistryBinds() {
         try {
+            //Make connection with the database server
+            connectedToDatabase = connectToRMIDatabaseServer();
+            
+            //Instantiate publisher, administration and bank
             publisher = new RemotePublisher();
             admin = new Administratie();
             Bank bank = new Bank("Rabobank", "RABO", admin, centrale);
             admin.addBank(bank);
             
+            //Adding database mediator to administration and bank
+            bank.setPersistencyMediator(database);
+            admin.setPersistencyMediator(database);
+            
+            //Bind admin with the registry
             serverRegistry.bind("admin", (IAdmin) admin);
             System.out.println("Centrale bound");
             
+            //Bind bank with the registry
             serverRegistry.bind("bank", (IBank) bank);
             System.out.println("Bank bound");
             
+            //Bind publisher with the registry
             serverRegistry.bind("serverPublisher", publisher);
             System.out.println("Publisher bound");
-            
-            connectedToDatabase = connectToRMIDatabaseServer();
         } catch (RemoteException | AlreadyBoundException ex)
         {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
