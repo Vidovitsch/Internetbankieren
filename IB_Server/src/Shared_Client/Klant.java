@@ -28,7 +28,7 @@ public class Klant implements Serializable {
      */
     public void addBankAccount(IBank bank) {
         try {
-            bank.addAccount(this);
+            bank.addBankAccount(this);
         } catch (RemoteException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SessionExpiredException | IllegalArgumentException ex) {
@@ -44,7 +44,7 @@ public class Klant implements Serializable {
      */
     public boolean removeBankAccount(String IBAN, IBank bank) {
         try {
-            return bank.removeAccount(IBAN, this);
+            return bank.removeBankAccount(IBAN, this);
         } catch (RemoteException ex) {
             Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
             return false;

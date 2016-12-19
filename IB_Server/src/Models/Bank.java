@@ -13,12 +13,11 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  *
  * @author David
  */
-public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
+public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
 
     private ArrayList<Bankrekening> bankAccounts;
     private String name;
@@ -53,7 +52,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
             throw new IllegalArgumentException("Client can't be null");
         }
         else if (!admin.checkSession(klant)) {
-            throw new SessionExpiredException("Session has expired for this client");
+            throw new SessionExpiredException("Session has expired");
         }
         else {
             for (Bankrekening b : bankAccounts) {
@@ -72,9 +71,9 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
             throw new IllegalArgumentException("Input can't be null");
         }
         else if (!admin.checkSession(klant)) {
-            throw new SessionExpiredException("Session has expired for this client");
+            throw new SessionExpiredException("Session has expired");
         }
-        else if (!admin.checkIBANProperty(IBAN, klant)) {
+        else if (!checkIBANProperty(IBAN, klant)) {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
         else {
@@ -87,12 +86,12 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     }
 
     @Override
-    public void addAccount(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+    public void addBankAccount(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         if (klant == null) {
             throw new IllegalArgumentException("Client can't be null");
         }
         else if (!admin.checkSession(klant)) {
-            throw new SessionExpiredException("Session has expired for this client");
+            throw new SessionExpiredException("Session has expired");
         }
         else {
             bankAccounts.add(new Bankrekening(generateNewIBAN(), 0, 100, klant));
@@ -100,15 +99,15 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     }
 
     @Override
-    public boolean removeAccount(String IBAN, Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+    public boolean removeBankAccount(String IBAN, Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         boolean bool = false;
         if (IBAN.isEmpty() || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
         }
         else if (!admin.checkSession(klant)) {
-            throw new SessionExpiredException("Session has expired for this client");
+            throw new SessionExpiredException("Session has expired");
         }
-        else if (!admin.checkIBANProperty(IBAN, klant)) {
+        else if (!checkIBANProperty(IBAN, klant)) {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
         else {
@@ -125,12 +124,12 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
             throw new IllegalArgumentException("Input can't be null");
         }
         else if (!admin.checkSession(klant)) {
-            throw new SessionExpiredException("Session has expired for this client");
+            throw new SessionExpiredException("Session has expired");
         }
-        else if (!admin.checkIBANProperty(IBAN1, klant)) {
+        else if (!checkIBANProperty(IBAN1, klant)) {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
-        else if (!admin.checkIBANExists(IBAN2)) {
+        else if (!checkIBANExists(IBAN2)) {
             throw new IllegalArgumentException("IBAN doesn't exists");
         }
         else {
@@ -145,7 +144,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
         if (IBAN.isEmpty() || value <= 0) {
             throw new IllegalArgumentException("Input can't be null");
         }
-        else if (!admin.checkIBANExists(IBAN)) {
+        else if (!checkIBANExists(IBAN)) {
             throw new IllegalArgumentException("IBAN doesn't exists");
         }
         else {
@@ -159,13 +158,49 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
         if (IBAN.isEmpty() || value <= 0) {
             throw new IllegalArgumentException("Input can't be null");
         }
-        else if (!admin.checkIBANExists(IBAN)) {
+        else if (!checkIBANExists(IBAN)) {
             throw new IllegalArgumentException("IBAN doesn't exists");
         }
         else {
             Bankrekening bankAccount = IBANToBankAccount(IBAN);
             bankAccount.removeFromBalance(value);
         }
+    }
+    
+    /**
+     * Checks if a IBAN is an existing one.
+     * Gets calles when you want to check an IBAN but don't have a client.
+     * @param IBAN
+     * @return True if it exists, else false.
+     */
+    private boolean checkIBANExists(String IBAN) {
+        //Deze methode staat in klasse bank, omdat we ervan uitgaan dat er maar 1 bank is.
+        //Als we dit gaan uitbreiden met meer dan 1 bank, dan moet deze methode in de administatie staan.
+        //Het ophalen van bankrekeningen wordt dan gedaan uit de database i.p.v. (in dit geval) de klasse Bank.
+        for (Bankrekening b : bankAccounts) {
+            if (b.toString().split(";")[0].equals(IBAN)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+     /**
+     * Checks if a IBAN is an and existing one.
+     * Gets called when you want to know if a IBAN is property of a client.
+     * @param IBAN
+     * @param klant
+     * @return True if it exists, else false.
+     */
+    private boolean checkIBANProperty(String IBAN, Klant klant) {
+        for (Bankrekening b : bankAccounts) {
+            if (b.toString().split(";")[0].equals(IBAN)) {
+                if (b.getKlant().equals(klant)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     private String generateNewIBAN() {

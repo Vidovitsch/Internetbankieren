@@ -146,7 +146,7 @@ public class BankTest {
         //Adding an account to bank with an invalid client
         try {
             try {
-                bank.addAccount(null);           
+                bank.addBankAccount(null);           
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             } catch (SessionExpiredException ex) {
@@ -161,7 +161,7 @@ public class BankTest {
         //Adding an account to bank with an expired session
         try {
             try {
-                bank.addAccount(dummyNoSession);
+                bank.addBankAccount(dummyNoSession);
             }
             catch (SessionExpiredException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
@@ -174,7 +174,7 @@ public class BankTest {
         //Adding an account to bank with a valid client
         try {
             try {
-                bank.addAccount(dummySession);
+                bank.addBankAccount(dummySession);
                 assertEquals("dummySession has 1 bank account", bank.getAccounts(dummySession).size(), 2);
                 assertEquals("No exception has been thrown", 0, 0);
             }
@@ -202,7 +202,7 @@ public class BankTest {
         //Making a dummy client without no session
         Klant dummyNoSession = new Klant("Dummy1", "Dummy1");
         try {
-            bank.addAccount(dummyNoSession);
+            bank.addBankAccount(dummyNoSession);
         } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -210,7 +210,7 @@ public class BankTest {
         Klant dummySession = null;
         try {
             dummySession = admin.login("TesetDummy1", "TestDummy1");
-            bank.addAccount(dummySession);
+            bank.addBankAccount(dummySession);
         } catch (IllegalArgumentException | RemoteException | SessionExpiredException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -218,7 +218,7 @@ public class BankTest {
         //Removing an account from bank with an invalid IBAN
         try {
             try {
-                bank.removeAccount("iets", dummySession);           
+                bank.removeBankAccount("iets", dummySession);           
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -230,7 +230,7 @@ public class BankTest {
         //Removing an account from bank with an expired session
         try {
             try {
-                bank.removeAccount("TestIBAN001", dummyNoSession);
+                bank.removeBankAccount("TestIBAN001", dummyNoSession);
             }
             catch (SessionExpiredException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
@@ -243,7 +243,7 @@ public class BankTest {
         //Removing an account from bank with an invalid client
         try {
             try {
-                bank.removeAccount("TestIBAN001", null);
+                bank.removeBankAccount("TestIBAN001", null);
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -254,7 +254,7 @@ public class BankTest {
         
         //Removing an account from bank with a valid client and account
         try {
-            bank.removeAccount("TestIBAN001", dummySession);
+            bank.removeBankAccount("TestIBAN001", dummySession);
             assertEquals("dummySession has 0 bank accounts", bank.getAccounts(dummySession).size(), 1);
             assertEquals("No exception has been thrown", 0, 0);
         } catch (RemoteException | SessionExpiredException | IllegalArgumentException ex ) {
@@ -278,7 +278,7 @@ public class BankTest {
         //Making a dummy client without no session
         Klant dummyNoSession = new Klant("Dummy1", "Dummy1");
         try {
-            bank.addAccount(dummyNoSession);
+            bank.addBankAccount(dummyNoSession);
         } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -286,8 +286,8 @@ public class BankTest {
         Klant dummySession;
         try {
             dummySession = admin.login("TesetDummy1", "TestDummy1");
-            bank.addAccount(dummySession);
-            bank.addAccount(dummySession);
+            bank.addBankAccount(dummySession);
+            bank.addBankAccount(dummySession);
         } catch (IllegalArgumentException | RemoteException | SessionExpiredException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -417,7 +417,7 @@ public class BankTest {
         Klant dummySession = null;
         try {
             dummySession = admin.login("TesetDummy1", "TestDummy1");
-            bank.addAccount(dummySession);
+            bank.addBankAccount(dummySession);
         } catch (IllegalArgumentException | RemoteException | SessionExpiredException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
