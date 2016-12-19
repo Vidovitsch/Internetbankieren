@@ -25,8 +25,8 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     }
 
     @Override
-    public void getTransactions(String IBAN) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ArrayList<ITransactie> getTransactions(String IBAN) throws RemoteException {
+        return null;
     }
 
 }

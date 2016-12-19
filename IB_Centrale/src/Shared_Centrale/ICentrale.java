@@ -2,6 +2,7 @@ package Shared_Centrale;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  *
@@ -25,7 +26,8 @@ public interface ICentrale extends Remote {
      * Gives all the transaction of the bank account
      * linked with the IBAN parameter.
      * @param IBAN linked with a bank account.
+     * @return 
      * @throws RemoteException 
      */
-    void getTransactions(String IBAN) throws RemoteException;
+    ArrayList<ITransactie> getTransactions(String IBAN) throws RemoteException;
 }
