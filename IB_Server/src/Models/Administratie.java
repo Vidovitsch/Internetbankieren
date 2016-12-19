@@ -28,6 +28,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     public void setPersistencyMediator(IPersistencyMediator pMediator) {
         this.pMediator = pMediator;
+        setDatabaseData();
     }
     
     public void addBank(Bank bank) {
@@ -72,6 +73,21 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         removeSession(klant);
     }
             
+        
+    /**
+     * Checks if a client has still a session running.
+     * @param klant
+     * @return True if session is running, else false.
+     */
+    public boolean checkSession(Klant klant) {
+        for (Sessie sessie : sessies) {
+            if (sessie.getClient().equals(klant)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * Adds a session on this server.
      * A session is added if a client is logged in.
@@ -98,17 +114,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         //DB code (Sessie weghalen uit de DB)
     }
     
-    /**
-     * Checks if a client has still a session running.
-     * @param klant
-     * @return True if session is running, else false.
-     */
-    public boolean checkSession(Klant klant) {
-        for (Sessie sessie : sessies) {
-            if (sessie.getClient().equals(klant)) {
-                return true;
-            }
-        }
-        return false;
+    private void setDatabaseData() {
+        //Fill lists
     }
 }

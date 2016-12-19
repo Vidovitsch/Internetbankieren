@@ -38,6 +38,7 @@ public final class CentraleServer
             
             setCentraleRegistryBinds();
             connectedToDatabase = connectToRMIDatabaseServer();
+            centrale.setPersistencyMediator(database);
         } catch (RemoteException ex) {
             System.out.println("Server: Cannot create registry");
             System.out.println("Server: RemoteException: " + ex.getMessage());
@@ -65,10 +66,6 @@ public final class CentraleServer
      */
     public boolean connectToRMIDatabaseServer()
     {
-        // Print IP address and port number for registry
-        System.out.println("Client: IP Address: " + ipAddressDB);
-        System.out.println("Client: Port number " + portNumber);
-
         // Locate registry at IP address and port number
         try
         {
@@ -78,16 +75,6 @@ public final class CentraleServer
             System.out.println("Client: Cannot locate registry");
             System.out.println("Client: RemoteException: " + ex.getMessage());
             dataBaseRegistry = null;
-        }
-
-        // Print result locating registry
-        if (dataBaseRegistry != null)
-        {
-            System.out.println("Client: Registry located");
-        } else
-        {
-            System.out.println("Client: Cannot locate registry");
-            System.out.println("Client: Registry is null pointer");
         }
 
         // Bind student administration using registry

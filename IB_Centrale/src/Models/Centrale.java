@@ -3,6 +3,7 @@ package Models;
 import Shared_Centrale.ICentrale;
 import Shared_Centrale.ITransactie;
 import Shared_Centrale.IBankTrans;
+import Shared_Data.IPersistencyMediator;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
@@ -14,11 +15,17 @@ import java.util.ArrayList;
  */
 public class Centrale extends UnicastRemoteObject implements ICentrale {
     private ArrayList<ITransactie> transactions;
+    private IPersistencyMediator pMediator;
     
     public Centrale() throws RemoteException {
         transactions = new ArrayList();
     }
 
+    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+        this.pMediator = pMediator;
+        setDatabaseData();
+    }
+    
     @Override
     public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
         bank.removeSaldo(IBAN1, value);
@@ -45,5 +52,9 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         LocalDateTime dateTime = LocalDateTime.now();
         System.out.println(dateTime.toString());
         return dateTime.toString();
+    }
+    
+    private void setDatabaseData() {
+        //Fill lists
     }
 }

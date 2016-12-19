@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package databaseserver;
 
 import Shared_Data.IPersistencyMediator;
@@ -24,9 +19,7 @@ import java.util.logging.Logger;
  */
 public class DatabaseMediator extends UnicastRemoteObject implements IPersistencyMediator
 {
-
     private static Connection con;
-    //private static Statement statement;
     private static ResultSet myRs;
     private static String connectionstring = "jdbc:mysql://localhost/internetbankieren";
     private static String user = "Internetbankieren";

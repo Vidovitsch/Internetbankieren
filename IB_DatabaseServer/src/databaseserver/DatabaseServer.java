@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package databaseserver;
 
 import java.rmi.RemoteException;
@@ -15,7 +10,6 @@ import java.rmi.registry.Registry;
  */
 public class DatabaseServer
 {    
-
     // Set port number
     private static final int portNumber = 1088;
 
@@ -26,7 +20,7 @@ public class DatabaseServer
     private Registry registry = null;
     private DatabaseMediator database = null;
 
-        // Constructor
+    // Constructor
     public DatabaseServer()
     {
         // Print port number for registry

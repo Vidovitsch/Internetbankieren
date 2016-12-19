@@ -123,7 +123,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void addBankAccount() {
         try {
             klant.addBankAccount(bank);

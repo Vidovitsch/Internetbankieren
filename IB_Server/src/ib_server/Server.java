@@ -107,10 +107,6 @@ public class Server
      */
     public boolean connectToRMIDatabaseServer()
     {
-        // Print IP address and port number for registry
-        System.out.println("Client: IP Address: " + ipAddressDB);
-        System.out.println("Client: Port number " + portNumber);
-
         // Locate registry at IP address and port number
         try
         {
@@ -120,16 +116,6 @@ public class Server
             System.out.println("Client: Cannot locate registry");
             System.out.println("Client: RemoteException: " + ex.getMessage());
             dataBaseRegistry = null;
-        }
-
-        // Print result locating registry
-        if (dataBaseRegistry != null)
-        {
-            System.out.println("Client: Registry located");
-        } else
-        {
-            System.out.println("Client: Cannot locate registry");
-            System.out.println("Client: Registry is null pointer");
         }
 
         // Bind student administration using registry
