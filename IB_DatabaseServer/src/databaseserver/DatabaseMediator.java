@@ -132,7 +132,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public ArrayList<String> getBankRekeningen(int klantID) throws RemoteException
+    public ArrayList<String> getBankRekeningenKlant(int klantID) throws RemoteException
     {
         String rekeningString = "";
         ArrayList<String> bankRekeningen = new ArrayList<>();
@@ -245,6 +245,18 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
         }
         return available;
+    }
+
+    @Override
+    public ArrayList<String> getKlanten() throws RemoteException
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ArrayList<String> getAllBankRekeningen() throws RemoteException
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

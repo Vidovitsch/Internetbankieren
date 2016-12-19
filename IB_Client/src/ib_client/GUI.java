@@ -30,7 +30,7 @@ public class GUI extends Application
     public void start(Stage stage) throws Exception {
         controller = new GUIController(this);
         
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("FXMLLogin.fxml"));
         
         Scene scene = new Scene(root);
         
