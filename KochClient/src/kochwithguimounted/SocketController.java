@@ -21,7 +21,8 @@ public class SocketController {
     public SocketController(KochManager manager) {
         try {
             this.manager = manager;
-            socket = new Socket("localhost", 8189);
+            //IP David_Fontys: 145.93.85.1 
+            socket = new Socket("145.93.177.68", 8189);
         
             out = new ObjectOutputStream(socket.getOutputStream());
             
