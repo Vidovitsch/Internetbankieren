@@ -12,15 +12,16 @@ import java.util.ArrayList;
  * @author David
  */
 public class Centrale extends UnicastRemoteObject implements ICentrale {
-    private ArrayList<ITransactie> transacties;
+    private ArrayList<ITransactie> transactions;
     
     public Centrale() throws RemoteException {
-        transacties = new ArrayList();
+        transactions = new ArrayList();
     }
 
     @Override
-    public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value) throws RemoteException {
-
+    public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
+        bank.removeSaldo(IBAN1, value);
+        bank.addSaldo(IBAN2, value);
     }
 
     @Override
