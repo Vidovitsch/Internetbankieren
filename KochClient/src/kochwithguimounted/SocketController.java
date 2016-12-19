@@ -22,7 +22,6 @@ public class SocketController {
         try {
             this.manager = manager;
 
-            //socket = new Socket("localhost", 8189);
             //IP David_Fontys: 145.93.85.1 
             socket = new Socket("145.93.177.68", 8189);
         
@@ -86,6 +85,30 @@ public class SocketController {
                     finished = true;
                 }
             }
+        } catch (IOException | ClassNotFoundException ex) {
+            Logger.getLogger(SocketController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void requestZoom(double zoom, double transX ,double transY) {
+        try {
+            out.writeInt(-1);
+            out.flush();
+            out.writeDouble(zoom);
+            out.flush();
+            out.writeDouble(transX);
+            out.flush();
+            out.writeDouble(transY);
+            out.flush();
+            
+            ArrayList<Edge> edges = (ArrayList<Edge>) in.readObject();
+            
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    manager.drawEdges(edges);
+                }
+            });
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(SocketController.class.getName()).log(Level.SEVERE, null, ex);
         }

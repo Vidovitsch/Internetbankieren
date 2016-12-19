@@ -44,8 +44,8 @@ public class KochManager extends Observable
         edges = new ArrayList();
         sController = new SocketController(this);
         
-        //requestEdgeList(lvlInput);
-        requestEdgesSingle(lvlInput);
+        requestEdgeList(lvlInput);
+        //requestEdgesSingle(lvlInput);
     }
 
     public void addEdge(Edge e)
@@ -86,6 +86,15 @@ public class KochManager extends Observable
     public void setEdges(ArrayList<Edge> edgieee)
     {
         this.edges = edgieee;
+    }
+    
+    public void requestZoom(double zoom, double transX, double transY) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sController.requestZoom(zoom, transX, transY);
+            }
+        }).start();
     }
     
     private void requestEdgeList(int lvlInput) {

@@ -157,7 +157,7 @@ public class KochWithGuiMounted extends Application {
         });
 
         // Create Koch manager and set initial level
-        resetZoom();
+        //resetZoom();
         
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter level: ");
@@ -246,9 +246,9 @@ public class KochWithGuiMounted extends Application {
         // Graphics
         GraphicsContext gc = kochPanel.getGraphicsContext2D();
 
+        //System.out.println(e);
         // Adjust edge for zoom and drag
-        Edge e1 = edgeAfterZoomAndDrag(e);
-
+        
         // Set line color
         gc.setStroke(Color.web(e.webColor));
 
@@ -262,7 +262,7 @@ public class KochWithGuiMounted extends Application {
         }
 
         // Draw line
-        gc.strokeLine(e1.X1, e1.Y1, e1.X2, e1.Y2);
+        gc.strokeLine(e.X1, e.Y1, e.X2, e.Y2);
     }
 
     public void setTextNrEdges(String text) {
@@ -303,7 +303,8 @@ public class KochWithGuiMounted extends Application {
             }
             zoomTranslateX = (int) (event.getX() - originalPointClickedX * zoom);
             zoomTranslateY = (int) (event.getY() - originalPointClickedY * zoom);
-            kochManager.drawEdges();
+
+            kochManager.requestZoom(zoom, zoomTranslateX, zoomTranslateY);
         }
     }
 
@@ -334,7 +335,8 @@ public class KochWithGuiMounted extends Application {
                 e.X1 * zoom + zoomTranslateX,
                 e.Y1 * zoom + zoomTranslateY,
                 e.X2 * zoom + zoomTranslateX,
-                e.Y2 * zoom + zoomTranslateY, Color.web(e.webColor));
+                e.Y2 * zoom + zoomTranslateY,
+                Color.web(e.webColor));
     }
 
     /**
@@ -347,7 +349,6 @@ public class KochWithGuiMounted extends Application {
      */
     public static void main(String[] args) {
         launch(args);
-
     }
 
 }
