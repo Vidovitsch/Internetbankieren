@@ -47,9 +47,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public void login(String name, String residence, String password) {
+    public void login(String userName, String password) {
         try {
-            klant = admin.login(name, residence, password);
+            klant = admin.login(userName, password);
         } catch (IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
@@ -64,9 +64,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
     
-    public void register(String name, String residence, String password) {
+    public void register(String userName, String password) {
         try {
-            klant = admin.register(name, residence, password);
+            klant = admin.register(userName, password);
         } catch (IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());

@@ -9,8 +9,6 @@
 //Transacties 2 IBAN's toegevoegd
 //IBankTrans heeft geen addTransactie meer (transacties worden opgeslagen op de overboekcentrale)
 
-
-
 package ib_client;
 
 import java.util.ArrayList;

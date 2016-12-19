@@ -1,6 +1,5 @@
 package Models;
 
-import Shared_Centrale.ICentrale;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
@@ -22,6 +21,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     public Administratie() throws RemoteException {
         sessies = new ArrayList();
         clients = new ArrayList();
+        banks = new ArrayList();
     }
 
     public void addBank(Bank bank) {
@@ -29,28 +29,40 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     @Override
-    public Klant register(String name, String residence, String password) throws IllegalArgumentException, RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Klant register(String userName, String password) throws IllegalArgumentException, RemoteException {
+        //DB code (-1 = not successful, else successful)
+        return null;
     }
 
     @Override
-    public Klant login(String name, String residence, String password) throws IllegalArgumentException, RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Klant login(String userName, String password) throws IllegalArgumentException, RemoteException {
+        //DB code (-1 = not successful, else successful)
+        addSession(null);
+        return null;
     }
 
     @Override
     public IBank getBank(Klant klant) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //DB code (bank.getName() in database vergelijken of de klant daarop accounts heeft)
+        return null;
     }
 
     @Override
     public boolean removeKlant(Klant klant) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean bool = false;
+        for (Klant k : clients) {
+            if (k.equals(klant)) {
+                bool = true;
+            }
+        }
+        if (bool) clients.remove(klant);
+        //DB code (ook uit de DB verwijderen)
+        return bool;
     }
 
     @Override
     public void logout(Klant klant) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        removeSession(klant);
     }
             
     /**
@@ -59,7 +71,8 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant 
      */
     private void addSession(Klant klant) {
-        
+        sessies.add(new Sessie(klant, this));
+        //DB code (Sessie toevoegen aan DB)
     }
     
     /**
@@ -68,7 +81,14 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant 
      */
     private void removeSession(Klant klant) {
-        
+        Sessie sessie = null;
+        for (Sessie s : sessies) {
+            if (s.getClient().equals(klant)) {
+                sessie = s;
+            }
+        }
+        sessies.remove(sessie);
+        //DB code (Sessie weghalen uit de DB)
     }
     
     /**
@@ -76,28 +96,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant
      * @return True if session is running, else false.
      */
-    public boolean checkSession(Klant klant) throws IllegalArgumentException {
-        return true;
-    }
-    
-    /**
-     * Checks if a IBAN is an existing one.
-     * Gets calles when you want to check an IBAN but don't have a client.
-     * @param IBAN
-     * @return True if it exists, else false.
-     */
-    public boolean checkIBANExists(String IBAN) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-     /**
-     * Checks if a IBAN is an and existing one.
-     * Gets called when you want to know if a IBAN is property of a client.
-     * @param IBAN
-     * @param klant
-     * @return True if it exists, else false.
-     */
-    public boolean checkIBANProperty(String IBAN, Klant klant) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean checkSession(Klant klant) {
+        for (Sessie sessie : sessies) {
+            if (sessie.getClient().equals(klant)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

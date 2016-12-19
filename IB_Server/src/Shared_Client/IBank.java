@@ -49,7 +49,7 @@ public interface IBank extends Remote {
      * @throws Exceptions.SessionExpiredException
      * @throws RemoteException
      */
-    void addAccount(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException;
+    void addBankAccount(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException;
     
     /**
      * Removes a account from a user.
@@ -60,7 +60,7 @@ public interface IBank extends Remote {
      * @throws Exceptions.SessionExpiredException
      * @throws RemoteException
      */
-    boolean removeAccount(String IBAN, Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException;
+    boolean removeBankAccount(String IBAN, Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException;
     
     /**
      * Starts a transaction between two bank accounts.

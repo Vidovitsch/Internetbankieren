@@ -29,4 +29,18 @@ public interface ITransactie extends Remote {
      * @throws RemoteException 
      */
     String getDescription() throws RemoteException;
+    
+    /**
+     * Returns the IBAN from the bank account who made the transaction.
+     * @return IBAN
+     * @throws RemoteException 
+     */
+    String getIBANFrom() throws RemoteException;
+    
+    /**
+     * Returns the IBAN from the bank account who received the transaction.
+     * @return IBAN
+     * @throws RemoteException 
+     */
+    String getIBANTo() throws RemoteException;
 }
