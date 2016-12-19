@@ -44,4 +44,19 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
         };
     }
 
+    @Override
+    public boolean Login(String username, String password) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean registerAccount(String Email, String Password) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean emailAvailable(String Email) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
