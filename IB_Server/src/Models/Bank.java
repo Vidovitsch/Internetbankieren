@@ -6,6 +6,7 @@ import Shared_Centrale.ICentrale;
 import Shared_Centrale.ITransactie;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
+import Shared_Data.IPersistencyMediator;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
  */
 public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
 
+    private IPersistencyMediator pMediator;
     private ArrayList<Bankrekening> bankAccounts;
     private String name;
     private String shortName;
@@ -40,6 +42,10 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         this.shortName = shortName;
     }
 
+    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+        this.pMediator = pMediator;
+    }
+    
     @Override
     public String getName() throws RemoteException {
         return name;

@@ -3,6 +3,7 @@ package Models;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
+import Shared_Data.IPersistencyMediator;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
  */
 public class Administratie extends UnicastRemoteObject implements IAdmin {
 
+    private IPersistencyMediator pMediator;
     private ArrayList<Sessie> sessies;
     private ArrayList<Klant> clients;
     private ArrayList<Bank> banks;
@@ -24,6 +26,10 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         banks = new ArrayList();
     }
 
+    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+        this.pMediator = pMediator;
+    }
+    
     public void addBank(Bank bank) {
         banks.add(bank);
     }
@@ -36,6 +42,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     @Override
     public Klant login(String userName, String password) throws IllegalArgumentException, RemoteException {
+        int userID = pMediator.Login(userName, password);
         //DB code (-1 = not successful, else successful)
         addSession(null);
         return null;
