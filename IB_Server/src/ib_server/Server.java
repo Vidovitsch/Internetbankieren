@@ -5,6 +5,7 @@ import Models.Bank;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
+import Shared_Data.IPersistencyMediator;
 import fontyspublisher.IRemotePublisherForDomain;
 import fontyspublisher.RemotePublisher;
 import java.rmi.AlreadyBoundException;
@@ -21,9 +22,17 @@ import java.util.logging.Logger;
  */
 public class Server
 {
+    private final String ipAddressDB = "145.93.177.68";
+    private final int portNumber = 1088;
+    private static final String bindingName = "Database";
+    private IPersistencyMediator database = null;
+    private boolean connectedToDatabase = false;
+    
     public IRemotePublisherForDomain publisher;
     private Registry centraleRegistry;
     private Registry serverRegistry;
+    private Registry dataBaseRegistry;
+    
     private ICentrale centrale;
     private Administratie admin;
     
@@ -75,10 +84,68 @@ public class Server
             
             serverRegistry.bind("serverPublisher", publisher);
             System.out.println("Publisher bound");
+            
+            connectedToDatabase = connectToRMIDatabaseServer();
         } catch (RemoteException | AlreadyBoundException ex)
         {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    /**
+     * Sets the connection with the database server
+     * @return true if connection successful, else false
+     */
+    public boolean connectToRMIDatabaseServer()
+    {
+        // Print IP address and port number for registry
+        System.out.println("Client: IP Address: " + ipAddressDB);
+        System.out.println("Client: Port number " + portNumber);
+
+        // Locate registry at IP address and port number
+        try
+        {
+            dataBaseRegistry = LocateRegistry.getRegistry(ipAddressDB, portNumber);
+        } catch (RemoteException ex)
+        {
+            System.out.println("Client: Cannot locate registry");
+            System.out.println("Client: RemoteException: " + ex.getMessage());
+            dataBaseRegistry = null;
+        }
+
+        // Print result locating registry
+        if (dataBaseRegistry != null)
+        {
+            System.out.println("Client: Registry located");
+        } else
+        {
+            System.out.println("Client: Cannot locate registry");
+            System.out.println("Client: Registry is null pointer");
+        }
+
+        // Bind student administration using registry
+        if (dataBaseRegistry != null)
+        {
+            try
+            {
+                database = (IPersistencyMediator) dataBaseRegistry.lookup(bindingName);
+                connectedToDatabase = true;
+                System.out.println("Client: connection with " + bindingName + " successful");
+            } catch (RemoteException ex)
+            {
+                System.out.println("Client: Cannot bind Database");
+                System.out.println("Client: RemoteException: " + ex.getMessage());
+                database = null;
+                connectedToDatabase = false;
+            } catch (NotBoundException ex)
+            {
+                System.out.println("Client: Cannot bind Database");
+                System.out.println("Client: NotBoundException: " + ex.getMessage());
+                database = null;
+                connectedToDatabase = false;
+            }
+        }
+        return connectedToDatabase;
     }
     
     /**
