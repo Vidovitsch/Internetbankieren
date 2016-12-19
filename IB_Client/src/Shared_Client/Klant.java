@@ -29,7 +29,7 @@ public class Klant implements Serializable {
      * @throws java.rmi.RemoteException
      */
     public void addBankAccount(IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
-        bank.addAccount(this);
+        bank.addBankAccount(this);
     }
     
     /**
@@ -41,7 +41,7 @@ public class Klant implements Serializable {
      * @throws java.rmi.RemoteException
      */
     public boolean removeBankAccount(String IBAN, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
-        return bank.removeAccount(IBAN, this);
+        return bank.removeBankAccount(IBAN, this);
     }
     
     /**
