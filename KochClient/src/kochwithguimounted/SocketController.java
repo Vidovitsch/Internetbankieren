@@ -113,4 +113,12 @@ public class SocketController {
             Logger.getLogger(SocketController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void closeSocket() {
+        try {
+            socket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(SocketController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

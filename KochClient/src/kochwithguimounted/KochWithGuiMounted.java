@@ -81,6 +81,11 @@ public class KochWithGuiMounted extends Application {
     private final int kpHeight = 500;
 
     @Override
+    public void stop() {
+        kochManager.closeSocket();
+    }
+    
+    @Override
     public void start(Stage primaryStage) throws InterruptedException, ExecutionException, IOException, FileNotFoundException, ClassNotFoundException {
 
         // Define grid pane

@@ -97,6 +97,10 @@ public class KochManager extends Observable
         }).start();
     }
     
+    public void closeSocket() {
+        sController.closeSocket();
+    }
+    
     private void requestEdgeList(int lvlInput) {
         new Thread(new Runnable() {
             @Override
