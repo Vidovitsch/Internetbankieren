@@ -30,12 +30,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     @Override
-    public Klant register(String name, String residence, String password) throws IllegalArgumentException, RemoteException {
+    public Klant register(String userName, String password) throws IllegalArgumentException, RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Klant login(String name, String residence, String password) throws IllegalArgumentException, RemoteException {
+    public Klant login(String userName, String password) throws IllegalArgumentException, RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

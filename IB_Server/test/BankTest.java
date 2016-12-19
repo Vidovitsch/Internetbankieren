@@ -3,6 +3,7 @@ import Models.Administratie;
 import Models.Bank;
 import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
+import Shared_Centrale.ITransactie;
 import Shared_Client.Klant;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -34,11 +35,11 @@ public class BankTest {
                 @Override
                 public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException { }
                 @Override
-                public void getTransactions(String IBAN) throws RemoteException { }
+                public ArrayList<ITransactie> getTransactions(String IBAN) throws RemoteException { return null; }
             };
             //Aanamken van eeen dummy administratie en bank
             admin = new Administratie();
-            bank = new Bank("Rabobank", admin, centrale);
+            bank = new Bank("Rabobank", "RABO", admin, centrale);
         } catch (RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -72,7 +73,7 @@ public class BankTest {
         //Name is correct and not empty
         String name = "Rabobank";
         try {
-            Bank bankTest = new Bank(name, admin, centrale);
+            Bank bankTest = new Bank(name, "RABO", admin, centrale);
         } catch (RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -81,7 +82,7 @@ public class BankTest {
         name = "";
         try {
             try {
-                Bank bankTest = new Bank(name, admin, centrale);
+                Bank bankTest = new Bank(name, "RABO", admin, centrale);
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -94,7 +95,7 @@ public class BankTest {
         name = "Rabobank";
         try {
             try {
-                Bank bankTest = new Bank(name, null, centrale);
+                Bank bankTest = new Bank(name, "RABO", null, centrale);
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -137,7 +138,7 @@ public class BankTest {
         //Making a dummy client with a session
         Klant dummySession = null;
         try {
-            dummyNoSession = admin.login("TestDummy", "TesetDummy", "TestDummy");
+            dummyNoSession = admin.login("TesetDummy", "TestDummy");
         } catch (IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -208,7 +209,7 @@ public class BankTest {
         //Making a dummy client with a session
         Klant dummySession = null;
         try {
-            dummySession = admin.login("TestDummy1", "TesetDummy1", "TestDummy1");
+            dummySession = admin.login("TesetDummy1", "TestDummy1");
             bank.addAccount(dummySession);
         } catch (IllegalArgumentException | RemoteException | SessionExpiredException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -284,7 +285,7 @@ public class BankTest {
         //Making a dummy client with a session
         Klant dummySession;
         try {
-            dummySession = admin.login("TestDummy1", "TesetDummy1", "TestDummy1");
+            dummySession = admin.login("TesetDummy1", "TestDummy1");
             bank.addAccount(dummySession);
             bank.addAccount(dummySession);
         } catch (IllegalArgumentException | RemoteException | SessionExpiredException ex) {
@@ -342,7 +343,7 @@ public class BankTest {
         //Making a dummy client with a session
         Klant dummySession = null;
         try {
-            dummySession = admin.login("TestDummy1", "TesetDummy1", "TestDummy1");
+            dummySession = admin.login("TesetDummy1", "TestDummy1");
         } catch (IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -415,7 +416,7 @@ public class BankTest {
         //Making a dummy client with a session
         Klant dummySession = null;
         try {
-            dummySession = admin.login("TestDummy1", "TesetDummy1", "TestDummy1");
+            dummySession = admin.login("TesetDummy1", "TestDummy1");
             bank.addAccount(dummySession);
         } catch (IllegalArgumentException | RemoteException | SessionExpiredException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -507,7 +508,7 @@ public class BankTest {
         //Making a dummy client with a session
         Klant dummySession = null;
         try {
-            dummySession = admin.login("TestDummy1", "TesetDummy1", "TestDummy1");
+            dummySession = admin.login("TesetDummy1", "TestDummy1");
         } catch (IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -562,7 +563,7 @@ public class BankTest {
         //Making a dummy client with a session
         Klant dummySession = null;
         try {
-            dummySession = admin.login("TestDummy1", "TesetDummy1", "TestDummy1");
+            dummySession = admin.login("TesetDummy1", "TestDummy1");
         } catch (IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
