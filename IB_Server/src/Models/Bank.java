@@ -101,6 +101,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         }
         else {
             bankAccounts.add(new Bankrekening(generateNewIBAN(), 0, 100, klant));
+            //DB code
         }
     }
 
@@ -247,5 +248,9 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         String value = String.valueOf(r.nextInt((endValue - startValue) + 1) + startValue);
         while (value.length() != numberLength) value = String.valueOf(new Random().nextInt(9) + startValue) + value;
         return value;
+    }
+    
+    private void setDatabaseData() {
+        //Fill lists
     }
 }
