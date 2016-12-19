@@ -11,7 +11,6 @@ import java.util.Date;
  */
 public interface IPersistencyMediator extends Remote
 {
-
     /**
      * Logt de klant in, Geeft -1 terug wanneer dit niet gelukt is, anders geeft deze methode
      * het id van de zojuist ingelogde klant terug
@@ -21,7 +20,6 @@ public interface IPersistencyMediator extends Remote
      * @throws RemoteException
      */
     public int Login(String username,String password) throws RemoteException;
-    
 
     /**
      * Geeft true terug als de username (naam+woonplaats) beschikbaar is, en false als dit niet zo is
@@ -30,7 +28,6 @@ public interface IPersistencyMediator extends Remote
      * @throws RemoteException
      */
     public boolean usernameAvailable(String Username) throws RemoteException;
-    
 
     /**
      * probeert de account te registreren en geeft true terug als dit lukt, wanneer hiet iets mis gaat geeft deze false terug
@@ -52,13 +49,6 @@ public interface IPersistencyMediator extends Remote
     public boolean addBank(String bankName, String bankShortName) throws RemoteException;
     
     /**
-     * geeft een lijst van alle klanten terug in String-vorm --> Name;Residence;id
-     * @return
-     * @throws RemoteException
-     */
-    public ArrayList<String> getKlanten() throws RemoteException;
-    
-    /**
      * voegt een bankrekening toe bij de betreffende bank, voor de betreffende klant
      * @param clientID      identifier voor de klant
      * @param iban          uniek nummer voor de nieuwe rekening
@@ -75,13 +65,6 @@ public interface IPersistencyMediator extends Remote
      * @throws RemoteException
      */
     public ArrayList<String> getBankRekeningenKlant(int klantID) throws RemoteException;
-    
-    /**
-     * geeft een lijst van alle bankrekeningen terug in Stringvorm
-     * @return
-     * @throws RemoteException
-     */
-    public ArrayList<String> getAllBankRekeningen() throws RemoteException;
     
     /**
      * kijkt of het gegeven iban bezet is, als deze bezet is geeft de methode false terug, anders true
@@ -111,4 +94,19 @@ public interface IPersistencyMediator extends Remote
      */
     public ArrayList<String> getTransactions(String iban) throws RemoteException;
     
+    /**
+     * geeft een lijst van alle klanten terug in String-vorm --> Name;Residence;id
+     * @return
+     * @throws RemoteException
+     */
+    public ArrayList<String> getAllKlanten() throws RemoteException;
+    
+    /**
+     * geeft een lijst van alle bankrekeningen terug in Stringvorm
+     * @return
+     * @throws RemoteException
+     */
+    public ArrayList<String> getAllBankrekeningen() throws RemoteException;
+    
+    public ArrayList<String> getAllBanks() throws RemoteException;
 }

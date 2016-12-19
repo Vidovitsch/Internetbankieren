@@ -34,7 +34,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
-        };
+        }
     }
 
     @Override
@@ -241,15 +241,51 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public ArrayList<String> getKlanten() throws RemoteException
+    public ArrayList<String> getAllKlanten() throws RemoteException
+    {
+        String fields;
+        ArrayList<String> clients = new ArrayList<>();
+        try
+        {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', Naam, Woonplaats, GeldigeSessie) AS Fields FROM Klant";
+            myRs = statement.executeQuery(query);
+            if (myRs.next())
+            {
+                fields = myRs.getString("Fields");
+                clients.add(fields);
+            }
+        } catch (Exception ex)
+        {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return clients;
+    }
+
+    @Override
+    public ArrayList<String> getAllBankrekeningen() throws RemoteException
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public ArrayList<String> getAllBankRekeningen() throws RemoteException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ArrayList<String> getAllBanks() throws RemoteException {
+        String fields;
+        ArrayList<String> transactions = new ArrayList<>();
+        try
+        {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', Naam, Afkorting) AS Fields FROM Bank";
+            myRs = statement.executeQuery(query);
+            if (myRs.next())
+            {
+                fields = myRs.getString("Fields");
+                transactions.add(fields);
+            }
+        } catch (Exception ex)
+        {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return transactions;
     }
-
 }
