@@ -43,7 +43,6 @@ public class Controller implements Observer{
     public Controller() throws IOException
     {
             try {
-                kochFractal = new KochFractal();
             // Establish server socket
             ServerSocket serverSocket = new ServerSocket(8189);
             LOG.log(Level.INFO, "Server is running. Listening on port: {0}", serverSocket.getLocalPort());
@@ -53,7 +52,7 @@ public class Controller implements Observer{
                     Socket incomingSocket = serverSocket.accept();
                     LOG.log(Level.INFO, "New Client Connected: {0}", incomingSocket.getInetAddress());
                     // Handle client request in a new thread
-                    Thread t = new Thread(new ClientListener(incomingSocket, kochFractal));
+                    Thread t = new Thread(new ClientListener(incomingSocket, new KochFractal()));
                     t.start();
                 } catch (IOException e) {
                     LOG.log(Level.WARNING, "IOException occurred: {0}", e.getMessage());
