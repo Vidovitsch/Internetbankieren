@@ -51,6 +51,75 @@ public class GUI extends Application
     }
     
     /**
+     * Convert Bankaccount.toString() to IBAN
+     * @param account (String value)
+     * @return IBAN (String value)
+     */
+    private String accountToIBAN(String account) {
+        return account.split(";")[0];
+    }
+    
+    /**
+     * Convert Bankaccount.toString() to amount of money
+     * @param account (String value)
+     * @return amount of money (String value)
+     */
+    private String accountToAmount(String account) {
+        return account.split(";")[1];
+    }
+    
+    /**
+     * Convert Transaction.toString() to date
+     * @param transaction (String value)
+     * @return date (String value)
+     */
+    private String transactionToDate(String transaction) {
+        return transaction.split(";")[0];
+    }
+    
+    /**
+     * Convert Transaction.toString() to amount of money
+     * @param transaction (String value)
+     * @return amount of money transferred (String value)
+     */
+    private String transactionToAmount(String transaction) {
+        return transaction.split(";")[1];
+    }
+        
+    /**
+     * Convert Transaction.toString() to IBANTo
+     * @param transaction (String value)
+     * @return IBANTo (String value)
+     */
+    private String transactionToIBANTo(String transaction) {
+        return transaction.split(";")[2];
+    }
+    
+    /**
+     * Convert Transaction.toString() to IBANFrom
+     * @param transaction (String value)
+     * @return IBANFrom (String value)
+     */
+    private String transactionToIBANFrom(String transaction) {
+        return transaction.split(";")[3];
+    }
+    
+    /**
+     * Convert Transaction.toString() to description
+     * @param transaction (String value)
+     * @return "" if description is empty, else description (String value)
+     */
+    private String transactionToDescription(String transaction) {
+        String[] fields = transaction.split(";");
+        
+        if (fields.length < 5) {
+            return "";
+        } else {
+            return fields[4];
+        }
+    }
+    
+    /**
      * @param args the command line arguments
      */
     public static void main(String[] args)

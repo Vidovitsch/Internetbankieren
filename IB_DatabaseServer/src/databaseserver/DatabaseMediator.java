@@ -5,7 +5,7 @@
  */
 package databaseserver;
 
-import Shared_Data.IPersistencyMediator;
+import Shared.Interfaces.IPersistencyMediator;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
