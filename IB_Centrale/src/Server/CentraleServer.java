@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public final class CentraleServer
 {
-    private final String ipAddressDB = "145.93.177.68";
+    private final String ipAddressDB = "localhost";
     private final int portNumber = 1088;
     private static final String bindingName = "Database";
     private IPersistencyMediator database = null;
