@@ -2,11 +2,14 @@ package Models;
 
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
+import Shared_Centrale.ICentrale;
 import Shared_Client.Klant;
 import Shared_Data.IPersistencyMediator;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -15,20 +18,26 @@ import java.util.ArrayList;
  */
 public class Administratie extends UnicastRemoteObject implements IAdmin {
 
+    private ICentrale centrale;
     private IPersistencyMediator pMediator;
     private ArrayList<Sessie> sessies;
     private ArrayList<Klant> clients;
     private ArrayList<Bank> banks;
     
-    public Administratie() throws RemoteException {
+    public Administratie(ICentrale centrale) throws RemoteException {
         sessies = new ArrayList();
         clients = new ArrayList();
         banks = new ArrayList();
+        this.centrale = centrale;
     }
 
     public void setPersistencyMediator(IPersistencyMediator pMediator) {
         this.pMediator = pMediator;
-        setDatabaseData();
+        try {
+            setDatabaseData();
+        } catch (RemoteException ex) {
+            Logger.getLogger(Administratie.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void addBank(Bank bank) {
@@ -114,7 +123,47 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         //DB code (Sessie weghalen uit de DB)
     }
     
-    private void setDatabaseData() {
-        //Fill lists
+    /**
+     * Set all database to lists in this class
+     */
+    private void setDatabaseData() throws RemoteException {
+        //Set banks
+        for (String bankValues : pMediator.getAllBanks()) {
+            banks.add(stringToBank(bankValues));
+        }
+        //Set clients
+        for (String clientValues : pMediator.getAllKlanten()) {
+            clients.add(stringToKlant(clientValues));
+        }
+    }
+    
+    /**
+     * Converts the String of klant-values to a Klant object.
+     * Als de klant een geldige sessie heeft draaien wordt er ook
+     * voor deze klant een sessie gestart.
+     * @param values
+     * @return Klant
+     */
+    private Klant stringToKlant(String values) {
+        String[] fields = values.split(";");
+        System.out.println(fields[0] + " :: " + fields[1] + " :: " + fields[2]);
+        Klant klant = new Klant(fields[0], fields[1]);
+        if (fields[2].equals("1")) {
+            System.out.println("sessie added");
+            sessies.add(new Sessie(klant, this));
+        } 
+        return new Klant(fields[0], fields[1]);
+    }
+    
+    /**
+     * Converts the String of bank-values to a Bank object
+     * @param values
+     * @return Bank
+     */
+    private Bank stringToBank(String values) throws RemoteException {
+        String[] fields = values.split(";");
+        Bank bank = new Bank(fields[0], fields[1], this, centrale);
+        bank.setPersistencyMediator(pMediator);
+        return bank;
     }
 }

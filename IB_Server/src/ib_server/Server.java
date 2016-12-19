@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class Server
 {
-    private final String ipAddressDB = "145.93.177.68";
+    private final String ipAddressDB = "localhost";
     private final int portNumber = 1088;
     private static final String bindingName = "Database";
     private IPersistencyMediator database = null;
@@ -74,23 +74,16 @@ public class Server
             //Make connection with the database server
             connectedToDatabase = connectToRMIDatabaseServer();
             
-            //Instantiate publisher, administration and bank
+            //Instantiate publisher and administration
             publisher = new RemotePublisher();
-            admin = new Administratie();
-            Bank bank = new Bank("Rabobank", "RABO", admin, centrale);
-            admin.addBank(bank);
+            admin = new Administratie(centrale);
             
-            //Adding database mediator to administration and bank
-            bank.setPersistencyMediator(database);
+            //Adding database mediator to administration
             admin.setPersistencyMediator(database);
             
             //Bind admin with the registry
             serverRegistry.bind("admin", (IAdmin) admin);
             System.out.println("Centrale bound");
-            
-            //Bind bank with the registry
-            serverRegistry.bind("bank", (IBank) bank);
-            System.out.println("Bank bound");
             
             //Bind publisher with the registry
             serverRegistry.bind("serverPublisher", publisher);

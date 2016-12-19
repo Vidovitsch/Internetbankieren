@@ -39,6 +39,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         bankAccounts = new ArrayList();
         this.centrale = centrale;
         this.admin = admin;
+        this.name = name;
         this.shortName = shortName;
     }
 
@@ -51,6 +52,11 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         return name;
     }
 
+    @Override
+    public String getShortName() throws RemoteException {
+        return shortName;
+    }
+    
     @Override
     public ArrayList<String> getAccounts(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         ArrayList<String> accounts = new ArrayList();
@@ -137,7 +143,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
         else if (!checkIBANExists(IBAN2)) {
-            throw new IllegalArgumentException("IBAN doesn't exists");
+            throw new IllegalArgumentException("IBAN doesn't exist");
         }
         else {
             centrale.startTransaction(IBAN1, IBAN2, this, value, description);

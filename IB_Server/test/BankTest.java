@@ -38,7 +38,7 @@ public class BankTest {
                 public ArrayList<ITransactie> getTransactions(String IBAN) throws RemoteException { return null; }
             };
             //Aanamken van eeen dummy administratie en bank
-            admin = new Administratie();
+            admin = new Administratie(centrale);
             bank = new Bank("Rabobank", "RABO", admin, centrale);
         } catch (RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
