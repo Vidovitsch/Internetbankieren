@@ -63,8 +63,8 @@ public class Server
     private void setCentraleRegistryBinds() {
         try {
             publisher = new RemotePublisher();
-            admin = new Administratie(centrale);
-            Bank bank = new Bank("Rabobank", admin);
+            admin = new Administratie();
+            Bank bank = new Bank("Rabobank", admin, centrale);
             
             serverRegistry.bind("admin", (IAdmin) admin);
             System.out.println("Centrale bound");

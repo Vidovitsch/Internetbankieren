@@ -17,15 +17,17 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     private ArrayList<Sessie> sessies;
     private ArrayList<Klant> clients;
-    private ICentrale centrale;
-    private Bank bank;
+    private ArrayList<Bank> banks;
     
-    public Administratie(ICentrale centrale) throws RemoteException {
-        this.centrale = centrale;
+    public Administratie() throws RemoteException {
         sessies = new ArrayList();
         clients = new ArrayList();
     }
 
+    public void addBank(Bank bank) {
+        banks.add(bank);
+    }
+    
     @Override
     public Klant register(String name, String residence, String password) throws IllegalArgumentException, RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

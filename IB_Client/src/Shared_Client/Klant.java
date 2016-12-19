@@ -77,5 +77,9 @@ public class Klant implements Serializable {
     public ArrayList<String> getTransactions(String IBAN, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         return bank.getTransactions(IBAN, this);
     }
+    
+    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+        return bank.startTransaction(klant, IBAN1, IBAN2, value, description);
+    }
 }
 

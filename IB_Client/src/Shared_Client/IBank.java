@@ -69,9 +69,10 @@ public interface IBank extends Remote {
      * @param IBAN1 representing the bank account, if empty throws IllegalArgumentException.
      * @param IBAN2 representing the bank account, if empty throws IllegalArgumentException.
      * @param value of the money to be transferred. Has to be greater than 0 or not empty, else IllegalArgumentException.
+     * @param description
      * @return True if succesful, else false.
      * @throws Exceptions.SessionExpiredException
      * @throws RemoteException
      */
-    boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value) throws SessionExpiredException, IllegalArgumentException, RemoteException;
+    boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, RemoteException;
 }

@@ -148,6 +148,22 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
     
+    public void startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) {
+        try {
+            if (klant.startTransaction(klant, IBAN1, IBAN2, value, description, bank)) {
+                getTransactions(IBAN1);
+                gui.initErrorMessage("Transaction successful");
+            } else {
+                gui.initErrorMessage("Transaction failed");
+            }
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            gui.initErrorMessage(ex.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     @Override
     public void propertyChange(PropertyChangeEvent pce) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
