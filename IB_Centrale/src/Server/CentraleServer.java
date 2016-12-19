@@ -38,6 +38,7 @@ public final class CentraleServer
             
             setCentraleRegistryBinds();
             connectedToDatabase = connectToRMIDatabaseServer();
+            centrale.setPersistencyMediator(database);
         } catch (RemoteException ex) {
             System.out.println("Server: Cannot create registry");
             System.out.println("Server: RemoteException: " + ex.getMessage());
