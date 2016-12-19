@@ -1,4 +1,6 @@
-/IB_Centrale/nbproject/private/
-/IB_Client/nbproject/private/
-/IB_Server/nbproject/private/
-/IB_DatabaseServer/nbproject/private/
+IB_Centralebuild
+IB_Centraledist
+IB_Serverbuild
+IB_Clientbuild
+IB_Clientdist
+IB_Serverdist

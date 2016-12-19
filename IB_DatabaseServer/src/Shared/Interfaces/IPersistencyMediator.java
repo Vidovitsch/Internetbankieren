@@ -5,11 +5,20 @@
  */
 package Shared.Interfaces;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
 /**
  *
  * @author Michiel van Eijkeren
  */
-public interface IPersistencyMediator
+public interface IPersistencyMediator extends Remote
 {
+    public boolean Login(String username,String password) throws RemoteException;
+    
+    public boolean registerAccount(String Email, String Password) throws RemoteException;
+    
+    public boolean emailAvailable(String Email) throws RemoteException;
+    
     
 }
