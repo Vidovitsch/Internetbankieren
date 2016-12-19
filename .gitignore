@@ -5,3 +5,4 @@ IB_Clientbuild
 IB_Clientdist
 IB_Serverdist
 /IB_DatabaseServer/build/
+/IB_DatabaseServer/dist/
