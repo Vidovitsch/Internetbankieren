@@ -2,6 +2,7 @@ package Models;
 
 import Exceptions.SessionExpiredException;
 import Shared_Centrale.IBankTrans;
+import Shared_Centrale.ICentrale;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
 import java.rmi.RemoteException;
@@ -18,16 +19,20 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     private ArrayList<Bankrekening> bankAccounts;
     private String name;
     private Administratie admin;
+    private ICentrale centrale;
     
     /**
      * A bank registered at the administration.
      * @param name of the bank, if empty IllegalArgumentException
      * @param admin
+     * @param centrale
      * @throws RemoteException, IllegalArgumentExcpetion
      */
-    public Bank(String name, Administratie admin) throws RemoteException {
+    public Bank(String name, Administratie admin, ICentrale centrale) throws RemoteException {
         bankAccounts = new ArrayList();
-        this.name = name;
+        this.centrale = centrale;
+        this.admin = admin;
+        admin.addBank(this);
     }
 
     @Override
@@ -100,7 +105,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
     }
 
     @Override
-    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         boolean bool = false;
         if (IBAN1.isEmpty() || IBAN2.isEmpty() || value <= 0 || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
@@ -115,7 +120,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
             throw new IllegalArgumentException("IBAN doesn't exists");
         }
         else {
-            //Code here
+            centrale.startTransaction(IBAN1, IBAN2, this, value, description);
         }
         return bool;
     }

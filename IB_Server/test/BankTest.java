@@ -23,21 +23,22 @@ public class BankTest {
     
     private Bank bank;
     private Administratie admin;
+    private ICentrale centrale;
     //Add Bankrekening b1 = new Bankrekening("TestIBAN001", 0, 0) to the database (linked with klant dummySession)
     //Add Bankrekening b1 = new Bankrekening("TestIBAN002", 0, 0) to the database (linked with klant dummySession)
     
     public BankTest() {
          try {
             //Aanmaken van een dummy centrale
-            ICentrale centrale = new ICentrale() {
+            centrale = new ICentrale() {
                 @Override
-                public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value) throws RemoteException { }
+                public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException { }
                 @Override
                 public void getTransactions(String IBAN) throws RemoteException { }
             };
             //Aanamken van eeen dummy administratie en bank
-            admin = new Administratie(centrale);
-            bank = new Bank("Rabobank", admin);
+            admin = new Administratie();
+            bank = new Bank("Rabobank", admin, centrale);
         } catch (RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -71,7 +72,7 @@ public class BankTest {
         //Name is correct and not empty
         String name = "Rabobank";
         try {
-            Bank bankTest = new Bank(name, admin);
+            Bank bankTest = new Bank(name, admin, centrale);
         } catch (RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -80,7 +81,7 @@ public class BankTest {
         name = "";
         try {
             try {
-                Bank bankTest = new Bank(name, admin);
+                Bank bankTest = new Bank(name, admin, centrale);
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -93,7 +94,7 @@ public class BankTest {
         name = "Rabobank";
         try {
             try {
-                Bank bankTest = new Bank(name, null);
+                Bank bankTest = new Bank(name, null, centrale);
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -385,7 +386,7 @@ public class BankTest {
         
         //Getting transactions from a bank account with a valid client and account
         try {
-            bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", 10);
+            bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", 10, "");
             assertEquals("dummySession has made 1 transaction", bank.getTransactions("TestIBAN001", dummySession).size(), 1);
             assertEquals("No exception has been thrown", 0, 0);
         } catch (RemoteException | SessionExpiredException | IllegalArgumentException ex ) {
@@ -423,7 +424,7 @@ public class BankTest {
         //Starting a transactions from a bank account with an invalid IBAN1
         try {
             try {
-                bank.startTransaction(dummySession, "iets", "TestIBAN002", 10);           
+                bank.startTransaction(dummySession, "iets", "TestIBAN002", 10, "");           
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -435,7 +436,7 @@ public class BankTest {
         //Starting a transactions from a bank account with an invalid IBAN2
         try {
             try {
-                bank.startTransaction(dummySession, "TestIBAN001", "iets", 10);           
+                bank.startTransaction(dummySession, "TestIBAN001", "iets", 10, "");           
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -447,7 +448,7 @@ public class BankTest {
         //Starting a transactions from a bank account with an expired session
         try {
             try {
-                bank.startTransaction(dummyNoSession, "TestIBAN001", "TestIBAN002", 10);
+                bank.startTransaction(dummyNoSession, "TestIBAN001", "TestIBAN002", 10, "");
             }
             catch (SessionExpiredException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
@@ -460,7 +461,7 @@ public class BankTest {
         //Starting a transactions from a bank account with an invalid client
         try {
             try {
-                bank.startTransaction(null, "TestIBAN001", "TestIBAN002", 10);
+                bank.startTransaction(null, "TestIBAN001", "TestIBAN002", 10, "");
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -472,7 +473,7 @@ public class BankTest {
         //Starting a transactions from a bank account with an invalid value
         try {
             try {
-                bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", -1);
+                bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", -1, "");
             } catch (IllegalArgumentException ex) {
                 assertEquals("An expected exception has been thrown", 0, 0);
             }
@@ -483,7 +484,7 @@ public class BankTest {
         
         //Strating a transactions from a bank account with a valid client, account and value
         try {
-            bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", 10);
+            bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", 10, "");
             assertEquals("dummySession has made 1 transaction", bank.getTransactions("TestIBAN001", dummySession).size(), 1);
             assertEquals("No exception has been thrown", 0, 0);
         } catch (RemoteException | SessionExpiredException | IllegalArgumentException ex ) {
