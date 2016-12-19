@@ -32,7 +32,6 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans{
         bankAccounts = new ArrayList();
         this.centrale = centrale;
         this.admin = admin;
-        admin.addBank(this);
     }
 
     @Override

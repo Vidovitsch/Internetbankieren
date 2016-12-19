@@ -65,6 +65,7 @@ public class Server
             publisher = new RemotePublisher();
             admin = new Administratie();
             Bank bank = new Bank("Rabobank", admin, centrale);
+            admin.addBank(bank);
             
             serverRegistry.bind("admin", (IAdmin) admin);
             System.out.println("Centrale bound");

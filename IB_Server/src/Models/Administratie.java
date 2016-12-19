@@ -22,6 +22,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     public Administratie() throws RemoteException {
         sessies = new ArrayList();
         clients = new ArrayList();
+        banks = new ArrayList();
     }
 
     public void addBank(Bank bank) {
