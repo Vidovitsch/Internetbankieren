@@ -98,6 +98,21 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     /**
+     * Returns a klant object by a given username
+     * @param username
+     * @return Klant
+     */
+    public Klant getKlantByUsername(String username) {
+        Klant klant = null;
+        for (Klant k : clients) {
+            if (k.getUsername().equals(username)) {
+                klant = k;
+            }
+        }
+        return klant;
+    }
+    
+    /**
      * Adds a session on this server.
      * A session is added if a client is logged in.
      * @param klant 
@@ -127,13 +142,13 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * Set all database to lists in this class
      */
     private void setDatabaseData() throws RemoteException {
-        //Set banks
-        for (String bankValues : pMediator.getAllBanks()) {
-            banks.add(stringToBank(bankValues));
-        }
         //Set clients
         for (String clientValues : pMediator.getAllKlanten()) {
             clients.add(stringToKlant(clientValues));
+        }
+        //Set banks
+        for (String bankValues : pMediator.getAllBanks()) {
+            banks.add(stringToBank(bankValues));
         }
     }
     
@@ -146,10 +161,8 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      */
     private Klant stringToKlant(String values) {
         String[] fields = values.split(";");
-        System.out.println(fields[0] + " :: " + fields[1] + " :: " + fields[2]);
         Klant klant = new Klant(fields[0], fields[1]);
         if (fields[2].equals("1")) {
-            System.out.println("sessie added");
             sessies.add(new Sessie(klant, this));
         } 
         return new Klant(fields[0], fields[1]);

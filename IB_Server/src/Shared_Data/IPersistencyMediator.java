@@ -94,6 +94,8 @@ public interface IPersistencyMediator extends Remote
      */
     public ArrayList<String> getTransactions(String iban) throws RemoteException;
     
+    public String getKlantByID(int userID) throws RemoteException;
+    
     /**
      * geeft een lijst van alle klanten terug in String-vorm --> Name;Residence;id
      * @return
@@ -106,7 +108,9 @@ public interface IPersistencyMediator extends Remote
      * @return
      * @throws RemoteException
      */
-    public ArrayList<String> getAllBankrekeningen() throws RemoteException;
+    public ArrayList<String> getAllBankrekeningen(String shortName) throws RemoteException;
     
     public ArrayList<String> getAllBanks() throws RemoteException;
+    
+    public ArrayList<String> getAllTransacties() throws RemoteException;
 }

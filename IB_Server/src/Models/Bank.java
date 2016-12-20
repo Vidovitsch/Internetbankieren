@@ -264,8 +264,8 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
      */
     private void setDatabaseData() throws RemoteException {
         //Set bankrekeningen
-        for (String bankValues : pMediator.getAllBanks()) {
-            bankAccounts.add(stringToBankrekening(bankValues));
+        for (String rekeningValues : pMediator.getAllBankrekeningen(shortName)) {
+            bankAccounts.add(stringToBankrekening(rekeningValues));
         }
     }
     
@@ -274,9 +274,14 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
      * Als de klant een geldige sessie heeft draaien wordt er ook
      * voor deze klant een sessie gestart.
      * @param values
-     * @return Klant
+     * @return Bankrekening
      */
-    private Bankrekening stringToBankrekening(String values) {
-        return null;
+    private Bankrekening stringToBankrekening(String values) throws RemoteException {
+        String[] rFields = values.split(";");
+        String[] klantFields = pMediator.getKlantByID(Integer.valueOf(rFields[1])).split(";");
+        String username = klantFields[0] + klantFields[1];
+        Klant klant = admin.getKlantByUsername(username);
+        Bankrekening rekening = new Bankrekening(rFields[0], Double.parseDouble(rFields[2]), Double.parseDouble(rFields[3]), klant);
+        return rekening;
     }
 }
