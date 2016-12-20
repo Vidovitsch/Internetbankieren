@@ -1,4 +1,5 @@
 //Aanpassing t.o.v. architectuurdocument:
+//
 //IAdminCheck bestaat niet meer, wordt nu lokaal geregeld op de Server
 //Klant heeft geen attribuut password
 //IAdmin heeft een extra methode logout
