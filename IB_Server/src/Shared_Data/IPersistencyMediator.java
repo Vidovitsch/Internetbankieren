@@ -20,7 +20,7 @@ public interface IPersistencyMediator extends Remote
      * @return
      * @throws RemoteException
      */
-    public int Login(String naam, String woonplaats, String password) throws RemoteException;
+    public int login(String naam, String woonplaats, String password) throws RemoteException;
 
     /**
      * Geeft true terug als de username (naam+woonplaats) beschikbaar is, en false als dit niet zo is
@@ -106,6 +106,7 @@ public interface IPersistencyMediator extends Remote
     
     /**
      * geeft een lijst van alle bankrekeningen terug in Stringvorm
+     * @param shortName
      * @return
      * @throws RemoteException
      */
@@ -114,4 +115,6 @@ public interface IPersistencyMediator extends Remote
     public ArrayList<String> getAllBanks() throws RemoteException;
     
     public ArrayList<String> getAllTransacties() throws RemoteException;
+    
+    public boolean removeKlant(String username, String residence, String password) throws RemoteException;
 }

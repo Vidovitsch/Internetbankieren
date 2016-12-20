@@ -1,4 +1,5 @@
 import Exceptions.LoginException;
+import Exceptions.RegisterException;
 import Models.Administratie;
 import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
@@ -154,26 +155,117 @@ public class AdminTest {
         }
     }
     
-    //Tests if the client gets a valid Klant object after login
+    //Tests if the client gets a valid Klant object and session after login
     @Test
-    public void validKlantOnLogin() {
+    public void validKlantAndSessionOnLogin() {
         try {
             Klant klant = admin.login("DummyUser", "DummyUser", "123456789");
             assertEquals("Username is DummyUserDummyUser", "DummyUserDummyUser", klant.getUsername());
+            assertTrue("This client has a valid session", admin.checkSession(klant));
         } catch (LoginException | IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         }
     }
     
-    //Tests if the client gets a valid session after login
+    
+    //Tests the exception thrown when trying to register with an empty name
     @Test
-    public void validSessionOnLogin() {
+    public void emptyNameRegisterTest() {
+            /**
+            * Registers a user at the administration.
+            * @param naam
+            * @param woonplaats
+            * @param password not null or size bigger than 7, else IllegalArgumentException.
+            * @return Klant object if succesfull, else null.
+            * @throws Exceptions.RegisterException
+            * @throws IllegalArgumentException
+            * @throws RemoteException 
+            */
         try {
-            Klant klant = admin.login("DummyUser", "DummyUser", "123456789");
-            assertTrue("This client has a valid session", admin.checkSession(klant));
-        } catch (LoginException | IllegalArgumentException | RemoteException ex) {
+            admin.register("", "RegisterTest", "RegisterTest");
+            fail();
+        } catch (IllegalArgumentException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        } catch (RemoteException | RegisterException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        }
+    }
+    
+    //Tests the exception thrown when trying to register with an empty residence
+    @Test
+    public void emptyResidenceRegisterTest() {
+        try {
+            admin.register("RegisterTest", "", "RegisterTest");
+            fail();
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        } catch (RegisterException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        }
+    }
+    
+    //Tests the exception thrown when trying to register with an empty password
+    @Test
+    public void emptyPasswordRegisterTest() {
+        try {
+            admin.register("RegisterTest", "RegisterTest", "");
+            fail();
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        } catch (RegisterException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        }
+    }
+    
+    
+    //Tests the exception thrown when trying to register with an password smaller than 9 characters
+    @Test
+    public void invalidPasswordRegisterTest() {
+        try {
+            admin.register("RegisterTest", "RegisterTest", "abcd");
+            fail();
+        } catch (RegisterException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        }
+    }
+    
+    //Tests the exception thrown when trying to register with an existing username
+    @Test
+    public void existingUsernameRegisterTest() {
+        try {
+            admin.register("DummyUser", "DummyUser", "123456789");
+            fail();
+        } catch (RegisterException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        } catch (IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        }
+    }
+    
+    //Tests if the client gets a valid Klant object and session after register
+    @Test
+    public void validKlantAndSessionOnRegister() {
+        try {
+            Klant klant = admin.register("RegisterTest", "RegisterTest", "123456789");
+            assertEquals("Username is RegisterTestRegisterTest", "RegisterTestRegisterTest", klant.getUsername());
+            assertTrue("This client has a valid session", admin.checkSession(klant));
+            admin.removeKlant("RegisterTest", "RegisterTest", "123456789");
+        } catch (IllegalArgumentException | RemoteException | RegisterException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         }
     }
 }

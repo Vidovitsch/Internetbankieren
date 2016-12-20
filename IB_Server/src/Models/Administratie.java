@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  *
  * @author David
@@ -52,11 +51,11 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {
             throw new IllegalArgumentException("Fill all fields");
         }
-        else if (getKlantByUsername(naam + woonplaats) != null) {
-            throw new RegisterException("This username already exists");
-        }
         else if (password.length() <= 8) {
             throw new IllegalArgumentException("Password has to be larger than 8 characters");
+        }
+        else if (getKlantByUsername(naam + woonplaats) != null) {
+            throw new RegisterException("This username already exists");
         }
         else {
             if (pMediator.registerAccount(naam, woonplaats, password)) {
@@ -75,7 +74,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             throw new IllegalArgumentException("Fill all fields");
         }
         else {
-            int userID = pMediator.Login(naam, woonplaats, password);
+            int userID = pMediator.login(naam, woonplaats, password);
             if (userID == -1) {
                 throw new LoginException("Invalid username or password");
             }
@@ -94,15 +93,18 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
 
     @Override
-    public boolean removeKlant(Klant klant) throws RemoteException {
+    public boolean removeKlant(String name, String residence, String password) throws RemoteException {
+        Klant klant = null;
         boolean bool = false;
         for (Klant k : clients) {
-            if (k.equals(klant)) {
-                bool = true;
+            if (k.equals(getKlantByUsername(name + residence))) {
+                if (pMediator.removeKlant(name, residence, password)) {
+                    klant = k;
+                    bool = true;
+                }
             }
         }
         if (bool) clients.remove(klant);
-        //DB code (ook uit de DB verwijderen)
         return bool;
     }
 
@@ -191,7 +193,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         Klant klant = new Klant(fields[0], fields[1]);
         if (fields[2].equals("1")) {
             sessies.add(new Sessie(klant, this));
-        } 
+        }
         return new Klant(fields[0], fields[1]);
     }
     
