@@ -33,10 +33,10 @@ public class GUI extends Application
         controller = new GUIController(this);
         FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLLogin.fxml"));
         Pane myPane = (Pane) myLoader.load();
-        FXMLLoginController controller = (FXMLLoginController) myLoader.getController();
+        FXMLLoginController loginController = (FXMLLoginController) myLoader.getController();
         Scene scene = new Scene(myPane);
-        controller.setStage(stage);
-        controller.setGuiController(controller);
+        loginController.setStage(stage);
+        loginController.setGuiController(controller);
         
         stage.setScene(scene);
         stage.setTitle("Login");

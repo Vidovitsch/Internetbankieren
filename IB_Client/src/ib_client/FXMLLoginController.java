@@ -46,10 +46,10 @@ public class FXMLLoginController implements Initializable
         this.stage = s;
     }
 
-    void setGuiController(FXMLLoginController controller)
-    {
-        this.controller = this.controller;
+    void setGuiController(GUIController controller) {
+        this.controller = controller;
     }
+    
     @FXML
     private Pane pane;
 
