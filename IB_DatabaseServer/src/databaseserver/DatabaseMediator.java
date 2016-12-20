@@ -58,17 +58,18 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public boolean registerAccount(String name, String Residence, String Password) throws RemoteException
+    public boolean registerAccount(String name, String residence, String password) throws RemoteException
     {
         boolean registered = false;
         try
         {
             Statement statement = con.createStatement();
-            String query = "INSERT INTO Klant(Naam,Woonplaats,Wachtwoord)VALUES("
-                    + name + ",'"
-                    + Residence
+            String query = "INSERT INTO Klant(Naam,Woonplaats,Wachtwoord)VALUES('"
+                    + name
                     + "','"
-                    + Password
+                    + residence
+                    + "','"
+                    + password
                     + "')";
             statement.executeUpdate(query);
             registered = true;
