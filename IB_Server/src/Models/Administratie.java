@@ -1,5 +1,7 @@
 package Models;
 
+import Exceptions.LoginException;
+import Exceptions.RegisterException;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
 import Shared_Centrale.ICentrale;
@@ -45,14 +47,29 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     @Override
-    public Klant register(String userName, String password) throws IllegalArgumentException, RemoteException {
-        //DB code (-1 = not successful, else successful)
-        return null;
+    public Klant register(String naam, String woonplaats, String password) throws RegisterException, IllegalArgumentException, RemoteException {
+        Klant klant = null;
+        if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {
+            throw new IllegalArgumentException("Fill all fields");
+        }
+        else if (!pMediator.usernameAvailable(naam + woonplaats)) {
+            throw new RegisterException("This username already exists");
+        }
+        else if (password.length() <= 8) {
+            throw new IllegalArgumentException("Password has to be larger than 8 characters");
+        }
+        else {
+            if (pMediator.registerAccount(naam, woonplaats, password)) {
+                klant = new Klant(naam, woonplaats);
+                clients.add(klant);
+            }
+        }
+        return klant;
     }
 
     @Override
-    public Klant login(String userName, String password) throws IllegalArgumentException, RemoteException {
-        int userID = pMediator.Login(userName, password);
+    public Klant login(String naam, String woonplaats, String password) throws LoginException, IllegalArgumentException, RemoteException {
+        int userID = pMediator.Login(naam + woonplaats, password);
         //DB code (-1 = not successful, else successful)
         addSession(null);
         return null;
