@@ -3,7 +3,6 @@ package Models;
 import Exceptions.SessionExpiredException;
 import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
-import Shared_Centrale.ITransactie;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
 import Shared_Data.IPersistencyMediator;
@@ -39,11 +38,17 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         bankAccounts = new ArrayList();
         this.centrale = centrale;
         this.admin = admin;
+        this.name = name;
         this.shortName = shortName;
     }
 
     public void setPersistencyMediator(IPersistencyMediator pMediator) {
         this.pMediator = pMediator;
+        try {
+            setDatabaseData();
+        } catch (RemoteException ex) {
+            Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Override
@@ -51,6 +56,11 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         return name;
     }
 
+    @Override
+    public String getShortName() throws RemoteException {
+        return shortName;
+    }
+    
     @Override
     public ArrayList<String> getAccounts(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         ArrayList<String> accounts = new ArrayList();
@@ -83,10 +93,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
         else {
-            ArrayList<ITransactie> transList = centrale.getTransactions(IBAN);
-            for (ITransactie trans : transList) {
-                transactions.add(transactionToString(trans));
-            }
+            transactions = centrale.getTransactions(IBAN);
         }
         return transactions;
     }
@@ -137,7 +144,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
         else if (!checkIBANExists(IBAN2)) {
-            throw new IllegalArgumentException("IBAN doesn't exists");
+            throw new IllegalArgumentException("IBAN doesn't exist");
         }
         else {
             centrale.startTransaction(IBAN1, IBAN2, this, value, description);
@@ -210,6 +217,10 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         return false;
     }
     
+    /**
+     * Generates a new IBAN at a specific bank (shortName)
+     * @return IBAN as String
+     */
     private String generateNewIBAN() {
         String part1 = "NL" + generateRandom(0, 99, 2);
         String part2 = shortName;
@@ -217,6 +228,11 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         return part1 + part2 + part3;
     }
     
+    /**
+     * Converts a IBAN to a linked Bankrekening
+     * @param IBAN as String
+     * @return Bankrekening
+     */
     private Bankrekening IBANToBankAccount(String IBAN) {
         Bankrekening bankAccount = null;
         for (Bankrekening b : bankAccounts) {
@@ -227,30 +243,45 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         return bankAccount;
     }
     
-    private String transactionToString(ITransactie transaction) {
-        try {
-            String description = transaction.getDescription();
-            if (description.isEmpty()) {
-                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANFrom() + ";" + transaction.getIBANTo();
-            } else {
-                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANFrom() + ";" + transaction.getIBANTo() + ";" + transaction.getDescription();
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-    
+    /**
+     * Generates a random value as String between two values.
+     * @param startValue is lowest number
+     * @param endValue is highest number
+     * @param numberLength amount of charaters in the generated number
+     * @return String
+     */
     private String generateRandom(int startValue, int endValue, int numberLength) {
         Random r = new Random();
         String value = String.valueOf(r.nextInt((endValue - startValue) + 1) + startValue);
-        while (value.length() != numberLength) value = String.valueOf(new Random().nextInt(9) + startValue) + value;
+        while (value.length() != numberLength) {
+            value = String.valueOf(new Random().nextInt(9) + startValue) + value;
+        }
         return value;
     }
     
-    private void setDatabaseData() {
-        //Fill lists
+    /**
+     * Set all database to lists in this class
+     */
+    private void setDatabaseData() throws RemoteException {
+        //Set bankrekeningen
+        for (String rekeningValues : pMediator.getAllBankrekeningen(shortName)) {
+            bankAccounts.add(stringToBankrekening(rekeningValues));
+        }
+    }
+    
+    /**
+     * Converts the String of klant-values to a Klant object.
+     * Als de klant een geldige sessie heeft draaien wordt er ook
+     * voor deze klant een sessie gestart.
+     * @param values
+     * @return Bankrekening
+     */
+    private Bankrekening stringToBankrekening(String values) throws RemoteException {
+        String[] rFields = values.split(";");
+        String[] klantFields = pMediator.getKlantByID(Integer.valueOf(rFields[1])).split(";");
+        String username = klantFields[0] + klantFields[1];
+        Klant klant = admin.getKlantByUsername(username);
+        Bankrekening rekening = new Bankrekening(rFields[0], Double.parseDouble(rFields[2]), Double.parseDouble(rFields[3]), klant);
+        return rekening;
     }
 }

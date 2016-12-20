@@ -7,7 +7,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <Pane fx:id="pane" maxHeight="252.0" minHeight="88.0" minWidth="400.0" prefHeight="100.0" prefWidth="400.0" style="-fx-background-color: GREY;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ib_client.FXMLLoginController">
    <children>
       <Button fx:id="buttonNotGivenAccount" layoutX="127.0" layoutY="64.0" mnemonicParsing="false" onAction="#rolloutAnchorPane" prefHeight="25.0" prefWidth="180.0" text="Dit ben ik niet" />

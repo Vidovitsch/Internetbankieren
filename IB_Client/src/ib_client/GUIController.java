@@ -1,5 +1,7 @@
 package ib_client;
 
+import Exceptions.LoginException;
+import Exceptions.RegisterException;
 import Exceptions.SessionExpiredException;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
@@ -12,7 +14,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,15 +56,14 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public void login(String userName, String password)
-    {
-        try
-        {
-            klant = admin.login(userName, password);
-        } catch (IllegalArgumentException | RemoteException ex)
-        {
+    public void login(String naam, String woonplaats, String password) {
+        try {
+            klant = admin.login(naam, woonplaats, password);
+        } catch (IllegalArgumentException | LoginException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -78,15 +78,15 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public void register(String userName, String password)
-    {
-        try
-        {
-            klant = admin.register(userName, password);
-        } catch (IllegalArgumentException | RemoteException ex)
-        {
+    
+    public void register(String naam, String woonplaats, String password) {
+        try {
+            klant = admin.register(naam, woonplaats, password);
+        } catch (IllegalArgumentException | RegisterException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

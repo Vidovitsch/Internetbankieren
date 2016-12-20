@@ -34,21 +34,26 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
-        };
+        }
     }
 
     @Override
-    public int Login(String username, String password) throws RemoteException
+    public int Login(String naam, String woonplaats, String password) throws RemoteException
     {
+        //Geldige sessie wordt ook toegevoegd aan de database als userID niet -1 is
         int userId = -1;
         try
         {
             Statement statement = con.createStatement();
-            String query = "SELECT ID, (Naam + Woonplaats) AS Username from Klant WHERE Username = '" + username + "' AND Wachtwoord = '" + password + "'";
+            String query = "SELECT ID FROM Klant WHERE Naam = '" + naam + "' AND Woonplaats = '" + woonplaats
+                    + "' AND Wachtwoord = '" + password + "'";
             myRs = statement.executeQuery(query);
             if (myRs.next())
             {
                 userId = myRs.getInt("ID");
+            }
+            if (userId != -1) {
+                statement.executeQuery("UPDATE Klant SET GeldigeSessie = 1 WHERE ID = " + userId);
             }
         } catch (Exception ex)
         {
@@ -58,18 +63,20 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public boolean registerAccount(String name, String Residence, String Password) throws RemoteException
+    public boolean registerAccount(String name, String residence, String password) throws RemoteException
     {
+        //Geldige sessie wordt ook toegevoegd aan de database
         boolean registered = false;
         try
         {
             Statement statement = con.createStatement();
-            String query = "INSERT INTO Klant(Naam,Woonplaats,Wachtwoord)VALUES("
-                    + name + ",'"
-                    + Residence
+            String query = "INSERT INTO Klant(Naam,Woonplaats,Wachtwoord,GeldigeSessie)VALUES('"
+                    + name
                     + "','"
-                    + Password
-                    + "')";
+                    + residence
+                    + "','"
+                    + password
+                    + "',1)";
             statement.executeUpdate(query);
             registered = true;
         } catch (Exception ex)
@@ -241,15 +248,104 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public ArrayList<String> getKlanten() throws RemoteException
+    public String getKlantByID(int userID) throws RemoteException {
+        String fields = "";
+        try
+        {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', Naam, Woonplaats) AS Fields FROM Klant WHERE ID = " + userID;
+            myRs = statement.executeQuery(query);
+            if (myRs.next())
+            {
+                fields = myRs.getString("Fields");
+            }
+        } catch (Exception ex)
+        {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return fields;
+    }
+    
+    @Override
+    public ArrayList<String> getAllKlanten() throws RemoteException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String fields;
+        ArrayList<String> clients = new ArrayList<>();
+        try
+        {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', Naam, Woonplaats, GeldigeSessie) AS Fields FROM Klant";
+            myRs = statement.executeQuery(query);
+            while (myRs.next())
+            {
+                fields = myRs.getString("Fields");
+                clients.add(fields);
+            }
+        } catch (Exception ex)
+        {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return clients;
     }
 
     @Override
-    public ArrayList<String> getAllBankRekeningen() throws RemoteException
+    public ArrayList<String> getAllBankrekeningen(String shortName) throws RemoteException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String fields;
+        ArrayList<String> rekeningen = new ArrayList<>();
+        try
+        {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', IBAN, Klant_ID, Saldo, Kredietlimiet) AS Fields FROM Bankrekening";
+            myRs = statement.executeQuery(query);
+            while (myRs.next())
+            {
+                fields = myRs.getString("Fields");
+                rekeningen.add(fields);
+            }
+        } catch (Exception ex)
+        {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rekeningen;
     }
 
+    @Override
+    public ArrayList<String> getAllBanks() throws RemoteException {
+        String fields;
+        ArrayList<String> banks = new ArrayList<>();
+        try
+        {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', Naam, Afkorting) AS Fields FROM Bank";
+            myRs = statement.executeQuery(query);
+            while (myRs.next())
+            {
+                fields = myRs.getString("Fields");
+                banks.add(fields);
+            }
+        } catch (Exception ex)
+        {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return banks;
+    }
+    
+    @Override
+    public ArrayList<String> getAllTransacties() throws RemoteException {
+        String fields;
+        ArrayList<String> transactions = new ArrayList<>();
+        try {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', Beschrijving, Bedrag, Datum, Bankrekening_IBAN_Naar, Bankrekening_IBAN_Van) AS Fields FROM Transactie";
+            myRs = statement.executeQuery(query);
+            while (myRs.next()) {
+                fields = myRs.getString("Fields");
+                transactions.add(fields);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return transactions;
+    }
 }

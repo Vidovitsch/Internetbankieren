@@ -19,6 +19,13 @@ public interface IBank extends Remote {
     String getName() throws RemoteException;
     
     /**
+     * Returns the short name of this bank
+     * @return Short name of this bank.
+     * @throws RemoteException 
+     */
+    String getShortName() throws RemoteException;
+    
+    /**
      * Returns a list of Strings. Every String is
      * representing a bank account.
      * NoDataFounException when client has no bank accounts.

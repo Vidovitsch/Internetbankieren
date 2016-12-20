@@ -1,4 +1,5 @@
 //Aanpassing t.o.v. architectuurdocument:
+//
 //IAdminCheck bestaat niet meer, wordt nu lokaal geregeld op de Server
 //Klant heeft geen attribuut password
 //IAdmin heeft een extra methode logout
@@ -39,7 +40,11 @@ public class GUI extends Application
         
         stage.setScene(scene);
         stage.setTitle("Login");
-        stage.show();        
+        stage.show();
+        
+        //controller.register("David", "Eindhoven", "123456789");
+        //controller.login("David", "Eindhoven", "123456789");
+
     }
 
     public void setAccountList(ArrayList<String> accounts) {

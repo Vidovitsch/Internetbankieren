@@ -29,5 +29,5 @@ public interface ICentrale extends Remote {
      * @return 
      * @throws RemoteException 
      */
-    ArrayList<ITransactie> getTransactions(String IBAN) throws RemoteException;
+    ArrayList<String> getTransactions(String IBAN) throws RemoteException;
 }

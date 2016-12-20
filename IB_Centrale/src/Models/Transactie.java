@@ -1,15 +1,12 @@
 package Models;
 
-import Shared_Centrale.ITransactie;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-
 
 /**
  *
  * @author David
  */
-public class Transactie extends UnicastRemoteObject implements ITransactie {
+public class Transactie {
 
     private String date;
     private double amount;
@@ -37,27 +34,47 @@ public class Transactie extends UnicastRemoteObject implements ITransactie {
         this.description = description;
     }
 
-    @Override
+    /**
+     * Returns the date of creation (in text) of this transaction.
+     * @return the date as a String type.
+     * @throws RemoteException 
+     */
     public String getDate() throws RemoteException {
         return date;
     }
 
-    @Override
+    /**
+     * Returns the amount of money transferred in this transaction.
+     * @return the amount of money.
+     * @throws RemoteException 
+     */
     public double getAmount() throws RemoteException {
         return amount;
     }
 
-    @Override
+    /**
+     * Returns the description of this transaction.
+     * @return the description of this transaction.
+     * @throws RemoteException 
+     */
     public String getDescription() throws RemoteException {
         return description;
     }
 
-    @Override
+    /**
+     * Returns the IBAN from the bank account who made the transaction.
+     * @return IBAN
+     * @throws RemoteException 
+     */
     public String getIBANFrom() throws RemoteException {
         return IBAN1;
     }
 
-    @Override
+    /**
+     * Returns the IBAN from the bank account who received the transaction.
+     * @return IBAN
+     * @throws RemoteException 
+     */
     public String getIBANTo() throws RemoteException {
         return IBAN2;
     }
