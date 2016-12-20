@@ -48,6 +48,7 @@ public class FXMLLoginController implements Initializable
 
     void setGuiController(GUIController controller) {
         this.controller = controller;
+        getLastLogged();
     }
     
     @FXML
@@ -127,7 +128,18 @@ public class FXMLLoginController implements Initializable
             }
         }).start();
     }
-
+    
+    //Property methode
+    private void getLastLogged() {
+        String name;
+        String residence;
+        String[] properties = controller.getLastLogged();
+        if (properties != null) {
+            name = properties[0];
+            residence = properties[1];
+        }
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {

@@ -6,6 +6,7 @@ import Exceptions.SessionExpiredException;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
+import Utility.PropertyHandler;
 import fontyspublisher.IRemotePropertyListener;
 import fontyspublisher.IRemotePublisherForListener;
 import java.beans.PropertyChangeEvent;
@@ -23,42 +24,39 @@ import java.util.logging.Logger;
  */
 public class GUIController extends UnicastRemoteObject implements IRemotePropertyListener
 {
-
+    private PropertyHandler pHandler;
     private GUI gui;
     private Klant klant;
     private IAdmin admin;
     private IBank bank;
     private IRemotePublisherForListener publisher;
-    private boolean testing = true;
 
     /**
      * Handles all RMI-based processes. Updates the GUI
-     *
      * @param gui
      * @throws java.rmi.RemoteException
      */
     public GUIController(GUI gui) throws RemoteException
     {
-        if (!testing)
+        try
         {
-            try
-            {
-                Registry serverRegistry = LocateRegistry.getRegistry("localhost", 1099);
-                admin = (IAdmin) serverRegistry.lookup("admin");
-                System.out.println("Admin lookup completed");
+            pHandler = new PropertyHandler();
+            Registry serverRegistry = LocateRegistry.getRegistry("localhost", 1099);
+            admin = (IAdmin) serverRegistry.lookup("admin");
+            System.out.println("Admin lookup completed");
 
-                publisher = (IRemotePublisherForListener) serverRegistry.lookup("serverPublisher");
-                System.out.println("Publisher lookup completed");
-            } catch (RemoteException | NotBoundException ex)
-            {
-                Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            publisher = (IRemotePublisherForListener) serverRegistry.lookup("serverPublisher");
+            System.out.println("Publisher lookup completed");
+        } catch (RemoteException | NotBoundException ex)
+        {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void login(String naam, String woonplaats, String password) {
         try {
             klant = admin.login(naam, woonplaats, password);
+            pHandler.setLoginProperties(naam, woonplaats);
         } catch (IllegalArgumentException | LoginException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
@@ -213,6 +211,10 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
+    public String[] getLastLogged() {
+        return pHandler.getLoginProperties();
+    }
+    
     @Override
     public void propertyChange(PropertyChangeEvent pce) throws RemoteException
     {
