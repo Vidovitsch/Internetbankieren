@@ -1,5 +1,7 @@
 package Shared_Client;
 
+import Exceptions.LoginException;
+import Exceptions.RegisterException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -14,20 +16,22 @@ public interface IAdmin extends Remote {
      * @param userName
      * @param password not null or size bigger than 7, else IllegalArgumentException.
      * @return Klant object if succesfull, else null.
+     * @throws Exceptions.RegisterException
      * @throws IllegalArgumentException
      * @throws RemoteException 
      */
-    Klant register(String userName, String password) throws IllegalArgumentException, RemoteException;
+    Klant register(String userName, String password) throws RegisterException, IllegalArgumentException, RemoteException;
     
     /**
      * Logs in a user and creating a session if succesful.
      * @param userName
      * @param password not null, else IllegalArgumentException.
      * @return Klant object if succesfull, else null.
+     * @throws Exceptions.LoginException
      * @throws IllegalArgumentException
      * @throws RemoteException 
      */
-    Klant login(String userName, String password) throws IllegalArgumentException, RemoteException;
+    Klant login(String userName, String password) throws LoginException, IllegalArgumentException, RemoteException;
     
     /**
      * Returns the subscribed bank of the user.
