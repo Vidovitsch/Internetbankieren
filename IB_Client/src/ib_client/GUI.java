@@ -43,7 +43,7 @@ public class GUI extends Application
         stage.show();
         
         //controller.register("David", "Eindhoven", "123456789");
-        controller.login("David", "Eindhoven", "123456789");
+        //controller.login("David", "Eindhoven", "123456789");
     }
 
     /**

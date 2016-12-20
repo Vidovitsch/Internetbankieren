@@ -52,7 +52,6 @@ public class PropertyHandler {
     public String[] getLoginProperties() {
         String name = loginProps.getProperty(loginKeyName);
         String residence = loginProps.getProperty(loginKeyResidence);
-                System.out.println("Got properties: " + name + " and " + residence);
         if (name.equals(".") || residence.equals(".")) {
             return null;
         } else {
