@@ -99,7 +99,6 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         String[] fields = values.split(";");
         Transactie transactie = new Transactie(fields[3], fields[4], fields[2], Double.parseDouble(fields[1]));
         if (!fields[0].isEmpty()) transactie.setDescription(fields[0]);
-        System.out.println(fields[3] + " ::: " + fields[4]);
         return transactie;
     }
 }
