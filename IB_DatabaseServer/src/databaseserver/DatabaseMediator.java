@@ -241,6 +241,25 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
+    public String getKlantByID(int userID) throws RemoteException {
+        String fields = "";
+        try
+        {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', Naam, Woonplaats) AS Fields FROM Klant WHERE ID = " + userID;
+            myRs = statement.executeQuery(query);
+            if (myRs.next())
+            {
+                fields = myRs.getString("Fields");
+            }
+        } catch (Exception ex)
+        {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return fields;
+    }
+    
+    @Override
     public ArrayList<String> getAllKlanten() throws RemoteException
     {
         String fields;
@@ -250,7 +269,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             Statement statement = con.createStatement();
             String query = "SELECT CONCAT_WS(';', Naam, Woonplaats, GeldigeSessie) AS Fields FROM Klant";
             myRs = statement.executeQuery(query);
-            if (myRs.next())
+            while (myRs.next())
             {
                 fields = myRs.getString("Fields");
                 clients.add(fields);
@@ -263,9 +282,25 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public ArrayList<String> getAllBankrekeningen() throws RemoteException
+    public ArrayList<String> getAllBankrekeningen(String shortName) throws RemoteException
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String fields;
+        ArrayList<String> rekeningen = new ArrayList<>();
+        try
+        {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', IBAN, Klant_ID, Saldo, Kredietlimiet) AS Fields FROM Bankrekening";
+            myRs = statement.executeQuery(query);
+            while (myRs.next())
+            {
+                fields = myRs.getString("Fields");
+                rekeningen.add(fields);
+            }
+        } catch (Exception ex)
+        {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rekeningen;
     }
 
     @Override
@@ -277,7 +312,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             Statement statement = con.createStatement();
             String query = "SELECT CONCAT_WS(';', Naam, Afkorting) AS Fields FROM Bank";
             myRs = statement.executeQuery(query);
-            if (myRs.next())
+            while (myRs.next())
             {
                 fields = myRs.getString("Fields");
                 banks.add(fields);
@@ -297,7 +332,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             Statement statement = con.createStatement();
             String query = "SELECT CONCAT_WS(';', Beschrijving, Bedrag, Datum, Bankrekening_IBAN_Naar, Bankrekening_IBAN_Van) AS Fields FROM Transactie";
             myRs = statement.executeQuery(query);
-            if (myRs.next()) {
+            while (myRs.next()) {
                 fields = myRs.getString("Fields");
                 transactions.add(fields);
             }
