@@ -1,20 +1,21 @@
 package Models;
 
 import Shared_Centrale.ICentrale;
-import Shared_Centrale.ITransactie;
 import Shared_Centrale.IBankTrans;
 import Shared_Data.IPersistencyMediator;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author David
  */
 public class Centrale extends UnicastRemoteObject implements ICentrale {
-    private ArrayList<ITransactie> transactions;
+    private ArrayList<Transactie> transactions;
     private IPersistencyMediator pMediator;
     
     public Centrale() throws RemoteException {
@@ -23,7 +24,11 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
 
     public void setPersistencyMediator(IPersistencyMediator pMediator) {
         this.pMediator = pMediator;
-        setDatabaseData();
+        try {
+            setDatabaseData();
+        } catch (RemoteException ex) {
+            Logger.getLogger(Centrale.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Override
@@ -38,23 +43,59 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     }
 
     @Override
-    public ArrayList<ITransactie> getTransactions(String IBAN) throws RemoteException {
-        ArrayList<ITransactie> transList = new ArrayList();
-        for (ITransactie trans : transactions) {
+    public ArrayList<String> getTransactions(String IBAN) throws RemoteException {
+        ArrayList<String> transList = new ArrayList();
+        for (Transactie trans : transactions) {
             if (trans.getIBANTo().equals(IBAN) || trans.getIBANFrom().equals(IBAN)) {
-                transList.add(trans);
+                transList.add(transactionToString(trans));
             }
         }
         return transList;
     }
 
+    /**
+     * Converts a transaction to a String representing the the transaction
+     * @param transaction
+     * @return String representing a transaction
+     */
+    private String transactionToString(Transactie transaction) {
+        try {
+            String description = transaction.getDescription();
+            if (description.isEmpty()) {
+                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
+                        transaction.getIBANFrom() + ";" + transaction.getIBANTo();
+            } else {
+                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
+                        transaction.getIBANFrom() + ";" + transaction.getIBANTo() + ";" + transaction.getDescription();
+            }
+        } catch (RemoteException ex) {
+            Logger.getLogger(Centrale.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
     private String getCurrentDateTime() {
         LocalDateTime dateTime = LocalDateTime.now();
         System.out.println(dateTime.toString());
         return dateTime.toString();
     }
     
-    private void setDatabaseData() {
-        //Fill lists
+    /**
+     * Set all database to lists in this class
+     */
+    private void setDatabaseData() throws RemoteException {
+        //Set transacties
+        for (String bankValues : pMediator.getAllBanks()) {
+            transactions.add(stringToTransactie(bankValues));
+        }
+    }
+    
+    /**
+     * Converts the String of transactie-values to a Transactie object
+     * @param values
+     * @return Transactie
+     */
+    private Transactie stringToTransactie(String value) {
+        return null;
     }
 }
