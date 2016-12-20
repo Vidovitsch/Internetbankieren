@@ -3,7 +3,6 @@ package Models;
 import Exceptions.SessionExpiredException;
 import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
-import Shared_Centrale.ITransactie;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
 import Shared_Data.IPersistencyMediator;
@@ -45,6 +44,11 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
 
     public void setPersistencyMediator(IPersistencyMediator pMediator) {
         this.pMediator = pMediator;
+        try {
+            setDatabaseData();
+        } catch (RemoteException ex) {
+            Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @Override
@@ -89,10 +93,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
         else {
-            ArrayList<ITransactie> transList = centrale.getTransactions(IBAN);
-            for (ITransactie trans : transList) {
-                transactions.add(transactionToString(trans));
-            }
+            transactions = centrale.getTransactions(IBAN);
         }
         return transactions;
     }
@@ -216,6 +217,10 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         return false;
     }
     
+    /**
+     * Generates a new IBAN at a specific bank (shortName)
+     * @return IBAN as String
+     */
     private String generateNewIBAN() {
         String part1 = "NL" + generateRandom(0, 99, 2);
         String part2 = shortName;
@@ -223,6 +228,11 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         return part1 + part2 + part3;
     }
     
+    /**
+     * Converts a IBAN to a linked Bankrekening
+     * @param IBAN as String
+     * @return Bankrekening
+     */
     private Bankrekening IBANToBankAccount(String IBAN) {
         Bankrekening bankAccount = null;
         for (Bankrekening b : bankAccounts) {
@@ -233,30 +243,40 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         return bankAccount;
     }
     
-    private String transactionToString(ITransactie transaction) {
-        try {
-            String description = transaction.getDescription();
-            if (description.isEmpty()) {
-                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANFrom() + ";" + transaction.getIBANTo();
-            } else {
-                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANFrom() + ";" + transaction.getIBANTo() + ";" + transaction.getDescription();
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-    
+    /**
+     * Generates a random value as String between two values.
+     * @param startValue is lowest number
+     * @param endValue is highest number
+     * @param numberLength amount of charaters in the generated number
+     * @return String
+     */
     private String generateRandom(int startValue, int endValue, int numberLength) {
         Random r = new Random();
         String value = String.valueOf(r.nextInt((endValue - startValue) + 1) + startValue);
-        while (value.length() != numberLength) value = String.valueOf(new Random().nextInt(9) + startValue) + value;
+        while (value.length() != numberLength) {
+            value = String.valueOf(new Random().nextInt(9) + startValue) + value;
+        }
         return value;
     }
     
-    private void setDatabaseData() {
-        //Fill lists
+    /**
+     * Set all database to lists in this class
+     */
+    private void setDatabaseData() throws RemoteException {
+        //Set bankrekeningen
+        for (String bankValues : pMediator.getAllBanks()) {
+            bankAccounts.add(stringToBankrekening(bankValues));
+        }
+    }
+    
+    /**
+     * Converts the String of klant-values to a Klant object.
+     * Als de klant een geldige sessie heeft draaien wordt er ook
+     * voor deze klant een sessie gestart.
+     * @param values
+     * @return Klant
+     */
+    private Bankrekening stringToBankrekening(String values) {
+        return null;
     }
 }

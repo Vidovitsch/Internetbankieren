@@ -3,7 +3,6 @@ import Models.Administratie;
 import Models.Bank;
 import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
-import Shared_Centrale.ITransactie;
 import Shared_Client.Klant;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class BankTest {
                 @Override
                 public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException { }
                 @Override
-                public ArrayList<ITransactie> getTransactions(String IBAN) throws RemoteException { return null; }
+                public ArrayList<String> getTransactions(String IBAN) throws RemoteException { return null; }
             };
             //Aanamken van eeen dummy administratie en bank
             admin = new Administratie(centrale);
