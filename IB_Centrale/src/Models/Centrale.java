@@ -85,8 +85,8 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
      */
     private void setDatabaseData() throws RemoteException {
         //Set transacties
-        for (String bankValues : pMediator.getAllBanks()) {
-            transactions.add(stringToTransactie(bankValues));
+        for (String transValues : pMediator.getAllTransacties()) {
+            transactions.add(stringToTransactie(transValues));
         }
     }
     
@@ -95,7 +95,11 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
      * @param values
      * @return Transactie
      */
-    private Transactie stringToTransactie(String value) {
-        return null;
+    private Transactie stringToTransactie(String values) throws RemoteException {
+        String[] fields = values.split(";");
+        Transactie transactie = new Transactie(fields[3], fields[4], fields[2], Double.parseDouble(fields[1]));
+        if (!fields[0].isEmpty()) transactie.setDescription(fields[0]);
+        System.out.println(fields[3] + " ::: " + fields[4]);
+        return transactie;
     }
 }
