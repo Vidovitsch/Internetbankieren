@@ -14,7 +14,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,6 +69,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     
     public void register(String naam, String woonplaats, String password) {
         try {
+            System.out.println(naam);
             klant = admin.register(naam, woonplaats, password);
         } catch (IllegalArgumentException | RegisterException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);

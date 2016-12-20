@@ -37,6 +37,8 @@ public class GUI extends Application
         
         stage.setScene(scene);
         stage.show();
+        
+        //controller.register("David", "Eindhoven", "123456789");
     }
 
     public void setAccountList(ArrayList<String> accounts) {
