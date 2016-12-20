@@ -38,7 +38,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public int Login(String naam, String woonplaats, String password) throws RemoteException
+    public int login(String naam, String woonplaats, String password) throws RemoteException
     {
         //Geldige sessie wordt ook toegevoegd aan de database als userID niet -1 is
         int userId = -1;
@@ -53,7 +53,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
                 userId = myRs.getInt("ID");
             }
             if (userId != -1) {
-                statement.executeQuery("UPDATE Klant SET GeldigeSessie = 1 WHERE ID = " + userId);
+                statement.executeUpdate("UPDATE Klant SET GeldigeSessie = 1 WHERE ID = " + userId);
             }
         } catch (Exception ex)
         {
@@ -347,5 +347,20 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
         }
         return transactions;
+    }
+
+    @Override
+    public boolean removeKlant(String name, String residence, String password) throws RemoteException {
+        try {
+            Statement statement = con.createStatement();
+            String query = "DELETE FROM Klant WHERE Naam = '" + name + "' AND Woonplaats = '" + residence
+                    + "' AND Wachtwoord = '" + password + "'";
+            statement.executeUpdate(query);
+            System.out.println("Deleting " + name + " : " + residence + " : " + password);
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
 }
