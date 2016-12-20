@@ -602,5 +602,4 @@ public class BankTest {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 }
