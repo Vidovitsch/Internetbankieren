@@ -14,12 +14,13 @@ public interface IPersistencyMediator extends Remote
     /**
      * Logt de klant in, Geeft -1 terug wanneer dit niet gelukt is, anders geeft deze methode
      * het id van de zojuist ingelogde klant terug
-     * @param username Name + Residence
+     * @param naam
+     * @param woonplaats
      * @param password password/hash
      * @return
      * @throws RemoteException
      */
-    public int Login(String username,String password) throws RemoteException;
+    public int Login(String naam, String woonplaats, String password) throws RemoteException;
 
     /**
      * Geeft true terug als de username (naam+woonplaats) beschikbaar is, en false als dit niet zo is

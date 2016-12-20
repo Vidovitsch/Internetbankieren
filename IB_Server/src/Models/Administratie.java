@@ -62,7 +62,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             if (pMediator.registerAccount(naam, woonplaats, password)) {
                 klant = new Klant(naam, woonplaats);
                 clients.add(klant);
-                System.out.println(klant.getUsername() + " registered");
+                addSession(klant);
             }
         }
         return klant;
@@ -70,10 +70,21 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     @Override
     public Klant login(String naam, String woonplaats, String password) throws LoginException, IllegalArgumentException, RemoteException {
-        int userID = pMediator.Login(naam + woonplaats, password);
-        //DB code (-1 = not successful, else successful)
-        addSession(null);
-        return null;
+        Klant klant = null;
+        if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {
+            throw new IllegalArgumentException("Fill all fields");
+        }
+        else {
+            int userID = pMediator.Login(naam, woonplaats, password);
+            if (userID == -1) {
+                throw new LoginException("Invalid username or password");
+            }
+            else {
+                klant = getKlantByUsername(naam + woonplaats);
+                addSession(klant);
+            }
+        }
+        return klant;
     }
 
     @Override
@@ -122,7 +133,6 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     public Klant getKlantByUsername(String username) {
         Klant klant = null;
         for (Klant k : clients) {
-            System.out.println(k.getUsername() + " : " + username);
             if (k.getUsername().equals(username)) {
                 klant = k;
             }
@@ -131,13 +141,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     /**
-     * Adds a session on this server.
+     * Adds a session on this server (only in local lists).
      * A session is added if a client is logged in.
      * @param klant 
      */
     private void addSession(Klant klant) {
         sessies.add(new Sessie(klant, this));
-        //DB code (Sessie toevoegen aan DB)
     }
     
     /**
