@@ -16,6 +16,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -29,13 +30,16 @@ public class GUI extends Application
     @Override
     public void start(Stage stage) throws Exception {
         controller = new GUIController(this);
-        
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLLogin.fxml"));
-        
-        Scene scene = new Scene(root);
+        FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLLogin.fxml"));
+        Pane myPane = (Pane) myLoader.load();
+        FXMLLoginController controller = (FXMLLoginController) myLoader.getController();
+        Scene scene = new Scene(myPane);
+        controller.setStage(stage);
+        controller.setGuiController(controller);
         
         stage.setScene(scene);
-        stage.show();
+        stage.setTitle("Login");
+        stage.show();        
     }
 
     public void setAccountList(ArrayList<String> accounts) {
