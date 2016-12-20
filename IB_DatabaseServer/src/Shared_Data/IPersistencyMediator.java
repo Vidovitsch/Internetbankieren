@@ -109,4 +109,6 @@ public interface IPersistencyMediator extends Remote
     public ArrayList<String> getAllBankrekeningen() throws RemoteException;
     
     public ArrayList<String> getAllBanks() throws RemoteException;
+    
+    public ArrayList<String> getAllTransacties() throws RemoteException;
 }

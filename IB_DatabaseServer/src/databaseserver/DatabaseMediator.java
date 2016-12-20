@@ -271,7 +271,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     @Override
     public ArrayList<String> getAllBanks() throws RemoteException {
         String fields;
-        ArrayList<String> transactions = new ArrayList<>();
+        ArrayList<String> banks = new ArrayList<>();
         try
         {
             Statement statement = con.createStatement();
@@ -280,10 +280,28 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             if (myRs.next())
             {
                 fields = myRs.getString("Fields");
-                transactions.add(fields);
+                banks.add(fields);
             }
         } catch (Exception ex)
         {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return banks;
+    }
+    
+    @Override
+    public ArrayList<String> getAllTransacties() throws RemoteException {
+        String fields;
+        ArrayList<String> transactions = new ArrayList<>();
+        try {
+            Statement statement = con.createStatement();
+            String query = "SELECT CONCAT_WS(';', Beschrijving, Bedrag, Datum, Bankrekening_IBAN_Naar, Bankrekening_IBAN_Van) AS Fields FROM Transactie";
+            myRs = statement.executeQuery(query);
+            if (myRs.next()) {
+                fields = myRs.getString("Fields");
+                transactions.add(fields);
+            }
+        } catch (Exception ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
         }
         return transactions;
