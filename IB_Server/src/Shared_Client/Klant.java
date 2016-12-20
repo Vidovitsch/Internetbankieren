@@ -4,9 +4,6 @@ import Exceptions.SessionExpiredException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  *
@@ -25,15 +22,11 @@ public class Klant implements Serializable {
     /**
      * Adds a bank account on the server linked with this Client.
      * @param bank
+     * @throws Exceptions.SessionExpiredException
+     * @throws java.rmi.RemoteException
      */
-    public void addBankAccount(IBank bank) {
-        try {
-            bank.addBankAccount(this);
-        } catch (RemoteException ex) {
-            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SessionExpiredException | IllegalArgumentException ex) {
-            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void addBankAccount(IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+        bank.addBankAccount(this);
     }
     
     /**
@@ -41,17 +34,11 @@ public class Klant implements Serializable {
      * @param IBAN
      * @param bank
      * @return True if succesful, else false
+     * @throws Exceptions.SessionExpiredException
+     * @throws java.rmi.RemoteException
      */
-    public boolean removeBankAccount(String IBAN, IBank bank) {
-        try {
-            return bank.removeBankAccount(IBAN, this);
-        } catch (RemoteException ex) {
-            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (SessionExpiredException | IllegalArgumentException ex) {
-            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
+    public boolean removeBankAccount(String IBAN, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+        return bank.removeBankAccount(IBAN, this);
     }
     
     /**
@@ -68,14 +55,11 @@ public class Klant implements Serializable {
      * representing a bank account.
      * @param bank
      * @return A list of Strings representing a bank account.
+     * @throws Exceptions.SessionExpiredException
+     * @throws java.rmi.RemoteException
      */
-    public ArrayList<String> getBankAccounts(IBank bank) {
-        try {
-            return bank.getAccounts(this);
-        } catch (RemoteException | IllegalArgumentException | SessionExpiredException ex) {
-            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    public ArrayList<String> getBankAccounts(IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+        return bank.getAccounts(this);
     }
     
     /**
@@ -84,17 +68,15 @@ public class Klant implements Serializable {
      * @param IBAN
      * @param bank
      * @return A list of Strings representing a transaction.
+     * @throws Exceptions.SessionExpiredException
+     * @throws java.rmi.RemoteException
      */
-    public ArrayList<String> getTransactions(String IBAN, IBank bank) {
-        try {
-            return bank.getTransactions(IBAN, this);
-        } catch (RemoteException ex) {
-            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        } catch (IllegalArgumentException | SessionExpiredException ex) {
-            Logger.getLogger(Klant.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
+    public ArrayList<String> getTransactions(String IBAN, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+        return bank.getTransactions(IBAN, this);
+    }
+    
+    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+        return bank.startTransaction(klant, IBAN1, IBAN2, value, description);
     }
 }
 

@@ -52,7 +52,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {
             throw new IllegalArgumentException("Fill all fields");
         }
-        else if (!pMediator.usernameAvailable(naam + woonplaats)) {
+        else if (getKlantByUsername(naam + woonplaats) != null) {
             throw new RegisterException("This username already exists");
         }
         else if (password.length() <= 8) {
@@ -62,6 +62,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             if (pMediator.registerAccount(naam, woonplaats, password)) {
                 klant = new Klant(naam, woonplaats);
                 clients.add(klant);
+                System.out.println(klant.getUsername() + " registered");
             }
         }
         return klant;
@@ -99,7 +100,6 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         removeSession(klant);
     }
             
-        
     /**
      * Checks if a client has still a session running.
      * @param klant
@@ -122,6 +122,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     public Klant getKlantByUsername(String username) {
         Klant klant = null;
         for (Klant k : clients) {
+            System.out.println(k.getUsername() + " : " + username);
             if (k.getUsername().equals(username)) {
                 klant = k;
             }
