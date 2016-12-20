@@ -38,17 +38,22 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public int Login(String username, String password) throws RemoteException
+    public int Login(String naam, String woonplaats, String password) throws RemoteException
     {
+        //Geldige sessie wordt ook toegevoegd aan de database als userID niet -1 is
         int userId = -1;
         try
         {
             Statement statement = con.createStatement();
-            String query = "SELECT ID, (Naam + Woonplaats) AS Username from Klant WHERE Username = '" + username + "' AND Wachtwoord = '" + password + "'";
+            String query = "SELECT ID FROM Klant WHERE Naam = '" + naam + "' AND Woonplaats = '" + woonplaats
+                    + "' AND Wachtwoord = '" + password + "'";
             myRs = statement.executeQuery(query);
             if (myRs.next())
             {
                 userId = myRs.getInt("ID");
+            }
+            if (userId != -1) {
+                statement.executeQuery("UPDATE Klant SET GeldigeSessie = 1 WHERE ID = " + userId);
             }
         } catch (Exception ex)
         {
@@ -60,17 +65,18 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     @Override
     public boolean registerAccount(String name, String residence, String password) throws RemoteException
     {
+        //Geldige sessie wordt ook toegevoegd aan de database
         boolean registered = false;
         try
         {
             Statement statement = con.createStatement();
-            String query = "INSERT INTO Klant(Naam,Woonplaats,Wachtwoord)VALUES('"
+            String query = "INSERT INTO Klant(Naam,Woonplaats,Wachtwoord,GeldigeSessie)VALUES('"
                     + name
                     + "','"
                     + residence
                     + "','"
                     + password
-                    + "')";
+                    + "',1)";
             statement.executeUpdate(query);
             registered = true;
         } catch (Exception ex)
