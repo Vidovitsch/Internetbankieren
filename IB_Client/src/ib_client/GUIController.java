@@ -103,7 +103,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     {
         try
         {
-            admin.removeKlant(klant);
+            admin.removeKlant("iets", "iets", "iets");
         } catch (RemoteException ex)
         {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
