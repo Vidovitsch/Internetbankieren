@@ -47,10 +47,20 @@ public class GUI extends Application
 
     }
 
+    /**
+     * Fills the list of this user's bank account.
+     * Only gets called by the controller.
+     * @param accounts 
+     */
     public void setAccountList(ArrayList<String> accounts) {
         
     }
     
+    /**
+     * Fills the list of this user's transactions of a bank account.
+     * Only gets called by the controller.
+     * @param transactions
+     */
     public void setTransactionList(ArrayList<String> transactions) {
         
     }
