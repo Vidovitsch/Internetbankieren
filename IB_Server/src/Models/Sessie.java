@@ -1,6 +1,11 @@
 package Models;
 
 import Shared_Client.Klant;
+import java.rmi.RemoteException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -10,6 +15,10 @@ public class Sessie {
     
     private Klant client;
     private Administratie admin;
+    private Timer sessionTimer;
+    
+    private final int maxTicks = 60;
+    private int ticks = 0;
     
     public Sessie(Klant client, Administratie admin) {
         this.client = client;
@@ -22,5 +31,34 @@ public class Sessie {
      */
     public Klant getClient() {
         return client;
+    }
+    
+    /**
+     * Starts the session with a timer.
+     * The max ticks is set in advance.
+     */
+    public void startSession() {
+        sessionTimer = new Timer();
+        sessionTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (ticks == maxTicks) {
+                    try {
+                        admin.logout(client);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(Sessie.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    ticks++;                    
+                }
+            }
+        }, 1000, 1000);
+    }
+    
+    /**
+     * Stops the session timer.
+     */
+    public void stopSession() {
+        sessionTimer.cancel();
     }
 }

@@ -41,8 +41,8 @@ public class GUI extends Application
         stage.setTitle("Login");
         stage.show();
         
-        //controller.register("David", "Eindhoven", "123456789");
-        //controller.login("DummyUser", "DummyUser", "123456789");
+        controller.login("Henk", "Eindhoven", "123456789");
+        controller.login("Frank", "Roermond", "123456789");
     }
 
     /**

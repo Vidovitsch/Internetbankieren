@@ -155,7 +155,9 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant 
      */
     private void addSession(Klant klant) {
-        sessies.add(new Sessie(klant, this));
+        Sessie session = new Sessie(klant, this);
+        session.startSession();
+        sessies.add(session);
     }
     
     /**
@@ -170,8 +172,11 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
                 sessie = s;
             }
         }
-        sessies.remove(sessie);
-        pMediator.endSession(klant.getName(), klant.getResidence());
+        if (sessie != null) {
+            sessie.stopSession();
+            sessies.remove(sessie);
+            pMediator.endSession(klant.getName(), klant.getResidence());
+        }
     }
     
     /**
