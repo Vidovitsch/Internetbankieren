@@ -285,7 +285,7 @@ public class AdminTest {
     
     //Tests if the client gets a valid Klant object and session after register
     @Test
-    public void validKlantAndSessionOnRegister() {
+    public void validKlantAndSessionOnRegisterTest() {
         try {
             Klant klant = admin.register("RegisterTest", "RegisterTest", "123456789");
             assertEquals("Username is RegisterTestRegisterTest", "RegisterTestRegisterTest", klant.getUsername());
@@ -294,6 +294,39 @@ public class AdminTest {
         } catch (IllegalArgumentException | RemoteException | RegisterException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
+        }
+    }
+    
+    //Tests if a user can logout after register
+    @Test
+    public void logoutAfterRegisterTest () {
+            /**
+             * Logs out a user.
+             * Gets called when a user wants to log out, or a session has expired.
+             * @param klant
+             * @throws RemoteException
+             */
+        try {
+            Klant klant = admin.register("RegisterTest", "RegisterTest", "123456789");
+            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
+            admin.logout(klant);
+            assertFalse("This client has no session", admin.checkSession(klant.getUsername()));
+            admin.removeKlant("RegisterTest", "RegisterTest", "123456789");
+        } catch (RemoteException | RegisterException | IllegalArgumentException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a user can logout after login
+    @Test
+    public void logoutAfterLoginTest() {
+        try {
+            Klant klant = admin.login("DummyUser", "DummyUser", "123456789");
+            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
+            admin.logout(klant);
+            assertFalse("This client has no session", admin.checkSession(klant.getUsername()));
+        } catch (LoginException | IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
