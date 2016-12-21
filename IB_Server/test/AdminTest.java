@@ -5,7 +5,7 @@ import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.Klant;
 import Shared_Data.IPersistencyMediator;
-import java.rmi.AccessException;
+import fontyspublisher.RemotePublisher;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -47,7 +47,7 @@ public class AdminTest {
                 public ArrayList<String> getTransactions(String IBAN) throws RemoteException {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
-            });
+            }, new RemotePublisher());
             admin.setPersistencyMediator(database);
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -169,18 +169,23 @@ public class AdminTest {
         }
     }
     
-//    //Tests if the client gets a valid Klant object and session after login
-//    @Test
-//    public void validKlantAndSessionOnLogin() {
-//        try {
-//            Klant klant = admin.login("DummyUser", "DummyUser", "123456789");
-//            assertEquals("Username is DummyUserDummyUser", "DummyUser2DummyUser2", klant.getUsername());
-//            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
-//        } catch (LoginException | IllegalArgumentException | RemoteException ex) {
-//            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
-//            fail();
-//        }
-//    }
+    //Tests if the client gets a valid Klant object and session after login
+    @Test
+    public void validKlantAndSessionOnLogin() {
+        try {
+            Klant klant = admin.register("DummyUser3", "DummyUser3", "123456789");
+            admin.logout(klant);
+            admin.login("DummyUser3", "DummyUser3", "123456789");
+            assertEquals("Username is DummyUser3DummyUser3", "DummyUser3DummyUser3", klant.getUsername());
+            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
+            admin.removeKlant("DummyUser3", "DummyUser3", "123456789");
+        } catch (LoginException | IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        } catch (RegisterException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     //Tests if the account has already a session running
     @Test

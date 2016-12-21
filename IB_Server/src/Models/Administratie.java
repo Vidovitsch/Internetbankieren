@@ -7,6 +7,7 @@ import Shared_Client.IBank;
 import Shared_Centrale.ICentrale;
 import Shared_Client.Klant;
 import Shared_Data.IPersistencyMediator;
+import fontyspublisher.IRemotePublisherForDomain;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -21,15 +22,18 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     private ICentrale centrale;
     private IPersistencyMediator pMediator;
+    private IRemotePublisherForDomain publisher;
     private ArrayList<Sessie> sessies;
     private ArrayList<Klant> clients;
     private ArrayList<Bank> banks;
     
-    public Administratie(ICentrale centrale) throws RemoteException {
+    //De publisher is er om de juiste gebruikers te subscriben
+    public Administratie(ICentrale centrale, IRemotePublisherForDomain publisher) throws RemoteException {
         sessies = new ArrayList();
         clients = new ArrayList();
         banks = new ArrayList();
         this.centrale = centrale;
+        this.publisher = publisher;
     }
 
     public void setPersistencyMediator(IPersistencyMediator pMediator) {
@@ -151,17 +155,21 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     
     /**
      * Adds a session on this server (only in local lists).
+     * and registers the user.
      * A session is added if a client is logged in.
      * @param klant 
      */
-    private void addSession(Klant klant) {
+    private void addSession(Klant klant) throws RemoteException {
         Sessie session = new Sessie(klant, this);
         session.startSession();
         sessies.add(session);
+        //Registers a property for this user
+        publisher.registerProperty(klant.getUsername());
     }
     
     /**
-     * Removes a session from this server.
+     * Removes a session from this server
+     * and unregisters the user.
      * A session is removed if a client is inactive for too long.
      * @param klant 
      */
@@ -176,6 +184,8 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             sessie.stopSession();
             sessies.remove(sessie);
             pMediator.endSession(klant.getName(), klant.getResidence());
+            //Unregisters a property for this user
+            publisher.unregisterProperty(klant.getUsername());
         }
     }
     

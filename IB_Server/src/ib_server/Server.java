@@ -76,7 +76,7 @@ public class Server
             
             //Instantiate publisher and administration
             publisher = new RemotePublisher();
-            admin = new Administratie(centrale);
+            admin = new Administratie(centrale, publisher);
             
             //Adding database mediator to administration
             admin.setPersistencyMediator(database);

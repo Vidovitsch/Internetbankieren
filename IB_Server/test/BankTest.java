@@ -5,6 +5,7 @@ import Models.Bank;
 import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.Klant;
+import fontyspublisher.RemotePublisher;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -38,7 +39,7 @@ public class BankTest {
                 public ArrayList<String> getTransactions(String IBAN) throws RemoteException { return null; }
             };
             //Aanamken van eeen dummy administratie en bank
-            admin = new Administratie(centrale);
+            admin = new Administratie(centrale, new RemotePublisher());
             bank = new Bank("Rabobank", "RABO", admin, centrale);
         } catch (RemoteException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
