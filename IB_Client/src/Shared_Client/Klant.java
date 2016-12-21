@@ -50,6 +50,14 @@ public class Klant implements Serializable {
         return name + residence;
     }
     
+    public String getName() {
+        return name;
+    }
+    
+    public String getResidence() {
+        return residence;
+    }
+    
     /**
      * Returns a list of Strings. Every String is
      * representing a bank account.

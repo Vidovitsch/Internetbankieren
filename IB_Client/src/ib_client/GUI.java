@@ -15,7 +15,6 @@ package ib_client;
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -43,7 +42,7 @@ public class GUI extends Application
         stage.show();
         
         //controller.register("David", "Eindhoven", "123456789");
-        //controller.login("David", "Eindhoven", "123456789");
+        controller.login("DummyUser", "DummyUser", "123456789");
     }
 
     /**
@@ -140,8 +139,13 @@ public class GUI extends Application
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         launch(args);
+    }
+    
+    @Override
+    public void stop() {
+        controller.logout();
+        System.exit(0);
     }
 }
