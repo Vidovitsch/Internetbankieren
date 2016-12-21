@@ -64,10 +64,24 @@ public class AdminTest {
     
     @Before
     public void setUp() {
+        try {
+            //Register two dummyUsers
+            admin.register("DummyUser", "DummyUser", "123456789");
+            admin.register("DummyUser2", "DummyUser2", "123456789");
+        } catch (RegisterException | IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @After
     public void tearDown() {
+        try {
+            //Remove dummyUsers from the database
+            admin.removeKlant("DummyUser", "DummyUser", "123456789");
+            admin.removeKlant("DummyUser2", "DummyUser2", "123456789");
+        } catch (RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     //Tests the exception thrown when trying to login with an empty name
@@ -155,19 +169,34 @@ public class AdminTest {
         }
     }
     
-    //Tests if the client gets a valid Klant object and session after login
+//    //Tests if the client gets a valid Klant object and session after login
+//    @Test
+//    public void validKlantAndSessionOnLogin() {
+//        try {
+//            Klant klant = admin.login("DummyUser", "DummyUser", "123456789");
+//            assertEquals("Username is DummyUserDummyUser", "DummyUser2DummyUser2", klant.getUsername());
+//            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
+//        } catch (LoginException | IllegalArgumentException | RemoteException ex) {
+//            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+//            fail();
+//        }
+//    }
+    
+    //Tests if the account has already a session running
     @Test
-    public void validKlantAndSessionOnLogin() {
+    public void checkSessionRunningOnLogin() {
         try {
-            Klant klant = admin.login("DummyUser", "DummyUser", "123456789");
-            assertEquals("Username is DummyUserDummyUser", "DummyUserDummyUser", klant.getUsername());
-            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
-        } catch (LoginException | IllegalArgumentException | RemoteException ex) {
+            admin.login("DummyUser", "DummyUser", "123456789");
+            admin.login("DummyUser", "DummyUser", "123456789");
+            fail();
+        } catch (LoginException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        } catch (IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         }
     }
-    
     
     //Tests the exception thrown when trying to register with an empty name
     @Test
