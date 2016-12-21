@@ -1,7 +1,7 @@
 package Models;
 
 import Exceptions.SessionExpiredException;
-import Shared_Centrale.IBankTrans;
+import Shared_Global.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IBank;
 import Shared_Client.Klant;

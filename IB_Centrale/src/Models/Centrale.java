@@ -1,7 +1,7 @@
 package Models;
 
 import Shared_Centrale.ICentrale;
-import Shared_Centrale.IBankTrans;
+import Shared_Global.IBankTrans;
 import Shared_Data.IPersistencyMediator;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

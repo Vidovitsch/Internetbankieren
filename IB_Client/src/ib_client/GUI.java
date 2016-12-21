@@ -42,7 +42,11 @@ public class GUI extends Application
         stage.show();
         
         controller.login("Henk", "Eindhoven", "123456789");
-        controller.login("Frank", "Roermond", "123456789");
+        controller.setBank();
+        System.out.println("Bank name: " + controller.getBankName());
+        controller.getAccounts();
+        controller.getTransactions("NL77RABO012345678");
+        //controller.login("Frank", "Roermond", "123456789");
     }
 
     /**
@@ -51,7 +55,7 @@ public class GUI extends Application
      * @param accounts 
      */
     public void setAccountList(ArrayList<String> accounts) {
-        
+        System.out.println(accounts.get(0));
     }
     
     /**
@@ -60,7 +64,7 @@ public class GUI extends Application
      * @param transactions
      */
     public void setTransactionList(ArrayList<String> transactions) {
-        
+        System.out.println(transactions.get(0));
     }
     
     public void initErrorMessage(String message) {

@@ -68,21 +68,21 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public void logout()
-    {
-        try
-        {
+    public void logout() {
+        try {
             admin.logout(klant);
-        } catch (RemoteException ex)
-        {
+        } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    
     public void register(String naam, String woonplaats, String password) {
         try {
             klant = admin.register(naam, woonplaats, password);
+            //Set properties
+            pHandler.setLoginProperties(naam, woonplaats);
+            //Subscribe to server
+            publisher.subscribeRemoteListener(this, klant.getUsername());
         } catch (IllegalArgumentException | RegisterException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
@@ -91,7 +91,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public void getBank() {
+    public void setBank() {
         try {
             bank = admin.getBank(klant);
         } catch (RemoteException ex) {
@@ -109,7 +109,11 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
 
     public String getBankName() {
         try {
-            return bank.getName();
+            if (bank == null) {
+                throw new NullPointerException("Bank isn't initialized yet");
+            } else {
+                return bank.getName();
+            }
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -117,89 +121,72 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     }
 
     public String getUsername() {
-        return klant.getUsername();
+        if (klant == null) {
+            throw new NullPointerException("Klant isn't initialized yet");
+        } else {
+            return klant.getUsername();
+        }
     }
 
-    public void getAccounts()
-    {
-        try
-        {
+    public void getAccounts() {
+        try {
             gui.setAccountList(klant.getBankAccounts(bank));
-        } catch (SessionExpiredException | IllegalArgumentException ex)
-        {
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
-        } catch (RemoteException ex)
-        {
+        } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void getTransactions(String IBAN)
-    {
-        try
-        {
+    public void getTransactions(String IBAN) {
+        try {
             gui.setTransactionList(klant.getTransactions(IBAN, bank));
-        } catch (SessionExpiredException | IllegalArgumentException ex)
-        {
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
-        } catch (RemoteException ex)
-        {
+        } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void addBankAccount()
-    {
-        try
-        {
+    public void addBankAccount() {
+        try {
             klant.addBankAccount(bank);
             getAccounts();
-        } catch (SessionExpiredException | IllegalArgumentException ex)
-        {
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
-        } catch (RemoteException ex)
-        {
+        } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void removeBankAccount(String IBAN)
-    {
-        try
-        {
+    public void removeBankAccount(String IBAN) {
+        try {
             klant.removeBankAccount(IBAN, bank);
             getAccounts();
-        } catch (SessionExpiredException | IllegalArgumentException ex)
-        {
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
-        } catch (RemoteException ex)
-        {
+        } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description)
     {
-        try
-        {
-            if (klant.startTransaction(klant, IBAN1, IBAN2, value, description, bank))
-            {
+        try {
+            if (klant.startTransaction(klant, IBAN1, IBAN2, value, description, bank)) {
                 getTransactions(IBAN1);
                 gui.initErrorMessage("Transaction successful");
-            } else
-            {
+            } else {
                 gui.initErrorMessage("Transaction failed");
             }
-        } catch (SessionExpiredException | IllegalArgumentException ex)
-        {
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
-        } catch (RemoteException ex)
-        {
+        } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

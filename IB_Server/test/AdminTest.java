@@ -1,7 +1,7 @@
 import Exceptions.LoginException;
 import Exceptions.RegisterException;
 import Models.Administratie;
-import Shared_Centrale.IBankTrans;
+import Shared_Global.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.Klant;
 import Shared_Data.IPersistencyMediator;

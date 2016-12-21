@@ -99,8 +99,10 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     @Override
     public IBank getBank(Klant klant) throws RemoteException {
-        //DB code (bank.getName() in database vergelijken of de klant daarop accounts heeft)
-        return null;
+        //Moet vervangen worden als er meerdere banken bestaan.
+        //Uit de database moet gekeken worden op welke banken de gebruiker
+        //subscribed is. Deze banken worden als een lijst teruggegeven.
+        return banks.get(0);
     }
 
     @Override

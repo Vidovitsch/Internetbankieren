@@ -2,7 +2,7 @@ import Exceptions.LoginException;
 import Exceptions.SessionExpiredException;
 import Models.Administratie;
 import Models.Bank;
-import Shared_Centrale.IBankTrans;
+import Shared_Global.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.Klant;
 import fontyspublisher.RemotePublisher;
