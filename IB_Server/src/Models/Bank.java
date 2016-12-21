@@ -67,7 +67,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (klant == null) {
             throw new IllegalArgumentException("Client can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else {
@@ -86,7 +86,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (IBAN.isEmpty() || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else if (!checkIBANProperty(IBAN, klant)) {
@@ -103,7 +103,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (klant == null) {
             throw new IllegalArgumentException("Client can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else {
@@ -118,7 +118,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (IBAN.isEmpty() || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else if (!checkIBANProperty(IBAN, klant)) {
@@ -137,7 +137,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (IBAN1.isEmpty() || IBAN2.isEmpty() || value <= 0 || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else if (!checkIBANProperty(IBAN1, klant)) {

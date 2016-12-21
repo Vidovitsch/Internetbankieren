@@ -82,6 +82,9 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             if (userID == -1) {
                 throw new LoginException("Invalid username or password");
             }
+            else if (checkSession(naam + woonplaats)) {
+                throw new LoginException("This account has already a session running");
+            }
             else {
                 klant = getKlantByUsername(naam + woonplaats);
                 addSession(klant);
@@ -119,12 +122,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             
     /**
      * Checks if a client has still a session running.
-     * @param klant
+     * @param username
      * @return True if session is running, else false.
      */
-    public boolean checkSession(Klant klant) {
+    public boolean checkSession(String username) {
         for (Sessie sessie : sessies) {
-            if (sessie.getClient().equals(klant)) {
+            if (sessie.getClient().getUsername().equals(username)) {
                 return true;
             }
         }

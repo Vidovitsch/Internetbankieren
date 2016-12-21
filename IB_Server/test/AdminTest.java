@@ -161,7 +161,7 @@ public class AdminTest {
         try {
             Klant klant = admin.login("DummyUser", "DummyUser", "123456789");
             assertEquals("Username is DummyUserDummyUser", "DummyUserDummyUser", klant.getUsername());
-            assertTrue("This client has a valid session", admin.checkSession(klant));
+            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
         } catch (LoginException | IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
@@ -224,7 +224,6 @@ public class AdminTest {
         }
     }
     
-    
     //Tests the exception thrown when trying to register with an password smaller than 9 characters
     @Test
     public void invalidPasswordRegisterTest() {
@@ -261,7 +260,7 @@ public class AdminTest {
         try {
             Klant klant = admin.register("RegisterTest", "RegisterTest", "123456789");
             assertEquals("Username is RegisterTestRegisterTest", "RegisterTestRegisterTest", klant.getUsername());
-            assertTrue("This client has a valid session", admin.checkSession(klant));
+            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
             admin.removeKlant("RegisterTest", "RegisterTest", "123456789");
         } catch (IllegalArgumentException | RemoteException | RegisterException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
