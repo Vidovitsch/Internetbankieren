@@ -41,6 +41,10 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         }
     }
     
+    /**
+     * This method only gets called if there are more banks involved within this concept.
+     * @param bank 
+     */
     public void addBank(Bank bank) {
         banks.add(bank);
     }
@@ -156,7 +160,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * A session is removed if a client is inactive for too long.
      * @param klant 
      */
-    private void removeSession(Klant klant) {
+    private void removeSession(Klant klant) throws RemoteException {
         Sessie sessie = null;
         for (Sessie s : sessies) {
             if (s.getClient().equals(klant)) {
@@ -164,7 +168,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             }
         }
         sessies.remove(sessie);
-        //DB code (Sessie weghalen uit de DB)
+        pMediator.endSession(klant.getName(), klant.getResidence());
     }
     
     /**
