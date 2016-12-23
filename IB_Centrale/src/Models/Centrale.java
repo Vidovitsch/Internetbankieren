@@ -1,7 +1,7 @@
 package Models;
 
 import Shared_Centrale.ICentrale;
-import Shared_Global.IBankTrans;
+import Shared_Centrale.IBankTrans;
 import Shared_Data.IPersistencyMediator;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -33,6 +33,7 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     
     @Override
     public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
+        System.out.println("dhfkawhfiowfhawiouefhweihfaweuiofgoawuegwiehff");
         bank.removeSaldo(IBAN1, value);
         bank.addSaldo(IBAN2, value);
         
@@ -40,6 +41,12 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         Transactie transactie = new Transactie(IBAN1, IBAN2, getCurrentDateTime(), value);
         if (!description.isEmpty()) transactie.setDescription(description);
         transactions.add(transactie);
+        
+        //Database transfer
+        pMediator.transferMoney(IBAN1, IBAN2, value);
+        
+        //Database add transactie
+        
     }
 
     @Override

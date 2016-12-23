@@ -1,4 +1,4 @@
-package Shared_Global;
+package Shared_Centrale;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

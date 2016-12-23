@@ -2,7 +2,7 @@ import Exceptions.LoginException;
 import Exceptions.SessionExpiredException;
 import Models.Administratie;
 import Models.Bank;
-import Shared_Global.IBankTrans;
+import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.Klant;
 import fontyspublisher.RemotePublisher;
@@ -492,116 +492,6 @@ public class BankTest {
         } catch (RemoteException | SessionExpiredException | IllegalArgumentException ex ) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-    }
-    
-    //Tests adding a value of money to a bank account
-    @Test
-    public void testAddSaldo() {
-        /**
-        * Adds a certain value of money to the bank account linked with
-        * the IBAN parameter.
-        * @param IBAN
-        * @param value of money to be added, has to be greater than 0, else IllegalArgumentException.
-        * @throws RemoteException 
-        */
-        
-        //Making a dummy client with a session
-        Klant dummySession = null;
-        try {
-            dummySession = admin.login("TesetDummy1", "TesetDummy", "TestDummy1");
-        } catch (IllegalArgumentException | RemoteException | LoginException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Add saldo with an invalid IBAN
-        try {
-            bank.addSaldo("", 10);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An expected exception has been thrown", 0, 0);
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Add saldo with an invalid value
-        try {
-            bank.addSaldo("TestIBAN001", -1);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An expected exception has been thrown", 0, 0);
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Add saldo with a valid IBAN and value        
-        try {
-            ArrayList<String> accounts = bank.getAccounts(dummySession);
-            
-            //Getting saldo of TestIBAN001
-            double saldoOld = Double.parseDouble(accounts.get(0).split(";")[1]);
-            bank.addSaldo("TestIBAN001", 10);
-            double saldoNew = Double.parseDouble(accounts.get(0).split(";")[1]);
-            assertEquals("TestIBAN001 has transferred 10 euros to TestIBAN002", saldoOld + 10, saldoNew); 
-        } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    //Tests removing a value of money to a bank account
-    @Test
-    public void testRemoveSaldo() {
-        /**
-        * Removes a certain value of money from the bank account linked
-        * with the IBAN parameter.
-        * @param IBAN not empty, else IllegalArgumentException.
-        * @param value of money to be removed, must be postive else IllegalArgumentException.
-        * @throws RemoteException 
-        */
-        
-        //Making a dummy client with a session
-        Klant dummySession = null;
-        try {
-            dummySession = admin.login("TesetDummy1", "TesetDummy", "TestDummy1");
-        } catch (IllegalArgumentException | RemoteException | LoginException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Remove saldo with an invalid IBAN
-        try {
-            bank.removeSaldo("", 10);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An expected exception has been thrown", 0, 0);
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Remove saldo with an invalid value
-        try {
-            bank.removeSaldo("TestIBAN001", -1);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An expected exception has been thrown", 0, 0);
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Remove saldo with a valid IBAN and value        
-        try {
-            ArrayList<String> accounts = bank.getAccounts(dummySession);
-            
-            //Getting saldo of TestIBAN001
-            double saldoOld = Double.parseDouble(accounts.get(0).split(";")[1]);
-            bank.removeSaldo("TestIBAN001", 10);
-            double saldoNew = Double.parseDouble(accounts.get(0).split(";")[1]);
-            assertEquals("TestIBAN001 has transferred 10 euros to TestIBAN002", saldoOld - 10, saldoNew); 
-        } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

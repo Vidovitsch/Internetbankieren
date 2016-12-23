@@ -36,10 +36,8 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
      * @param gui
      * @throws java.rmi.RemoteException
      */
-    public GUIController(GUI gui) throws RemoteException
-    {
-        try
-        {
+    public GUIController(GUI gui) throws RemoteException {
+        try {
             pHandler = new PropertyHandler();
             Registry serverRegistry = LocateRegistry.getRegistry("localhost", 1099);
             admin = (IAdmin) serverRegistry.lookup("admin");
@@ -47,8 +45,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
 
             publisher = (IRemotePublisherForListener) serverRegistry.lookup("serverPublisher");
             System.out.println("Publisher lookup completed");
-        } catch (RemoteException | NotBoundException ex)
-        {
+        } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -127,13 +124,14 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             return klant.getUsername();
         }
     }
-
+    
     public void getAccounts() {
         try {
-            gui.setAccountList(klant.getBankAccounts(bank));
+            System.out.println(klant.getBankAccounts(bank).get(0));
+            //gui.setAccountList(klant.getBankAccounts(bank));
         } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
-            gui.initErrorMessage(ex.getMessage());
+            //gui.initErrorMessage(ex.getMessage());
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -174,14 +172,15 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public void startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description)
+    public void startTransaction(String IBAN1, String IBAN2, double value, String description)
     {
+        System.out.println("haskdfh");
         try {
             if (klant.startTransaction(klant, IBAN1, IBAN2, value, description, bank)) {
-                getTransactions(IBAN1);
-                gui.initErrorMessage("Transaction successful");
+                //getTransactions(IBAN1);
+                //gui.initSuccessMessage("Transaction successful");
             } else {
-                gui.initErrorMessage("Transaction failed");
+                //gui.initErrorMessage("Transaction failed");
             }
         } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);

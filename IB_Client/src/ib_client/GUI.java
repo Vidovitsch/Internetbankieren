@@ -43,10 +43,8 @@ public class GUI extends Application
         
         controller.login("Henk", "Eindhoven", "123456789");
         controller.setBank();
-        System.out.println("Bank name: " + controller.getBankName());
-        controller.getAccounts();
-        controller.getTransactions("NL77RABO012345678");
-        //controller.login("Frank", "Roermond", "123456789");
+        //controller.getAccounts();
+        controller.startTransaction("NL77RABO012345678", "NL77RABO087654321", 12, "niks");
     }
 
     /**
@@ -55,9 +53,9 @@ public class GUI extends Application
      * @param accounts 
      */
     public void setAccountList(ArrayList<String> accounts) {
-        System.out.println(accounts.get(0));
+
     }
-    
+
     /**
      * Fills the list of this user's transactions of a bank account.
      * Only gets called by the controller.
@@ -65,6 +63,10 @@ public class GUI extends Application
      */
     public void setTransactionList(ArrayList<String> transactions) {
         System.out.println(transactions.get(0));
+    }
+    
+    public void initSuccessMessage(String message) {
+        
     }
     
     public void initErrorMessage(String message) {

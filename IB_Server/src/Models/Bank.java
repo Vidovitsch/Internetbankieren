@@ -1,7 +1,7 @@
 package Models;
 
 import Exceptions.SessionExpiredException;
-import Shared_Global.IBankTrans;
+import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  *
  * @author David
  */
-public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
+public class Bank extends UnicastRemoteObject implements IBank {
 
     private IPersistencyMediator pMediator;
     private ArrayList<Bankrekening> bankAccounts;
@@ -25,6 +25,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
     private String shortName;
     private Administratie admin;
     private ICentrale centrale;
+    private BankTrans bankTrans;
     
     /**
      * A bank registered at the administration.
@@ -36,10 +37,13 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
      */
     public Bank(String name, String shortName, Administratie admin, ICentrale centrale) throws RemoteException {
         bankAccounts = new ArrayList();
+        System.out.println(centrale.toString());
         this.centrale = centrale;
         this.admin = admin;
         this.name = name;
         this.shortName = shortName;
+        
+        bankTrans = new BankTrans(this);
     }
 
     public void setPersistencyMediator(IPersistencyMediator pMediator) {
@@ -72,11 +76,12 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         }
         else {
             for (Bankrekening b : bankAccounts) {
-                if (b.getKlant().equals(klant)) {
+                if (b.getKlant().getUsername().equals(klant.getUsername())) {
                     accounts.add(b.toString());
                 }
             }
         }
+        System.out.println(accounts.get(0));
         return accounts;
     }
 
@@ -134,7 +139,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
     @Override
     public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, RemoteException {
         boolean bool = false;
-        if (IBAN1.isEmpty() || IBAN2.isEmpty() || value <= 0 || klant == null) {
+        if (IBAN1.isEmpty() || IBAN2.isEmpty() || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
         }
         else if (!admin.checkSession(klant.getUsername())) {
@@ -146,39 +151,15 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         else if (!checkIBANExists(IBAN2)) {
             throw new IllegalArgumentException("IBAN doesn't exist");
         }
+        else if (value <= 0) {
+            throw new IllegalArgumentException("Value must be higher than 0");
+        }
         else {
-            centrale.startTransaction(IBAN1, IBAN2, this, value, description);
+            centrale.startTransaction(IBAN1, IBAN2, bankTrans, value, description);
+            System.out.println("Bank transactie: succes!");
             bool = true;
         }
         return bool;
-    }
-
-    @Override
-    public void addSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
-        if (IBAN.isEmpty() || value <= 0) {
-            throw new IllegalArgumentException("Input can't be null");
-        }
-        else if (!checkIBANExists(IBAN)) {
-            throw new IllegalArgumentException("IBAN doesn't exists");
-        }
-        else {
-            Bankrekening bankAccount = IBANToBankAccount(IBAN);
-            bankAccount.addToBalance(value);
-        }
-    }
-
-    @Override
-    public void removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
-        if (IBAN.isEmpty() || value <= 0) {
-            throw new IllegalArgumentException("Input can't be null");
-        }
-        else if (!checkIBANExists(IBAN)) {
-            throw new IllegalArgumentException("IBAN doesn't exists");
-        }
-        else {
-            Bankrekening bankAccount = IBANToBankAccount(IBAN);
-            bankAccount.removeFromBalance(value);
-        }
     }
     
     /**
@@ -187,7 +168,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
      * @param IBAN
      * @return True if it exists, else false.
      */
-    private boolean checkIBANExists(String IBAN) {
+    public boolean checkIBANExists(String IBAN) {
         //Deze methode staat in klasse bank, omdat we ervan uitgaan dat er maar 1 bank is.
         //Als we dit gaan uitbreiden met meer dan 1 bank, dan moet deze methode in de administatie staan.
         //Het ophalen van bankrekeningen wordt dan gedaan uit de database i.p.v. (in dit geval) de klasse Bank.
@@ -209,7 +190,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
     private boolean checkIBANProperty(String IBAN, Klant klant) {
         for (Bankrekening b : bankAccounts) {
             if (b.toString().split(";")[0].equals(IBAN)) {
-                if (b.getKlant().equals(klant)) {
+                if (b.getKlant().getUsername().equals(klant.getUsername())) {
                     return true;
                 }
             }
@@ -233,7 +214,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
      * @param IBAN as String
      * @return Bankrekening
      */
-    private Bankrekening IBANToBankAccount(String IBAN) {
+    public Bankrekening IBANToBankAccount(String IBAN) {
         Bankrekening bankAccount = null;
         for (Bankrekening b : bankAccounts) {
             if (b.toString().split(";")[0].equals(IBAN)) {

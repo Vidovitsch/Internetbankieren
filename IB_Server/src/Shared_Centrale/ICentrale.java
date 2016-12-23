@@ -1,6 +1,5 @@
 package Shared_Centrale;
 
-import Shared_Global.IBankTrans;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;

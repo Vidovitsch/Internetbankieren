@@ -1,10 +1,8 @@
 package ib_server;
 
 import Models.Administratie;
-import Models.Bank;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IAdmin;
-import Shared_Client.IBank;
 import Shared_Data.IPersistencyMediator;
 import fontyspublisher.IRemotePublisherForDomain;
 import fontyspublisher.RemotePublisher;
@@ -40,7 +38,7 @@ public class Server
      * Handles all RMI-based processes.
      */
     public Server() {
-         try {
+        try {
             System.setProperty("java.rmi.server.hostname", "localhost");
             serverRegistry = LocateRegistry.createRegistry(1099);
             getCentraleRegistryBinds();
@@ -135,6 +133,7 @@ public class Server
         }
         return connectedToDatabase;
     }
+    
     
     /**
      * @param args the command line arguments

@@ -70,8 +70,7 @@ public final class CentraleServer
         try
         {
             dataBaseRegistry = LocateRegistry.getRegistry(ipAddressDB, portNumber);
-        } catch (RemoteException ex)
-        {
+        } catch (RemoteException ex) {
             System.out.println("Client: Cannot locate registry");
             System.out.println("Client: RemoteException: " + ex.getMessage());
             dataBaseRegistry = null;

@@ -370,7 +370,20 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             Statement statement = con.createStatement();
             String query = "UPDATE Klant SET GeldigeSessie = 0 WHERE Naam = '" + name + "' AND Woonplaats = '" + residence + "'";
             statement.executeUpdate(query);
-            System.out.println("Logout: " + name + " : " + residence);
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Override
+    public void transferMoney(String IBANFrom, String IBANTo, double value) throws RemoteException {
+        try {
+            Statement statement = con.createStatement();
+            String query = "UPDATE Bankrekening SET Saldo = Saldo - " + value + " WHERE IBAN = '" + IBANFrom + "'";
+            statement.executeUpdate(query);
+            query = "UPDATE Bankrekening SET Saldo = Saldo + " + value + " WHERE IBAN = '" + IBANTo + "'";
+            statement.executeUpdate(query);
+            System.out.println("Transferred");
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
         }

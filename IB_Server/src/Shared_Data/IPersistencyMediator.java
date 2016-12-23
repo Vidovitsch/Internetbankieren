@@ -119,4 +119,6 @@ public interface IPersistencyMediator extends Remote
     public boolean removeKlant(String username, String residence, String password) throws RemoteException;
     
     public void endSession(String name, String residence) throws RemoteException;
+    
+    public void transferMoney(String IBANFrom, String IBANTo, double value) throws RemoteException;
 }

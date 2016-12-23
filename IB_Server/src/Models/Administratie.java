@@ -102,7 +102,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         //Moet vervangen worden als er meerdere banken bestaan.
         //Uit de database moet gekeken worden op welke banken de gebruiker
         //subscribed is. Deze banken worden als een lijst teruggegeven.
-        return banks.get(0);
+        return (IBank) banks.get(0);
     }
 
     @Override
