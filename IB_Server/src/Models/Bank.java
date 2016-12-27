@@ -80,7 +80,6 @@ public class Bank extends UnicastRemoteObject implements IBank {
                 }
             }
         }
-        System.out.println(accounts.get(0));
         //Refresh session on button click
         admin.refreshSession(klant);
         return accounts;
@@ -115,8 +114,15 @@ public class Bank extends UnicastRemoteObject implements IBank {
             throw new SessionExpiredException("Session has expired");
         }
         else {
-            bankAccounts.add(new Bankrekening(generateNewIBAN(), 0, 100, klant));
-            //DB code
+            boolean value = false;
+            while (!value) {
+                String IBAN = generateNewIBAN();
+                if (!checkIBANExists(IBAN)) {
+                    bankAccounts.add(new Bankrekening(generateNewIBAN(), klant));
+                    pMediator.addBankrekening(klant.getName(), klant.getResidence(), IBAN, shortName);
+                    value = true;
+                }
+            }
             admin.refreshSession(klant);
         }
     }
@@ -268,7 +274,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
         String[] klantFields = pMediator.getKlantByID(Integer.valueOf(rFields[1])).split(";");
         String username = klantFields[0] + klantFields[1];
         Klant klant = admin.getKlantByUsername(username);
-        Bankrekening rekening = new Bankrekening(rFields[0], Double.parseDouble(rFields[2]), Double.parseDouble(rFields[3]), klant);
-        return rekening;
+        Bankrekening rekening = new Bankrekening(rFields[0], klant);
+        return rekening; 
     }
 }

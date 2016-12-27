@@ -51,13 +51,14 @@ public interface IPersistencyMediator extends Remote
     
     /**
      * voegt een bankrekening toe bij de betreffende bank, voor de betreffende klant
-     * @param clientID      identifier voor de klant
+     * @param name
+     * @param residence
      * @param iban          uniek nummer voor de nieuwe rekening
      * @param bankShortName afkorting voor iban
      * @return
      * @throws RemoteException
      */
-    public boolean addBankrekening(int clientID, String iban, String bankShortName) throws RemoteException;
+    public boolean addBankrekening(String name, String residence, String iban, String bankShortName) throws RemoteException;
     
     /**
      * Geeft alle bankrekeningen van de betreffende klant terug in String-vorm

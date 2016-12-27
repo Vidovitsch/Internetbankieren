@@ -11,13 +11,11 @@ public class Bankrekening {
     
     private String IBAN;
     private double balance = 0;
-    private double credit = 100;
+    private final double credit = 100;
     private Klant klant;
     
-    public Bankrekening(String IBAN ,double balance, double credit, Klant klant) {
+    public Bankrekening(String IBAN, Klant klant) {
         this.IBAN = IBAN;
-        this.balance = balance;
-        this.credit = credit;
         this.klant = klant;
     }
     

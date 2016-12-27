@@ -43,8 +43,8 @@ public class GUI extends Application
         
         controller.login("Henk", "Eindhoven", "123456789");
         controller.setBank();
-        //controller.getAccounts();
-        controller.startTransaction("NL77RABO012345678", "NL77RABO087654321", 12, "niks");
+        controller.addBankAccount();
+        //controller.startTransaction("NL77RABO012345678", "NL77RABO087654321", 12, "niks");
     }
 
     /**
@@ -53,7 +53,11 @@ public class GUI extends Application
      * @param accounts 
      */
     public void setAccountList(ArrayList<String> accounts) {
-
+        //Testcode: kan vervangen worden
+        for (String fields : accounts) {
+            System.out.println("IBAN: " + accountToIBAN(fields));
+            System.out.println("Saldo: " + accountToAmount(fields));
+        }
     }
 
     /**
@@ -62,7 +66,14 @@ public class GUI extends Application
      * @param transactions
      */
     public void setTransactionList(ArrayList<String> transactions) {
-        System.out.println(transactions.get(0));
+        //Testcode: kan vervangen worden
+        for (String fields : transactions) {
+            System.out.println("Date: " + transactionToDate(fields));
+            System.out.println("Amount: " + transactionToAmount(fields));
+            System.out.println("IBANTo: " + transactionToIBANTo(fields));
+            System.out.println("IBANFrom: " + transactionToIBANFrom(fields));
+            System.out.println("Description: " + transactionToDescription(fields));
+        }
     }
     
     public void initSuccessMessage(String message) {

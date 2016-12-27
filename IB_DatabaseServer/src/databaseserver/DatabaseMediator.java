@@ -109,22 +109,19 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public boolean addBankrekening(int clientID, String iban, String bankShortName) throws RemoteException
-    {
+    public boolean addBankrekening(String name, String residence, String IBAN, String bankShortName) throws RemoteException {
         boolean bankAdded = false;
-        try
-        {
+        try {
             Statement statement = con.createStatement();
-            String query = "INSERT INTO Bankrekening(IBAN,bank_Afkorting,Klant_ID)VALUES("
-                    + iban + ",'"
+            String query = "INSERT INTO Bankrekening(IBAN,bank_Afkorting,Klant_ID)VALUES('"
+                    + IBAN + "','"
                     + bankShortName
                     + "',"
-                    + clientID
+                    + getIDByUsername(name, residence)
                     + ")";
             statement.executeUpdate(query);
             bankAdded = true;
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -387,5 +384,26 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    /**
+     * Gets ID by username (= name + client)
+     * @param name of the client
+     * @param residence of the client
+     * @return id of the client
+     */
+    private int getIDByUsername(String name, String residence) {
+        int userID = 0;
+        try {
+            Statement statement = con.createStatement();
+            String query = "SELECT ID FROM Klant WHERE Naam = '" + name + "' AND Woonplaats = '" + residence + "'";
+            myRs = statement.executeQuery(query);
+            if (myRs.next()) {
+                userID = myRs.getInt("ID");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return userID;
     }
 }
