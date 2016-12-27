@@ -99,6 +99,8 @@ public class Bank extends UnicastRemoteObject implements IBank {
         }
         else {
             transactions = centrale.getTransactions(IBAN);
+            //Publish update
+            
             //Refresh session on button click
             admin.refreshSession(klant);
         }
@@ -170,7 +172,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
         }
         else {
             centrale.startTransaction(IBAN1, IBAN2, bankTrans, value, description);
-            System.out.println("Bank transactie: succes!");
+            admin.publishTransaction(getUsernameByIBAN(IBAN1), getUsernameByIBAN(IBAN2), this);
             bool = true;
             admin.refreshSession(klant);
         }
@@ -211,6 +213,21 @@ public class Bank extends UnicastRemoteObject implements IBank {
             }
         }
         return false;
+    }
+    
+    /**
+     * Returns the username of the client from this IBAN.
+     * @param IBAN of the client.
+     * @return username of the client.
+     */
+    private String getUsernameByIBAN(String IBAN) {
+        String username = null;
+        for (Bankrekening b : bankAccounts) {
+            if (b.toString().split(";")[0].equals(IBAN)) {
+                username = b.getKlant().getUsername();
+            }
+        }
+        return username;
     }
     
     /**

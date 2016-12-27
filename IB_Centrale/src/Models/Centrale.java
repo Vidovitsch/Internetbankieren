@@ -33,7 +33,6 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     
     @Override
     public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
-        System.out.println("dhfkawhfiowfhawiouefhweihfaweuiofgoawuegwiehff");
         bank.removeSaldo(IBAN1, value);
         bank.addSaldo(IBAN2, value);
         
@@ -44,8 +43,8 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         
         //Database transfer
         pMediator.transferMoney(IBAN1, IBAN2, value);
-        
         //Database add transactie
+        pMediator.addTransaction(IBAN1, IBAN2, value, getCurrentDateTime(), description);
         
     }
 

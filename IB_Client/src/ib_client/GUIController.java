@@ -15,6 +15,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -171,9 +172,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public void startTransaction(String IBAN1, String IBAN2, double value, String description)
-    {
-        System.out.println("haskdfh");
+    public void startTransaction(String IBAN1, String IBAN2, double value, String description) {
         try {
             if (klant.startTransaction(klant, IBAN1, IBAN2, value, description, bank)) {
                 //getTransactions(IBAN1);
@@ -194,8 +193,8 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     }
     
     @Override
-    public void propertyChange(PropertyChangeEvent pce) throws RemoteException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void propertyChange(PropertyChangeEvent pce) throws RemoteException {
+        System.out.println("got it!: " + ((ArrayList<String>) pce.getNewValue()).size());
+        //gui.setAccountList((ArrayList<String>) pce.getNewValue());
     }
 }

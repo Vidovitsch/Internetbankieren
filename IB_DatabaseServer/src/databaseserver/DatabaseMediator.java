@@ -172,29 +172,24 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public boolean addTransaction(String ibanFrom, String ibanTo, double amount, Date date, String description) throws RemoteException
-    {
-
+    public boolean addTransaction(String ibanFrom, String ibanTo, double amount, String date, String description) throws RemoteException {
         boolean transactionAdded = false;
-        try
-        {
+        try {
             Date dt = new Date();
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy");
-            String currentTime = sdf.format(dt);
+//            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy");
+//            String currentTime = sdf.format(dt);
             Statement statement = con.createStatement();
-            String query = "INSERT INTO Transaction(beschrijving,bedrag,datum,Bankrekening_IBAN_Naar, Bankrekening_IBAN_Van)VALUES("
-                    + description + ","
-                    + amount
-                    + ",STR_TO_DATE('"
-                    + currentTime + "', '%d-%m-%Y'),'"
+            String query = "INSERT INTO Transactie(beschrijving,bedrag,datum,Bankrekening_IBAN_Naar, Bankrekening_IBAN_Van)VALUES('"
+                    + description + "',"
+                    + amount + ",'"
+                    + date + "','"
                     + ibanTo
                     + "','"
                     + ibanFrom
                     + "')";
             statement.executeUpdate(query);
             transactionAdded = true;
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -211,7 +206,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             Statement statement = con.createStatement();
             String query = "SELECT (Datum + ';' + Bankrekening_IBAN_Van + ';' + Bankrekening_IBAN_Naar + ';' + bedrag + ';' + Beschrijving) AS TransactieString from transactie WHERE Bankrekening_IBAN_Van = '" + iban + "' OR Bankrekening_IBAN_Naar = '" + iban + "'";
             myRs = statement.executeQuery(query);
-            if (myRs.next())
+            while (myRs.next())
             {
                 transactionString = myRs.getString("TransactieString");
                 transactions.add(transactionString);

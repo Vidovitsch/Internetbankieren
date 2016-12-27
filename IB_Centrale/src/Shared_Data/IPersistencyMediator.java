@@ -86,7 +86,7 @@ public interface IPersistencyMediator extends Remote
      * @return
      * @throws RemoteException
      */
-    public boolean addTransaction(String ibanFrom, String ibanTo, double amount, Date date, String description) throws RemoteException;
+    public boolean addTransaction(String ibanFrom, String ibanTo, double amount, String date, String description) throws RemoteException;
     
     /**
      * vraagt een lijst op van alle transacties die bij het meegegeven iban horen in String-vorm

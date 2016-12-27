@@ -2,6 +2,7 @@ package Models;
 
 import Exceptions.LoginException;
 import Exceptions.RegisterException;
+import Exceptions.SessionExpiredException;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
 import Shared_Centrale.ICentrale;
@@ -172,6 +173,30 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     /**
+     * Publishes the updated list of transactions and bankaccounts to the
+     * involved users with a running session.
+     * @param usernameTo
+     * @param usernameFrom
+     * @param bank
+     * @throws RemoteException 
+     */
+    public void publishTransaction(String usernameFrom, String usernameTo, Bank bank) throws RemoteException {
+        ArrayList<String> updatedBankAccounts;
+        try {
+            if (checkSession(usernameFrom)) {
+                updatedBankAccounts = getKlantByUsername(usernameFrom).getBankAccounts(bank);
+                publisher.inform(usernameFrom, null, updatedBankAccounts);
+            }     
+            if (checkSession(usernameTo)) {
+                updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);
+                publisher.inform(usernameTo, null, updatedBankAccounts);
+            }       
+        } catch (SessionExpiredException | IllegalArgumentException ex) {
+            Logger.getLogger(Administratie.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
      * Adds a session on this server (only in local lists).
      * and registers the user.
      * A session is added if a client is logged in.
@@ -181,7 +206,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         Sessie session = new Sessie(klant, this);
         session.startSession();
         sessies.add(session);
-        //Registers a property for this user
+        //Register a property for this user
         publisher.registerProperty(klant.getUsername());
     }
     
@@ -202,7 +227,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             sessie.stopSession();
             sessies.remove(sessie);
             pMediator.endSession(klant.getName(), klant.getResidence());
-            //Unregisters a property for this user
+            //Unregister a property for this user
             publisher.unregisterProperty(klant.getUsername());
         }
     }
