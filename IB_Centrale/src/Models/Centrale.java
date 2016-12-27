@@ -82,7 +82,6 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     
     private String getCurrentDateTime() {
         LocalDateTime dateTime = LocalDateTime.now();
-        System.out.println(dateTime.toString());
         return dateTime.toString();
     }
     

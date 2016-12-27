@@ -42,10 +42,8 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             pHandler = new PropertyHandler();
             Registry serverRegistry = LocateRegistry.getRegistry("localhost", 1099);
             admin = (IAdmin) serverRegistry.lookup("admin");
-            System.out.println("Admin lookup completed");
 
             publisher = (IRemotePublisherForListener) serverRegistry.lookup("serverPublisher");
-            System.out.println("Publisher lookup completed");
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -194,7 +192,6 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     
     @Override
     public void propertyChange(PropertyChangeEvent pce) throws RemoteException {
-        System.out.println("got it!: " + ((ArrayList<String>) pce.getNewValue()).size());
         //gui.setAccountList((ArrayList<String>) pce.getNewValue());
     }
 }

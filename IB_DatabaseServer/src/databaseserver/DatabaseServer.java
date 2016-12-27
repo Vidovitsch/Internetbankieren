@@ -23,36 +23,24 @@ public class DatabaseServer
     // Constructor
     public DatabaseServer()
     {
-        // Print port number for registry
-        System.out.println("DatabaseServer: Port number " + portNumber);
-
         // Create student administration
         try {
             database = new DatabaseMediator();
-            System.out.println("DatabaseServer: Database created");
         } catch (RemoteException ex) {
-            System.out.println("DatabaseServer: Cannot create Database");
-            System.out.println("DatabaseServer: RemoteException: " + ex.getMessage());
             database = null;
         }
 
         // Create registry at port number
         try {
             registry = LocateRegistry.createRegistry(portNumber);
-            System.out.println("DatabaseServer: Registry created on port number " + portNumber);
         } catch (RemoteException ex) {
-            System.out.println("DatabaseServer: Cannot create registry");
-            System.out.println("DatabaseServer: RemoteException: " + ex.getMessage());
             registry = null;
         }
 
         // Bind student administration using registry
         try {
             registry.rebind(bindingName, database);
-        } catch (RemoteException ex) {
-            System.out.println("DatabaseServer: Cannot bind Databse");
-            System.out.println("DatabaseServer: RemoteException: " + ex.getMessage());
-        }
+        } catch (RemoteException ex) { }
     }
     /**
      * @param args the command line arguments

@@ -30,7 +30,6 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
         try
         {
             con = DriverManager.getConnection(connectionstring, user, pass);
-            System.out.println(con.toString());
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
@@ -375,7 +374,6 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             statement.executeUpdate(query);
             query = "UPDATE Bankrekening SET Saldo = Saldo + " + value + " WHERE IBAN = '" + IBANTo + "'";
             statement.executeUpdate(query);
-            System.out.println("Transferred");
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
         }

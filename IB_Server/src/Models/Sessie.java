@@ -50,7 +50,6 @@ public class Sessie {
                     }
                 } else {
                     ticks++;
-                    System.out.println(client.getName() + "'s session: " + ticks);
                 }
             }
         }, 1000, 1000);

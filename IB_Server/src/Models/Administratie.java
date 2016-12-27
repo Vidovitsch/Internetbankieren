@@ -169,7 +169,6 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             }
         }
         if (session != null) session.refreshSession();
-        System.out.println("Session refresh");
     }
     
     /**

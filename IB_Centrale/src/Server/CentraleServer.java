@@ -34,14 +34,11 @@ public final class CentraleServer
             System.setProperty("java.rmi.server.hostname", "localhost");
             
             centraleRegistry = LocateRegistry.createRegistry(1100);
-            System.out.println("Centrale registry created");
             
             setCentraleRegistryBinds();
             connectedToDatabase = connectToRMIDatabaseServer();
             centrale.setPersistencyMediator(database);
         } catch (RemoteException ex) {
-            System.out.println("Server: Cannot create registry");
-            System.out.println("Server: RemoteException: " + ex.getMessage());
             Logger.getLogger(CentraleServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -53,7 +50,6 @@ public final class CentraleServer
         try {
             centrale = new Centrale();
             centraleRegistry.bind("centrale", centrale);
-            System.out.println("Centrale bound");
         } catch (RemoteException | AlreadyBoundException ex)
         {
             Logger.getLogger(CentraleServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,36 +60,20 @@ public final class CentraleServer
      * Sets the connection with the database server
      * @return true if connection successful, else false
      */
-    public boolean connectToRMIDatabaseServer()
-    {
+    public boolean connectToRMIDatabaseServer() {
         // Locate registry at IP address and port number
-        try
-        {
+        try {
             dataBaseRegistry = LocateRegistry.getRegistry(ipAddressDB, portNumber);
         } catch (RemoteException ex) {
-            System.out.println("Client: Cannot locate registry");
-            System.out.println("Client: RemoteException: " + ex.getMessage());
             dataBaseRegistry = null;
         }
 
         // Bind student administration using registry
-        if (dataBaseRegistry != null)
-        {
-            try
-            {
+        if (dataBaseRegistry != null) {
+            try {
                 database = (IPersistencyMediator) dataBaseRegistry.lookup(bindingName);
                 connectedToDatabase = true;
-                System.out.println("Client: connection with " + bindingName + " successful");
-            } catch (RemoteException ex)
-            {
-                System.out.println("Client: Cannot bind Database");
-                System.out.println("Client: RemoteException: " + ex.getMessage());
-                database = null;
-                connectedToDatabase = false;
-            } catch (NotBoundException ex)
-            {
-                System.out.println("Client: Cannot bind Database");
-                System.out.println("Client: NotBoundException: " + ex.getMessage());
+            } catch (RemoteException | NotBoundException ex) {
                 database = null;
                 connectedToDatabase = false;
             }

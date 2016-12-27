@@ -36,7 +36,6 @@ public class Bank extends UnicastRemoteObject implements IBank {
      */
     public Bank(String name, String shortName, Administratie admin, ICentrale centrale) throws RemoteException {
         bankAccounts = new ArrayList();
-        System.out.println(centrale.toString());
         this.centrale = centrale;
         this.admin = admin;
         this.name = name;
@@ -142,9 +141,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
         else {
-            System.out.println("bankAccounts Size: " + bankAccounts.size());
             bankAccounts.remove(IBANToBankAccount(IBAN));
-            System.out.println("bankAccounts Size: " + bankAccounts.size());
             pMediator.removeBankAccount(IBAN);
             bool = true;
             admin.refreshSession(klant);
