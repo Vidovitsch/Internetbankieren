@@ -49,10 +49,20 @@ public class Sessie {
                         Logger.getLogger(Sessie.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
-                    ticks++;                    
+                    ticks++;
+                    System.out.println(client.getName() + "'s session: " + ticks);
                 }
             }
         }, 1000, 1000);
+    }
+    
+    /**
+     * Refeshes the current session
+     */
+    public void refreshSession() {
+        stopSession();
+        ticks = 0;
+        startSession();
     }
     
     /**

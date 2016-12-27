@@ -156,6 +156,22 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     /**
+     * Refreshing the session of a client on an action.
+     * The session timer resets.
+     * @param klant 
+     */
+    public void refreshSession(Klant klant) {
+        Sessie session = null;
+        for (Sessie s : sessies) {
+            if (s.getClient().getUsername().equals(klant.getUsername())) {
+                session = s;
+            }
+        }
+        if (session != null) session.refreshSession();
+        System.out.println("Session refresh");
+    }
+    
+    /**
      * Adds a session on this server (only in local lists).
      * and registers the user.
      * A session is added if a client is logged in.
@@ -178,7 +194,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     private void removeSession(Klant klant) throws RemoteException {
         Sessie sessie = null;
         for (Sessie s : sessies) {
-            if (s.getClient().equals(klant)) {
+            if (s.getClient().getUsername().equals(klant.getUsername())) {
                 sessie = s;
             }
         }

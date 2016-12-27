@@ -1,7 +1,6 @@
 package Models;
 
 import Exceptions.SessionExpiredException;
-import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
@@ -82,6 +81,8 @@ public class Bank extends UnicastRemoteObject implements IBank {
             }
         }
         System.out.println(accounts.get(0));
+        //Refresh session on button click
+        admin.refreshSession(klant);
         return accounts;
     }
 
@@ -99,6 +100,8 @@ public class Bank extends UnicastRemoteObject implements IBank {
         }
         else {
             transactions = centrale.getTransactions(IBAN);
+            //Refresh session on button click
+            admin.refreshSession(klant);
         }
         return transactions;
     }
@@ -114,6 +117,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
         else {
             bankAccounts.add(new Bankrekening(generateNewIBAN(), 0, 100, klant));
             //DB code
+            admin.refreshSession(klant);
         }
     }
 
@@ -132,6 +136,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
         else {
             bankAccounts.remove(IBANToBankAccount(IBAN));
             bool = true;
+            admin.refreshSession(klant);
         }
         return bool;
     }
@@ -158,6 +163,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
             centrale.startTransaction(IBAN1, IBAN2, bankTrans, value, description);
             System.out.println("Bank transactie: succes!");
             bool = true;
+            admin.refreshSession(klant);
         }
         return bool;
     }
