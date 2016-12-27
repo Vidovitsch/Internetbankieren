@@ -42,9 +42,6 @@ public class GUI extends Application
         stage.show();
         
         controller.login("Henk", "Eindhoven", "123456789");
-        controller.setBank();
-        controller.addBankAccount();
-        //controller.startTransaction("NL77RABO012345678", "NL77RABO087654321", 12, "niks");
     }
 
     /**

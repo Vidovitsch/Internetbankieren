@@ -386,6 +386,17 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
         }
     }
     
+    @Override
+    public void removeBankAccount(String IBAN) {
+        try {
+            Statement statement = con.createStatement();
+            String query = "DELETE FROM Bankrekening WHERE IBAN = '" + IBAN + "'";
+            statement.executeUpdate(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     /**
      * Gets ID by username (= name + client)
      * @param name of the client

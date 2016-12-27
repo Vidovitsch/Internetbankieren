@@ -140,7 +140,10 @@ public class Bank extends UnicastRemoteObject implements IBank {
             throw new IllegalArgumentException("IBAN is no property of this client");
         }
         else {
+            System.out.println("bankAccounts Size: " + bankAccounts.size());
             bankAccounts.remove(IBANToBankAccount(IBAN));
+            System.out.println("bankAccounts Size: " + bankAccounts.size());
+            pMediator.removeBankAccount(IBAN);
             bool = true;
             admin.refreshSession(klant);
         }

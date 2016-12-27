@@ -122,4 +122,6 @@ public interface IPersistencyMediator extends Remote
     public void endSession(String name, String residence) throws RemoteException;
     
     public void transferMoney(String IBANFrom, String IBANTo, double value) throws RemoteException;
+    
+    public void removeBankAccount(String IBAN) throws RemoteException;
 }

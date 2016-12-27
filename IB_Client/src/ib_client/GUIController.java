@@ -150,10 +150,10 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     public void addBankAccount() {
         try {
             klant.addBankAccount(bank);
-            //getAccounts();
+            getAccounts();
         } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
-            //gui.initErrorMessage(ex.getMessage());
+            gui.initErrorMessage(ex.getMessage());
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
