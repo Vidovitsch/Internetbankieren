@@ -1,13 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ib_client;
 
-import com.sun.scenario.effect.impl.Renderer;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,17 +8,11 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
@@ -40,15 +27,22 @@ public class FXMLLoginController implements Initializable
     double anchorWidth = 394;
     private Stage stage;
     private GUIController controller;
+    private GUI gui;
+    private String name;
+    private String residence;
     
-    public void setStage(Stage s)
-    {
+    public void setStage(Stage s) {
         this.stage = s;
     }
 
     void setGuiController(GUIController controller) {
         this.controller = controller;
-        getLastLogged();
+        setLastLogged();
+        setWelcomeText(name, residence);
+    }
+    
+    void setGui(GUI gui) {
+        this.gui = gui;
     }
     
     @FXML
@@ -88,51 +82,56 @@ public class FXMLLoginController implements Initializable
     private Label label;
 
     @FXML
-    private void handleButtonAction(ActionEvent event)
-    {
-        System.out.println("You clicked me!");
-        label.setText("Hello World!");
+    private void login() {
+        name = textFieldAccountName.getText();
+        residence = textFieldAccountResidence.getText();
+        String password = textFieldAccountPassword.getText();
+        controller.login(name, residence, password);
+        //controller.setBank();
+    }
+    
+    @FXML
+    private void loginGivenAccount() {
+        String password = textFieldPasswordGivenAccount.getText();
+        controller.login(name, residence, password);
+        controller.setBank();
+    }
+    
+    @FXML
+    private void openRegisterScreen() {
+        
     }
 
     @FXML
-    private void rolloutAnchorPane(ActionEvent event)
-    {
+    private void rolloutAnchorPane(ActionEvent event) {
         anchorCurrentHeight = stage.getHeight();
-        new Thread(new Runnable()
-        {
+        new Thread(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 //anchorCurrentHeight = anchorPane.getHeight();
-
-                while (anchorCurrentHeight < anchorHeightMoreOptions)
-                {
-                    try
-                    {
+                while (anchorCurrentHeight < anchorHeightMoreOptions) {
+                    try {
                         anchorCurrentHeight++;
-                        Platform.runLater(new Runnable()
-                        {
+                        Platform.runLater(new Runnable() {
                             @Override
-                            public void run()
-                            {
+                            public void run() {
                                 pane.setPrefHeight(anchorCurrentHeight);
                                 stage.setHeight(anchorCurrentHeight);
                             }
                         });
                         Thread.currentThread().sleep(2);
-                    } catch (InterruptedException ex)
-                    {
+                    } catch (InterruptedException ex) {
                         Logger.getLogger(FXMLLoginController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }
         }).start();
+        disableWelcomeControls();
     }
     
-    //Property methode
-    private void getLastLogged() {
-        String name;
-        String residence;
+    private void setLastLogged() {
+        name = "";
+        residence = "";
         String[] properties = controller.getLastLogged();
         if (properties != null) {
             name = properties[0];
@@ -140,11 +139,24 @@ public class FXMLLoginController implements Initializable
         }
     }
     
+    private void setWelcomeText(String name, String residence) {
+        if (name.isEmpty() || residence.isEmpty()) {
+            labelWelcomeText.setText("Authenticate to login");
+            buttonNotGivenAccount.setText("Press to login");
+            disableWelcomeControls();
+        } else {
+            labelWelcomeText.setText("Welcome " + name + residence + "!");
+        }
+    }
+    
+    private void disableWelcomeControls() {
+        buttonLoginGivenAccount.setDisable(true);
+        textFieldPasswordGivenAccount.setDisable(true);
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
         // TODO
     }
-
-
 }

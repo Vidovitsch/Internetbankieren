@@ -15,8 +15,16 @@ package ib_client;
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -26,24 +34,22 @@ import javafx.stage.Stage;
 public class GUI extends Application
 {
     private GUIController controller;
+    private Pane myPane;
     
     @Override
     public void start(Stage stage) throws Exception {
         controller = new GUIController(this);
         FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLLogin.fxml"));
-        Pane myPane = (Pane) myLoader.load();
+        myPane = (Pane) myLoader.load();
         FXMLLoginController loginController = (FXMLLoginController) myLoader.getController();
         Scene scene = new Scene(myPane);
         loginController.setStage(stage);
         loginController.setGuiController(controller);
-        
+        loginController.setGui(this);
+
         stage.setScene(scene);
         stage.setTitle("Login");
         stage.show();
-        
-        controller.login("Henk", "Eindhoven", "123456789");
-        controller.setBank();
-        controller.startTransaction("NL77RABO012345678", "NL77RABO087654321", 12, "niks");
     }
 
     /**
@@ -80,7 +86,11 @@ public class GUI extends Application
     }
     
     public void initErrorMessage(String message) {
-        
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
     
     /**

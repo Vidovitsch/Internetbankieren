@@ -18,6 +18,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.layout.Pane;
 
 /**
  *
@@ -39,6 +40,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
      */
     public GUIController(GUI gui) throws RemoteException {
         try {
+            this.gui = gui;
             pHandler = new PropertyHandler();
             Registry serverRegistry = LocateRegistry.getRegistry("localhost", 1099);
             admin = (IAdmin) serverRegistry.lookup("admin");
@@ -173,10 +175,10 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     public void startTransaction(String IBAN1, String IBAN2, double value, String description) {
         try {
             if (klant.startTransaction(klant, IBAN1, IBAN2, value, description, bank)) {
-                //getTransactions(IBAN1);
-                //gui.initSuccessMessage("Transaction successful");
+                getTransactions(IBAN1);
+                gui.initSuccessMessage("Transaction successful");
             } else {
-                //gui.initErrorMessage("Transaction failed");
+                gui.initErrorMessage("Transaction failed");
             }
         } catch (SessionExpiredException | IllegalArgumentException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
