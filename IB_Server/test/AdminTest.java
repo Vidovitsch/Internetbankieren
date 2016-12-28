@@ -306,11 +306,11 @@ public class AdminTest {
     @Test
     public void logoutAfterRegisterTest () {
             /**
-             * Logs out a user.
-             * Gets called when a user wants to log out, or a session has expired.
-             * @param klant
-             * @throws RemoteException
-             */
+            * Logs out a user.
+            * Gets called when a user wants to log out, or a session has expired.
+            * @param klant
+            * @throws RemoteException
+            */
         try {
             Klant klant = admin.register("RegisterTest", "RegisterTest", "123456789");
             assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
@@ -331,6 +331,62 @@ public class AdminTest {
             admin.logout(klant);
             assertFalse("This client has no session", admin.checkSession(klant.getUsername()));
         } catch (LoginException | IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a client gets removed correctly
+    @Test
+    public void removeValidClientTest() {
+            /**
+            * Removes a user from the administration. All data gets lost.
+            * @param username
+            * @param residence
+            * @param password
+            * @return True if succesful, else false.
+            * @throws RemoteException
+            */
+        try {
+            admin.login("DummyUser", "DummyUser", "123456789");
+            boolean value = admin.removeKlant("DummyUser", "DummyUser", "123456789");
+            assertTrue("This user has been removed correctly", value);
+        } catch (RemoteException | LoginException | IllegalArgumentException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a client gets remove correctly without a valid name
+    @Test
+    public void removeClientUnvalidNameTest() {
+        try {
+            admin.login("DummyUser", "DummyUser", "123456789");
+            boolean value = admin.removeKlant("D", "DummyUser", "123456789");
+            assertFalse("This user has not been removed correctly", value);
+        } catch (RemoteException | LoginException | IllegalArgumentException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a client gets remove correctly without a valid residence
+    @Test
+    public void removeClientUnvalidResidenceTest() {
+        try {
+            admin.login("DummyUser", "DummyUser", "123456789");
+            boolean value = admin.removeKlant("DummyUser", "D", "123456789");
+            assertFalse("This user has not been removed correctly", value);
+        } catch (RemoteException | LoginException | IllegalArgumentException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a client gets remove correctly without a valid password
+    @Test
+    public void removeClientUnvalidPasswordTest() {
+        try {
+            admin.login("DummyUser", "DummyUser", "123456789");
+            boolean value = admin.removeKlant("DummyUser", "DummyUser", "1");
+            assertFalse("This user has not been removed correctly", value);
+        } catch (RemoteException | LoginException | IllegalArgumentException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

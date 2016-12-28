@@ -62,10 +62,9 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public boolean registerAccount(String name, String residence, String password) throws RemoteException
+    public void registerAccount(String name, String residence, String password) throws RemoteException
     {
         //Geldige sessie wordt ook toegevoegd aan de database
-        boolean registered = false;
         try
         {
             Statement statement = con.createStatement();
@@ -77,13 +76,10 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
                     + password
                     + "',1)";
             statement.executeUpdate(query);
-            registered = true;
         } catch (Exception ex)
         {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
-        return registered;
     }
 
     @Override
@@ -341,17 +337,15 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public boolean removeKlant(String name, String residence, String password) throws RemoteException {
+    public void removeKlant(String name, String residence, String password) throws RemoteException {
         //Kan met behlulp van wachtwoord of zonder wachtwoord?
         try {
             Statement statement = con.createStatement();
             String query = "DELETE FROM Klant WHERE Naam = '" + name + "' AND Woonplaats = '" + residence
                     + "' AND Wachtwoord = '" + password + "'";
             statement.executeUpdate(query);
-            return true;
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
         }
     }
 

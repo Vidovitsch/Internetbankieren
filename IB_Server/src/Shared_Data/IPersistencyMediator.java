@@ -35,10 +35,9 @@ public interface IPersistencyMediator extends Remote
      * @param name
      * @param Residence
      * @param Password
-     * @return
      * @throws RemoteException
      */
-    public boolean registerAccount(String name, String Residence, String Password) throws RemoteException;
+    public void registerAccount(String name, String Residence, String Password) throws RemoteException;
     
     /**
      * Voegt een bank toe aan de database, geeft true terug wanneer dit lukt, anders false
@@ -117,7 +116,7 @@ public interface IPersistencyMediator extends Remote
     
     public ArrayList<String> getAllTransacties() throws RemoteException;
     
-    public boolean removeKlant(String username, String residence, String password) throws RemoteException;
+    public void removeKlant(String username, String residence, String password) throws RemoteException;
     
     public void endSession(String name, String residence) throws RemoteException;
     

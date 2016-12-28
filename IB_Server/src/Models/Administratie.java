@@ -67,11 +67,10 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             throw new RegisterException("This username already exists");
         }
         else {
-            if (pMediator.registerAccount(naam, woonplaats, password)) {
-                klant = new Klant(naam, woonplaats);
-                clients.add(klant);
-                addSession(klant);
-            }
+            pMediator.registerAccount(naam, woonplaats, password);
+            klant = new Klant(naam, woonplaats);
+            clients.add(klant);
+            addSession(klant);
         }
         return klant;
     }
@@ -111,11 +110,10 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         Klant klant = null;
         boolean bool = false;
         for (Klant k : clients) {
-            if (k.equals(getKlantByUsername(name + residence))) {
-                if (pMediator.removeKlant(name, residence, password)) {
-                    klant = k;
-                    bool = true;
-                }
+            if (k.getUsername().equals(name + residence)) {
+                pMediator.removeKlant(name, residence, password);
+                klant = k;
+                bool = true;
             }
         }
         if (bool) clients.remove(klant);
