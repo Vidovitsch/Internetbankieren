@@ -34,6 +34,14 @@ public class Sessie {
     }
     
     /**
+     * Test method for inspecting amount of ticks
+     * @return amount of ticks
+     */
+    public int getTicks() {
+        return ticks;
+    }
+    
+    /**
      * Starts the session with a timer.
      * The max ticks is set in advance.
      */

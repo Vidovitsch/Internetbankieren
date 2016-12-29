@@ -1,8 +1,11 @@
 import Exceptions.LoginException;
 import Exceptions.RegisterException;
+import Exceptions.SessionExpiredException;
 import Models.Administratie;
+import Models.Bank;
 import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
+import Shared_Client.IBank;
 import Shared_Client.Klant;
 import Shared_Data.IPersistencyMediator;
 import fontyspublisher.RemotePublisher;
@@ -25,6 +28,18 @@ import static org.junit.Assert.*;
  * @author David
  */
 
+//Test coverage:
+//
+//Login functionality
+//Register functionality
+//Logout functionality
+//Remove client functionality
+//GetBank inspection method
+//Session check functionality
+//GetKlanByUsername functionality
+//Publish transaction functionality
+//AddBank functionality
+
 //Zet de centrale en de database aan voor deze tests
 public class AdminTest {
     
@@ -32,15 +47,14 @@ public class AdminTest {
     private final String bindingName = "Database";
     private final int portNumber = 1088;
     private Administratie admin;
+    private ICentrale centrale;
     
     private Klant dummyKlant1;
     private Klant dummyKlant2;
     
     public AdminTest() {
         try {
-            Registry dataBaseRegistry = LocateRegistry.getRegistry(ipAddressDB, portNumber);
-            IPersistencyMediator database = (IPersistencyMediator) dataBaseRegistry.lookup(bindingName);
-            admin = new Administratie(new ICentrale() {
+            centrale = new ICentrale() {
                 @Override
                 public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -50,7 +64,10 @@ public class AdminTest {
                 public ArrayList<String> getTransactions(String IBAN) throws RemoteException {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
-            }, new RemotePublisher());
+            };
+            Registry dataBaseRegistry = LocateRegistry.getRegistry(ipAddressDB, portNumber);
+            IPersistencyMediator database = (IPersistencyMediator) dataBaseRegistry.lookup(bindingName);
+            admin = new Administratie(centrale, new RemotePublisher());
             admin.setPersistencyMediator(database);
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -336,6 +353,19 @@ public class AdminTest {
         }
     }
     
+    //Tests if a user can logout after putting a false user
+    @Test
+    public void logoutWithFalseKlant() {
+        try {
+            Klant klant = new Klant("Somebody", "Anywhere");
+            assertFalse("klant has no running session", admin.checkSession(klant.getUsername()));
+            admin.logout(klant);
+            assertFalse("klant has again no running session", admin.checkSession(klant.getUsername()));
+        } catch (RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     //Tests if a client gets removed correctly
     @Test
     public void removeValidClientTest() {
@@ -384,6 +414,162 @@ public class AdminTest {
             boolean value = admin.removeKlant("DummyUser", "DummyUser", "1");
             assertFalse("This user has not been removed correctly", value);
         } catch (RemoteException | IllegalArgumentException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a klant gets the correct bank
+    @Test
+    public void getBankTest() {
+        try {
+            /**
+             * Returns the subscribed bank of the user.
+             * @param klant
+             * @return IBank, null if the user has no bank.
+             * @throws RemoteException
+             */
+            //Because we only use one bank within our concept. The returned bank
+            //is alway RABOBAN.
+            assertEquals("The bank name is RABOBANK", "RABOBANK", admin.getBank(dummyKlant1).getName());
+        } catch (RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a logged klant has a running session
+    @Test
+    public void checkSessionLoggedKlantTest() {
+        /**
+        * Checks if a client has still a session running.
+        * @param username
+        * @return True if session is running, else false.
+        */
+        assertTrue("DummyKlant1 has a running session", admin.checkSession(dummyKlant1.getUsername()));
+    }
+    
+    //Tests if a logged klant has no running session
+    @Test
+    public void checkSessionLoggedOutKlantTest() {
+        try {
+            admin.logout(dummyKlant1);
+            assertFalse("DummyKlant1 has no running session", admin.checkSession(dummyKlant1.getUsername()));
+        } catch (RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a correct klant is returned after putting a incorrect username
+    @Test
+    public void getKlantByFalseUsername() {
+        /**
+        * Returns a klant object by a given username
+        * @param username
+        * @return Klant
+        */
+        Klant klant = admin.getKlantByUsername("Somebody");
+        assertEquals("This klant doesn't exist", null, klant);
+    }
+    
+    //Tests if a correct klant is returned after putting a correct username
+    @Test
+    public void getKlantByValidUsername() {
+        String username = dummyKlant1.getUsername();
+        Klant klant = admin.getKlantByUsername(username);
+        assertEquals("This klant does exist", klant.getUsername(), username);
+    }
+    
+    //Tests publish method with 2 users with running sessions
+    @Test
+    public void publishTwoSessions() {
+        try {
+            /**
+            * Publishes the updated list of transactions and bankaccounts to the
+            * involved users with a running session.
+            * @param usernameTo
+            * @param usernameFrom
+            * @param bank
+            * @return true if succesfull, else false.
+            * @throws RemoteException
+            */
+            String username1 = dummyKlant1.getUsername();
+            String username2 = dummyKlant2.getUsername();
+            //Ervan uitgaande dat er maar één bank in het spel is
+            IBank bank = admin.getBank(dummyKlant1);
+            assertTrue("Both users have a running session", admin.publishTransaction(username1, username2, (Bank) bank));
+        } catch (RemoteException | SessionExpiredException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests publish method with 2 users with no running session
+    @Test
+    public void publishNoSessions() {
+        try {
+            String username1 = dummyKlant1.getUsername();
+            String username2 = dummyKlant2.getUsername();
+            //Ervan uitgaande dat er maar één bank in het spel is
+            IBank bank = admin.getBank(dummyKlant1);
+            admin.logout(dummyKlant1);
+            admin.logout(dummyKlant2);
+            assertTrue("Both users have no running session", admin.publishTransaction(username1, username2, (Bank) bank));
+        } catch (RemoteException | SessionExpiredException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests publish method with 2 users with 1 running an 1 not running session
+    @Test
+    public void publishOneSession1() {
+        try {
+            String username1 = dummyKlant1.getUsername();
+            String username2 = dummyKlant2.getUsername();
+            //Ervan uitgaande dat er maar één bank in het spel is
+            IBank bank = admin.getBank(dummyKlant1);
+            admin.logout(dummyKlant1);
+            assertTrue("Both users have no running session", admin.publishTransaction(username1, username2, (Bank) bank));
+        } catch (RemoteException | SessionExpiredException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests publish method with 2 users with 1 not running an 1 running session
+    @Test
+    public void publishOneSession2() {
+        try {
+            String username1 = dummyKlant1.getUsername();
+            String username2 = dummyKlant2.getUsername();
+            //Ervan uitgaande dat er maar één bank in het spel is
+            IBank bank = admin.getBank(dummyKlant1);
+            admin.logout(dummyKlant2);
+            assertTrue("Both users have no running session", admin.publishTransaction(username1, username2, (Bank) bank));
+        } catch (RemoteException | SessionExpiredException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    } 
+    
+    //Tests if a new bank is correctly added to the collection
+    @Test
+    public void addValidBankTest() {
+            /**
+            * This method only gets called if there are more banks involved within this concept.
+            * @param bank
+            * @return
+            * @throws java.rmi.RemoteException
+            */
+        try {
+            Bank dummyBank = new Bank("ING", "ING", admin, centrale);
+            assertTrue("Bank is added succesfully", admin.addBank(dummyBank));
+        } catch (RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests if a existing bank is not correctly added to the collection
+    @Test
+    public void addExistingBankTest() {
+        try {
+            assertFalse("Bank is not added succesfully", admin.addBank((Bank) admin.getBank(dummyKlant1)));
+        } catch (RemoteException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

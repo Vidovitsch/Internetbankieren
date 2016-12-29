@@ -37,21 +37,25 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         this.publisher = publisher;
     }
 
-    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+    public void setPersistencyMediator(IPersistencyMediator pMediator) throws RemoteException {
         this.pMediator = pMediator;
-        try {
-            setDatabaseData();
-        } catch (RemoteException ex) {
-            Logger.getLogger(Administratie.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        setDatabaseData();
     }
     
     /**
      * This method only gets called if there are more banks involved within this concept.
      * @param bank 
+     * @return  
+     * @throws java.rmi.RemoteException  
      */
-    public void addBank(Bank bank) {
+    public boolean addBank(Bank bank) throws RemoteException {
+        for (Bank b : banks) {
+            if (b.getName().equals(bank.getName())) {
+                return false;
+            }
+        }
         banks.add(bank);
+        return true;
     }
     
     @Override
@@ -111,7 +115,6 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         boolean bool = false;
         for (Klant k : clients) {
             if (k.getUsername().equals(name + residence)) {
-                System.out.println(name + ":" + residence + ":" + password);
                 if (pMediator.removeKlant(name, residence, password)) {
                     klant = k;
                     bool = true;
@@ -164,13 +167,11 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant 
      */
     public void refreshSession(Klant klant) {
-        Sessie session = null;
         for (Sessie s : sessies) {
             if (s.getClient().getUsername().equals(klant.getUsername())) {
-                session = s;
+                s.refreshSession();
             }
         }
-        if (session != null) session.refreshSession();
     }
     
     /**
@@ -179,22 +180,21 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param usernameTo
      * @param usernameFrom
      * @param bank
+     * @return true if succesfull, else false.
      * @throws RemoteException 
+     * @throws Exceptions.SessionExpiredException 
      */
-    public void publishTransaction(String usernameFrom, String usernameTo, Bank bank) throws RemoteException {
+    public boolean publishTransaction(String usernameFrom, String usernameTo, Bank bank) throws RemoteException, SessionExpiredException {
         ArrayList<String> updatedBankAccounts;
-        try {
-            if (checkSession(usernameFrom)) {
-                updatedBankAccounts = getKlantByUsername(usernameFrom).getBankAccounts(bank);
-                publisher.inform(usernameFrom, null, updatedBankAccounts);
-            }     
-            if (checkSession(usernameTo)) {
-                updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);
-                publisher.inform(usernameTo, null, updatedBankAccounts);
-            }       
-        } catch (SessionExpiredException | IllegalArgumentException ex) {
-            Logger.getLogger(Administratie.class.getName()).log(Level.SEVERE, null, ex);
+        if (checkSession(usernameFrom)) {
+            updatedBankAccounts = getKlantByUsername(usernameFrom).getBankAccounts(bank);
+            publisher.inform(usernameFrom, null, updatedBankAccounts);
+        }     
+        if (checkSession(usernameTo)) {
+            updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);
+            publisher.inform(usernameTo, null, updatedBankAccounts);
         }
+        return true;
     }
     
     /**

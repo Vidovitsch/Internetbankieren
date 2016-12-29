@@ -37,64 +37,68 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 <span class="fc" id="L37">        this.publisher = publisher;</span>
 <span class="fc" id="L38">    }</span>
 
-    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+    public void setPersistencyMediator(IPersistencyMediator pMediator) throws RemoteException {
 <span class="fc" id="L41">        this.pMediator = pMediator;</span>
-        try {
-<span class="fc" id="L43">            setDatabaseData();</span>
-<span class="nc" id="L44">        } catch (RemoteException ex) {</span>
-<span class="nc" id="L45">            Logger.getLogger(Administratie.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="fc" id="L46">        }</span>
-<span class="fc" id="L47">    }</span>
+<span class="fc" id="L42">        setDatabaseData();</span>
+<span class="fc" id="L43">    }</span>
     
     /**
      * This method only gets called if there are more banks involved within this concept.
      * @param bank 
+     * @return  
+     * @throws java.rmi.RemoteException  
      */
-    public void addBank(Bank bank) {
-<span class="nc" id="L54">        banks.add(bank);</span>
-<span class="nc" id="L55">    }</span>
+    public boolean addBank(Bank bank) throws RemoteException {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (Bank b : banks) {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            if (b.getName().equals(bank.getName())) {</span>
+<span class="fc" id="L54">                return false;</span>
+            }
+<span class="fc" id="L56">        }</span>
+<span class="fc" id="L57">        banks.add(bank);</span>
+<span class="fc" id="L58">        return true;</span>
+    }
     
     @Override
     public Klant register(String naam, String woonplaats, String password) throws RegisterException, IllegalArgumentException, RemoteException {
-<span class="fc" id="L59">        Klant klant = null;</span>
-<span class="fc bfc" id="L60" title="All 6 branches covered.">        if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {</span>
-<span class="fc" id="L61">            throw new IllegalArgumentException(&quot;Fill all fields&quot;);</span>
+<span class="fc" id="L63">        Klant klant = null;</span>
+<span class="fc bfc" id="L64" title="All 6 branches covered.">        if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {</span>
+<span class="fc" id="L65">            throw new IllegalArgumentException(&quot;Fill all fields&quot;);</span>
         }
-<span class="fc bfc" id="L63" title="All 2 branches covered.">        else if (password.length() &lt;= 8) {</span>
-<span class="fc" id="L64">            throw new IllegalArgumentException(&quot;Password has to be larger than 8 characters&quot;);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        else if (password.length() &lt;= 8) {</span>
+<span class="fc" id="L68">            throw new IllegalArgumentException(&quot;Password has to be larger than 8 characters&quot;);</span>
         }
-<span class="fc bfc" id="L66" title="All 2 branches covered.">        else if (getKlantByUsername(naam + woonplaats) != null) {</span>
-<span class="fc" id="L67">            throw new RegisterException(&quot;This username already exists&quot;);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        else if (getKlantByUsername(naam + woonplaats) != null) {</span>
+<span class="fc" id="L71">            throw new RegisterException(&quot;This username already exists&quot;);</span>
         }
         else {
-<span class="fc" id="L70">            pMediator.registerAccount(naam, woonplaats, password);</span>
-<span class="fc" id="L71">            klant = new Klant(naam, woonplaats);</span>
-<span class="fc" id="L72">            clients.add(klant);</span>
-<span class="fc" id="L73">            addSession(klant);</span>
+<span class="fc" id="L74">            pMediator.registerAccount(naam, woonplaats, password);</span>
+<span class="fc" id="L75">            klant = new Klant(naam, woonplaats);</span>
+<span class="fc" id="L76">            clients.add(klant);</span>
+<span class="fc" id="L77">            addSession(klant);</span>
         }
-<span class="fc" id="L75">        return klant;</span>
+<span class="fc" id="L79">        return klant;</span>
     }
 
     @Override
     public Klant login(String naam, String woonplaats, String password) throws LoginException, IllegalArgumentException, RemoteException {
-<span class="fc" id="L80">        Klant klant = null;</span>
-<span class="fc bfc" id="L81" title="All 6 branches covered.">        if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {</span>
-<span class="fc" id="L82">            throw new IllegalArgumentException(&quot;Fill all fields&quot;);</span>
+<span class="fc" id="L84">        Klant klant = null;</span>
+<span class="fc bfc" id="L85" title="All 6 branches covered.">        if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {</span>
+<span class="fc" id="L86">            throw new IllegalArgumentException(&quot;Fill all fields&quot;);</span>
         }
         else {
-<span class="fc" id="L85">            int userID = pMediator.login(naam, woonplaats, password);</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (userID == -1) {</span>
-<span class="fc" id="L87">                throw new LoginException(&quot;Invalid username or password&quot;);</span>
+<span class="fc" id="L89">            int userID = pMediator.login(naam, woonplaats, password);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">            if (userID == -1) {</span>
+<span class="fc" id="L91">                throw new LoginException(&quot;Invalid username or password&quot;);</span>
             }
-<span class="fc bfc" id="L89" title="All 2 branches covered.">            else if (checkSession(naam + woonplaats)) {</span>
-<span class="fc" id="L90">                throw new LoginException(&quot;This account has already a session running&quot;);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            else if (checkSession(naam + woonplaats)) {</span>
+<span class="fc" id="L94">                throw new LoginException(&quot;This account has already a session running&quot;);</span>
             }
             else {
-<span class="fc" id="L93">                klant = getKlantByUsername(naam + woonplaats);</span>
-<span class="fc" id="L94">                addSession(klant);</span>
+<span class="fc" id="L97">                klant = getKlantByUsername(naam + woonplaats);</span>
+<span class="fc" id="L98">                addSession(klant);</span>
             }
         }
-<span class="fc" id="L97">        return klant;</span>
+<span class="fc" id="L101">        return klant;</span>
     }
 
     @Override
@@ -102,32 +106,31 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         //Moet vervangen worden als er meerdere banken bestaan.
         //Uit de database moet gekeken worden op welke banken de gebruiker
         //subscribed is. Deze banken worden als een lijst teruggegeven.
-<span class="nc" id="L105">        return (IBank) banks.get(0);</span>
+<span class="fc" id="L109">        return (IBank) banks.get(0);</span>
     }
 
     @Override
     public boolean removeKlant(String name, String residence, String password) throws RemoteException {
-<span class="fc" id="L110">        Klant klant = null;</span>
-<span class="fc" id="L111">        boolean bool = false;</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        for (Klant k : clients) {</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">            if (k.getUsername().equals(name + residence)) {</span>
-<span class="fc" id="L114">                System.out.println(name + &quot;:&quot; + residence + &quot;:&quot; + password);</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">                if (pMediator.removeKlant(name, residence, password)) {</span>
-<span class="fc" id="L116">                    klant = k;</span>
-<span class="fc" id="L117">                    bool = true;</span>
+<span class="fc" id="L114">        Klant klant = null;</span>
+<span class="fc" id="L115">        boolean bool = false;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (Klant k : clients) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">            if (k.getUsername().equals(name + residence)) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                if (pMediator.removeKlant(name, residence, password)) {</span>
+<span class="fc" id="L119">                    klant = k;</span>
+<span class="fc" id="L120">                    bool = true;</span>
                 }
             }
-<span class="fc" id="L120">        }</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (bool) {</span>
-<span class="fc" id="L122">            clients.remove(klant);</span>
+<span class="fc" id="L123">        }</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (bool) {</span>
+<span class="fc" id="L125">            clients.remove(klant);</span>
         }
-<span class="fc" id="L124">        return bool;</span>
+<span class="fc" id="L127">        return bool;</span>
     }
 
     @Override
     public void logout(Klant klant) throws RemoteException {
-<span class="fc" id="L129">        removeSession(klant);</span>
-<span class="fc" id="L130">    }</span>
+<span class="fc" id="L132">        removeSession(klant);</span>
+<span class="fc" id="L133">    }</span>
             
     /**
      * Checks if a client has still a session running.
@@ -135,12 +138,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @return True if session is running, else false.
      */
     public boolean checkSession(String username) {
-<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (Sessie sessie : sessies) {</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">            if (sessie.getClient().getUsername().equals(username)) {</span>
-<span class="fc" id="L140">                return true;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (Sessie sessie : sessies) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            if (sessie.getClient().getUsername().equals(username)) {</span>
+<span class="fc" id="L143">                return true;</span>
             }
-<span class="fc" id="L142">        }</span>
-<span class="fc" id="L143">        return false;</span>
+<span class="fc" id="L145">        }</span>
+<span class="fc" id="L146">        return false;</span>
     }
     
     /**
@@ -149,13 +152,13 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @return Klant
      */
     public Klant getKlantByUsername(String username) {
-<span class="fc" id="L152">        Klant klant = null;</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">        for (Klant k : clients) {</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">            if (k.getUsername().equals(username)) {</span>
-<span class="fc" id="L155">                klant = k;</span>
+<span class="fc" id="L155">        Klant klant = null;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        for (Klant k : clients) {</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">            if (k.getUsername().equals(username)) {</span>
+<span class="fc" id="L158">                klant = k;</span>
             }
-<span class="fc" id="L157">        }</span>
-<span class="fc" id="L158">        return klant;</span>
+<span class="fc" id="L160">        }</span>
+<span class="fc" id="L161">        return klant;</span>
     }
     
     /**
@@ -164,14 +167,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant 
      */
     public void refreshSession(Klant klant) {
-<span class="nc" id="L167">        Sessie session = null;</span>
-<span class="nc bnc" id="L168" title="All 2 branches missed.">        for (Sessie s : sessies) {</span>
-<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (s.getClient().getUsername().equals(klant.getUsername())) {</span>
-<span class="nc" id="L170">                session = s;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (Sessie s : sessies) {</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            if (s.getClient().getUsername().equals(klant.getUsername())) {</span>
+<span class="fc" id="L172">                s.refreshSession();</span>
             }
-<span class="nc" id="L172">        }</span>
-<span class="nc bnc" id="L173" title="All 2 branches missed.">        if (session != null) session.refreshSession();</span>
-<span class="nc" id="L174">    }</span>
+<span class="fc" id="L174">        }</span>
+<span class="fc" id="L175">    }</span>
     
     /**
      * Publishes the updated list of transactions and bankaccounts to the
@@ -179,23 +180,22 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param usernameTo
      * @param usernameFrom
      * @param bank
+     * @return true if succesfull, else false.
      * @throws RemoteException 
+     * @throws Exceptions.SessionExpiredException 
      */
-    public void publishTransaction(String usernameFrom, String usernameTo, Bank bank) throws RemoteException {
+    public boolean publishTransaction(String usernameFrom, String usernameTo, Bank bank) throws RemoteException, SessionExpiredException {
         ArrayList&lt;String&gt; updatedBankAccounts;
-        try {
-<span class="nc bnc" id="L187" title="All 2 branches missed.">            if (checkSession(usernameFrom)) {</span>
-<span class="nc" id="L188">                updatedBankAccounts = getKlantByUsername(usernameFrom).getBankAccounts(bank);</span>
-<span class="nc" id="L189">                publisher.inform(usernameFrom, null, updatedBankAccounts);</span>
-            }     
-<span class="nc bnc" id="L191" title="All 2 branches missed.">            if (checkSession(usernameTo)) {</span>
-<span class="nc" id="L192">                updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);</span>
-<span class="nc" id="L193">                publisher.inform(usernameTo, null, updatedBankAccounts);</span>
-            }       
-<span class="nc" id="L195">        } catch (SessionExpiredException | IllegalArgumentException ex) {</span>
-<span class="nc" id="L196">            Logger.getLogger(Administratie.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L197">        }</span>
-<span class="nc" id="L198">    }</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        if (checkSession(usernameFrom)) {</span>
+<span class="fc" id="L190">            updatedBankAccounts = getKlantByUsername(usernameFrom).getBankAccounts(bank);</span>
+<span class="fc" id="L191">            publisher.inform(usernameFrom, null, updatedBankAccounts);</span>
+        }     
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (checkSession(usernameTo)) {</span>
+<span class="fc" id="L194">            updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);</span>
+<span class="fc" id="L195">            publisher.inform(usernameTo, null, updatedBankAccounts);</span>
+        }
+<span class="fc" id="L197">        return true;</span>
+    }
     
     /**
      * Adds a session on this server (only in local lists).
@@ -224,7 +224,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 <span class="fc" id="L224">                sessie = s;</span>
             }
 <span class="fc" id="L226">        }</span>
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (sessie != null) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        if (sessie != null) {</span>
 <span class="fc" id="L228">            sessie.stopSession();</span>
 <span class="fc" id="L229">            sessies.remove(sessie);</span>
 <span class="fc" id="L230">            pMediator.endSession(klant.getName(), klant.getResidence());</span>
