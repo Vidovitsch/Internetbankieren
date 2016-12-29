@@ -337,15 +337,18 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
     }
 
     @Override
-    public void removeKlant(String name, String residence, String password) throws RemoteException {
+    public boolean removeKlant(String name, String residence, String password) throws RemoteException {
         //Kan met behlulp van wachtwoord of zonder wachtwoord?
         try {
             Statement statement = con.createStatement();
             String query = "DELETE FROM Klant WHERE Naam = '" + name + "' AND Woonplaats = '" + residence
                     + "' AND Wachtwoord = '" + password + "'";
-            statement.executeUpdate(query);
+            int rowsManipulated = statement.executeUpdate(query);
+            System.out.println(rowsManipulated + " : " + name + ":" + residence + ":" + password);
+            return rowsManipulated != 0;
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
     }
 

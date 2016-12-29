@@ -111,12 +111,16 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         boolean bool = false;
         for (Klant k : clients) {
             if (k.getUsername().equals(name + residence)) {
-                pMediator.removeKlant(name, residence, password);
-                klant = k;
-                bool = true;
+                System.out.println(name + ":" + residence + ":" + password);
+                if (pMediator.removeKlant(name, residence, password)) {
+                    klant = k;
+                    bool = true;
+                }
             }
         }
-        if (bool) clients.remove(klant);
+        if (bool) {
+            clients.remove(klant);
+        }
         return bool;
     }
 

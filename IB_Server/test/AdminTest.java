@@ -33,6 +33,9 @@ public class AdminTest {
     private final int portNumber = 1088;
     private Administratie admin;
     
+    private Klant dummyKlant1;
+    private Klant dummyKlant2;
+    
     public AdminTest() {
         try {
             Registry dataBaseRegistry = LocateRegistry.getRegistry(ipAddressDB, portNumber);
@@ -66,8 +69,8 @@ public class AdminTest {
     public void setUp() {
         try {
             //Register two dummyUsers
-            admin.register("DummyUser", "DummyUser", "123456789");
-            admin.register("DummyUser2", "DummyUser2", "123456789");
+            dummyKlant1 = admin.register("DummyUser", "DummyUser", "123456789");
+            dummyKlant2 = admin.register("DummyUser2", "DummyUser2", "123456789");
         } catch (RegisterException | IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -191,7 +194,6 @@ public class AdminTest {
     @Test
     public void checkSessionRunningOnLogin() {
         try {
-            admin.login("DummyUser", "DummyUser", "123456789");
             admin.login("DummyUser", "DummyUser", "123456789");
             fail();
         } catch (LoginException ex) {
@@ -325,12 +327,11 @@ public class AdminTest {
     //Tests if a user can logout after login
     @Test
     public void logoutAfterLoginTest() {
-        try {
-            Klant klant = admin.login("DummyUser", "DummyUser", "123456789");
-            assertTrue("This client has a valid session", admin.checkSession(klant.getUsername()));
-            admin.logout(klant);
-            assertFalse("This client has no session", admin.checkSession(klant.getUsername()));
-        } catch (LoginException | IllegalArgumentException | RemoteException ex) {
+     try {  
+            assertTrue("This client has a valid session", admin.checkSession(dummyKlant1.getUsername()));
+            admin.logout(dummyKlant1);
+            assertFalse("This client has no session", admin.checkSession(dummyKlant1.getUsername()));
+        } catch (IllegalArgumentException | RemoteException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -347,10 +348,9 @@ public class AdminTest {
             * @throws RemoteException
             */
         try {
-            admin.login("DummyUser", "DummyUser", "123456789");
             boolean value = admin.removeKlant("DummyUser", "DummyUser", "123456789");
             assertTrue("This user has been removed correctly", value);
-        } catch (RemoteException | LoginException | IllegalArgumentException ex) {
+        } catch (RemoteException | IllegalArgumentException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -359,10 +359,9 @@ public class AdminTest {
     @Test
     public void removeClientUnvalidNameTest() {
         try {
-            admin.login("DummyUser", "DummyUser", "123456789");
             boolean value = admin.removeKlant("D", "DummyUser", "123456789");
             assertFalse("This user has not been removed correctly", value);
-        } catch (RemoteException | LoginException | IllegalArgumentException ex) {
+        } catch (RemoteException | IllegalArgumentException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -371,10 +370,9 @@ public class AdminTest {
     @Test
     public void removeClientUnvalidResidenceTest() {
         try {
-            admin.login("DummyUser", "DummyUser", "123456789");
             boolean value = admin.removeKlant("DummyUser", "D", "123456789");
             assertFalse("This user has not been removed correctly", value);
-        } catch (RemoteException | LoginException | IllegalArgumentException ex) {
+        } catch (RemoteException | IllegalArgumentException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -383,10 +381,9 @@ public class AdminTest {
     @Test
     public void removeClientUnvalidPasswordTest() {
         try {
-            admin.login("DummyUser", "DummyUser", "123456789");
             boolean value = admin.removeKlant("DummyUser", "DummyUser", "1");
             assertFalse("This user has not been removed correctly", value);
-        } catch (RemoteException | LoginException | IllegalArgumentException ex) {
+        } catch (RemoteException | IllegalArgumentException ex) {
             Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
