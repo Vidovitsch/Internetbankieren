@@ -1,12 +1,19 @@
 import Exceptions.LoginException;
+import Exceptions.RegisterException;
 import Exceptions.SessionExpiredException;
 import Models.Administratie;
 import Models.Bank;
 import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
+import Shared_Client.IBank;
 import Shared_Client.Klant;
+import Shared_Data.IPersistencyMediator;
 import fontyspublisher.RemotePublisher;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,27 +28,40 @@ import static org.junit.Assert.*;
  *
  * @author David
  */
+
+//Test coverage:
+//
+//
+
+//Zet de centrale en de database aan voor deze tests
 public class BankTest {
     
-    private Bank bank;
+    private final String ipAddressDB = "localhost";
+    private final String bindingName = "Database";
+    private final int portNumber = 1088;
+    private Klant dummyKlant1;
     private Administratie admin;
     private ICentrale centrale;
-    //Add Bankrekening b1 = new Bankrekening("TestIBAN001", 0, 0) to the database (linked with klant dummySession)
-    //Add Bankrekening b1 = new Bankrekening("TestIBAN002", 0, 0) to the database (linked with klant dummySession)
+    private IBank bank;
     
     public BankTest() {
-         try {
-            //Aanmaken van een dummy centrale
+        try {
             centrale = new ICentrale() {
                 @Override
-                public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException { }
+                public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                
                 @Override
-                public ArrayList<String> getTransactions(String IBAN) throws RemoteException { return null; }
+                public ArrayList<String> getTransactions(String IBAN) throws RemoteException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
             };
-            //Aanamken van eeen dummy administratie en bank
+            Registry dataBaseRegistry = LocateRegistry.getRegistry(ipAddressDB, portNumber);
+            IPersistencyMediator database = (IPersistencyMediator) dataBaseRegistry.lookup(bindingName);
             admin = new Administratie(centrale, new RemotePublisher());
-            bank = new Bank("Rabobank", "RABO", admin, centrale);
-        } catch (RemoteException ex) {
+            admin.setPersistencyMediator(database);
+        } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -52,446 +72,39 @@ public class BankTest {
     
     @AfterClass
     public static void tearDownClass() {
+        
     }
     
     @Before
     public void setUp() {
+        try {
+            //Register one dummyUsers and a bank
+            dummyKlant1 = admin.register("DummyUser", "DummyUser", "123456789");
+            bank = admin.getBank(dummyKlant1);
+        } catch (RegisterException | IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     @After
     public void tearDown() {
-    }
-
-    //Tests the constructor of the Bank class
-    @Test
-    public void testConstuctor() {
-        /**
-        * A bank registered at the administration.
-        * @param name of the bank, if null IllegalArgumentException
-        * @throws RemoteException, IllegalArgumentExcpetion
-        */
-        
-        //Name is correct and not empty
-        String name = "Rabobank";
         try {
-            Bank bankTest = new Bank(name, "RABO", admin, centrale);
+            //Remove dummyUsers from the database
+            admin.removeKlant("DummyUser", "DummyUser", "123456789");
         } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Name is incorrect and empty
-        name = "";
-        try {
-            try {
-                Bank bankTest = new Bank(name, "RABO", admin, centrale);
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Administratie is incorrect and null
-        name = "Rabobank";
-        try {
-            try {
-                Bank bankTest = new Bank(name, "RABO", null, centrale);
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
+            Logger.getLogger(AdminTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    //Tests the inspection method getGame of the Bank class
+    //Tests concerning the interface IBank, implemented by the class Bank
+    
     @Test
-    public void testGetName() {
-        /**
-        * Returns the name of this bank.
-        * @return Name of this bank.
-        * @throws RemoteException
-        */
+    public void getNameTest() {
         
-        try {
-            assertEquals("This bank's name is 'Rabobank'", bank.getName(), "Rabobank");
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
-    //Tests if adding accounts goes succesful
     @Test
-    public void testAddAccount() {
-        /**
-        * Adds a bank account for a user.
-        * If session is over, SessionExpiredException.
-        * @param klant, if empty throws IllegalArgumentException.
-        * @return A String representing the new bank account.
-        * @throws Exceptions.SessionExpiredException
-        * @throws RemoteException
-        */
+    public void getShortNameTest() {
         
-        //Making a dummy client without no session
-        Klant dummyNoSession = new Klant("Dummy1", "Dummy1");
-        //Making a dummy client with a session
-        Klant dummySession = null;
-        try {
-            dummyNoSession = admin.login("TesetDummy", "TesetDummy", "TestDummy");
-        } catch (IllegalArgumentException | RemoteException | LoginException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Adding an account to bank with an invalid client
-        try {
-            try {
-                bank.addBankAccount(null);           
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            } catch (SessionExpiredException ex) {
-                assertEquals("An unexpected exception has been thrown", 1, 0);
-                Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } catch (RemoteException ex) {
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Adding an account to bank with an expired session
-        try {
-            try {
-                bank.addBankAccount(dummyNoSession);
-            }
-            catch (SessionExpiredException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Adding an account to bank with a valid client
-        try {
-            try {
-                bank.addBankAccount(dummySession);
-                assertEquals("dummySession has 1 bank account", bank.getAccounts(dummySession).size(), 2);
-                assertEquals("No exception has been thrown", 0, 0);
-            }
-            catch (SessionExpiredException ex) {
-                assertEquals("An unexpected exception has been thrown", 1, 0);
-            }
-        } catch (IllegalArgumentException | RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-    }
-    
-    //Tests if removing accounts is going succesful
-    @Test
-    public void testRemoveAccount() {
-        /**
-        * Removes a account from a user.
-        * If session is over, SessionExpiredException.
-        * @param IBAN representing the bank account, if empty or non-existing throws IllegalArgumentException..
-        * @return True if succesful, else false.
-        * @throws Exceptions.SessionExpiredException
-        * @throws RemoteException
-        */
-        
-        //Making a dummy client without no session
-        Klant dummyNoSession = new Klant("Dummy1", "Dummy1");
-        try {
-            bank.addBankAccount(dummyNoSession);
-        } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //Making a dummy client with a session
-        Klant dummySession = null;
-        try {
-            dummySession = admin.login("TesetDummy1", "TesetDummy", "TestDummy1");
-            bank.addBankAccount(dummySession);
-        } catch (IllegalArgumentException | RemoteException | SessionExpiredException | LoginException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Removing an account from bank with an invalid IBAN
-        try {
-            try {
-                bank.removeBankAccount("iets", dummySession);           
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException | SessionExpiredException ex) {
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Removing an account from bank with an expired session
-        try {
-            try {
-                bank.removeBankAccount("TestIBAN001", dummyNoSession);
-            }
-            catch (SessionExpiredException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Removing an account from bank with an invalid client
-        try {
-            try {
-                bank.removeBankAccount("TestIBAN001", null);
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException | SessionExpiredException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Removing an account from bank with a valid client and account
-        try {
-            bank.removeBankAccount("TestIBAN001", dummySession);
-            assertEquals("dummySession has 0 bank accounts", bank.getAccounts(dummySession).size(), 1);
-            assertEquals("No exception has been thrown", 0, 0);
-        } catch (RemoteException | SessionExpiredException | IllegalArgumentException ex ) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-    }
-    
-    //Test for obtaining all the bank accounts of a user
-    @Test
-    public void testGetAccounts() {
-        /**
-        * Returns a list of Strings. Every String is
-        * representing a bank account.
-        * NoDataFounException when client has no bank accounts.
-        * @param klant, if null throws IllegalArgumentException.
-        * @return A list of Strings representing a bank account.
-        * @throws RemoteException
-        */
-        
-        //Making a dummy client without no session
-        Klant dummyNoSession = new Klant("Dummy1", "Dummy1");
-        try {
-            bank.addBankAccount(dummyNoSession);
-        } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //Making a dummy client with a session
-        Klant dummySession;
-        try {
-            dummySession = admin.login("TesetDummy1", "TesetDummy", "TestDummy1");
-            bank.addBankAccount(dummySession);
-            bank.addBankAccount(dummySession);
-        } catch (IllegalArgumentException | RemoteException | SessionExpiredException | LoginException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Get accounts from an invalid client
-        try {
-            bank.getAccounts(null);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An expected exception has been thrown", 0, 0);
-        } catch (RemoteException | SessionExpiredException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Get accounts from a no session client        
-        try {
-            bank.getAccounts(dummyNoSession);
-        } catch (IllegalArgumentException | RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        } catch (SessionExpiredException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An expected exception has been thrown", 0, 0);
-        }
-        
-        //Get accounts from a valid user        
-        try {
-            assertEquals("This client has 2 bank accounts", bank.getAccounts(dummyNoSession).size(), 2);
-        } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    //Test for obtaining all the transaction of a bank account
-    @Test
-    public void testGetTransactions() {
-        /**
-        * Returns a list of Strings. Every String is
-        * representing a transaction.
-        * If session is over, SessionExpiredException.
-        * NoDataFounException when client has no bank transactions.
-        * @param IBAN, if empty throws IllegalArgumentException.
-        * @param klant
-        * @return A list of Strings representing a transaction.
-        * @throws Exceptions.SessionExpiredException
-        * @throws RemoteException
-        */
-        
-        //Making a dummy client without no session
-        Klant dummyNoSession = new Klant("Dummy1", "Dummy1");
-       
-        //Making a dummy client with a session
-        Klant dummySession = null;
-        try {
-            dummySession = admin.login("TesetDummy1", "TesetDummy", "TestDummy1");
-        } catch (IllegalArgumentException | RemoteException | LoginException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Getting transactions from a bank account with an invalid IBAN
-        try {
-            try {
-                bank.getTransactions("iets", dummySession);           
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException | SessionExpiredException ex) {
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Getting transactions from a bank account with an expired session
-        try {
-            try {
-                bank.getTransactions("TestIBAN001", dummyNoSession);
-            }
-            catch (SessionExpiredException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Getting transactions from a bank account with an invalid client
-        try {
-            try {
-                bank.getTransactions("TestIBAN001", null);
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException | SessionExpiredException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Getting transactions from a bank account with a valid client and account
-        try {
-            bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", 10, "");
-            assertEquals("dummySession has made 1 transaction", bank.getTransactions("TestIBAN001", dummySession).size(), 1);
-            assertEquals("No exception has been thrown", 0, 0);
-        } catch (RemoteException | SessionExpiredException | IllegalArgumentException ex ) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-    }
-    
-    //Tests the functionality starting a transaction
-    @Test
-    public void testStartTransaction() {
-        /**
-        * Starts a transaction between two bank accounts.
-        * If session is over, SessionExpiredException.
-        * @param klant not null, else throws IllegalArgumentException.
-        * @param IBAN1 representing the bank account, if empty throws IllegalArgumentException.
-        * @param IBAN2 representing the bank account, if empty throws IllegalArgumentException.
-        * @param value of the money to be transferred. Has to be greater than 0 or not empty, else IllegalArgumentException.
-        * @return True if succesful, else false.
-        * @throws Exceptions.SessionExpiredException
-        * @throws RemoteException
-        */
-        
-        //Making a dummy client without no session
-        Klant dummyNoSession = new Klant("Dummy1", "Dummy1");
-        //Making a dummy client with a session
-        Klant dummySession = null;
-        try {
-            dummySession = admin.login("TesetDummy1", "TesetDummy", "TestDummy1");
-            bank.addBankAccount(dummySession);
-        } catch (IllegalArgumentException | RemoteException | SessionExpiredException | LoginException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Starting a transactions from a bank account with an invalid IBAN1
-        try {
-            try {
-                bank.startTransaction(dummySession, "iets", "TestIBAN002", 10, "");           
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException | SessionExpiredException ex) {
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Starting a transactions from a bank account with an invalid IBAN2
-        try {
-            try {
-                bank.startTransaction(dummySession, "TestIBAN001", "iets", 10, "");           
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException | SessionExpiredException ex) {
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        //Starting a transactions from a bank account with an expired session
-        try {
-            try {
-                bank.startTransaction(dummyNoSession, "TestIBAN001", "TestIBAN002", 10, "");
-            }
-            catch (SessionExpiredException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Starting a transactions from a bank account with an invalid client
-        try {
-            try {
-                bank.startTransaction(null, "TestIBAN001", "TestIBAN002", 10, "");
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException | SessionExpiredException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Starting a transactions from a bank account with an invalid value
-        try {
-            try {
-                bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", -1, "");
-            } catch (IllegalArgumentException ex) {
-                assertEquals("An expected exception has been thrown", 0, 0);
-            }
-        } catch (RemoteException | SessionExpiredException ex) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
-        
-        //Strating a transactions from a bank account with a valid client, account and value
-        try {
-            bank.startTransaction(dummySession, "TestIBAN001", "TestIBAN002", 10, "");
-            assertEquals("dummySession has made 1 transaction", bank.getTransactions("TestIBAN001", dummySession).size(), 1);
-            assertEquals("No exception has been thrown", 0, 0);
-        } catch (RemoteException | SessionExpiredException | IllegalArgumentException ex ) {
-            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertEquals("An unexpected exception has been thrown", 1, 0);
-        }
     }
 }
