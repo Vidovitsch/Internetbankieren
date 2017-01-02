@@ -69,10 +69,10 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
             String description = transaction.getDescription();
             if (description.isEmpty()) {
                 return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANFrom() + ";" + transaction.getIBANTo();
+                        transaction.getIBANTo() + ";" + transaction.getIBANFrom();
             } else {
                 return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANFrom() + ";" + transaction.getIBANTo() + ";" + transaction.getDescription();
+                        transaction.getIBANTo() + ";" + transaction.getIBANFrom() + ";" + transaction.getDescription();
             }
         } catch (RemoteException ex) {
             Logger.getLogger(Centrale.class.getName()).log(Level.SEVERE, null, ex);

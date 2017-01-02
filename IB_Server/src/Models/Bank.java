@@ -98,8 +98,6 @@ public class Bank extends UnicastRemoteObject implements IBank {
         }
         else {
             transactions = centrale.getTransactions(IBAN);
-            //Publish update
-            
             //Refresh session on button click
             admin.refreshSession(klant);
         }

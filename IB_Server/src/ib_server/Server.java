@@ -26,7 +26,7 @@ public class Server
     private IPersistencyMediator database = null;
     private boolean connectedToDatabase = false;
     
-    public IRemotePublisherForDomain publisher;
+    private IRemotePublisherForDomain publisher;
     private Registry centraleRegistry;
     private Registry serverRegistry;
     private Registry dataBaseRegistry;
