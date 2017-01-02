@@ -174,7 +174,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
 
     public void startTransaction(String IBAN1, String IBAN2, double value, String description) {
         try {
-            if (klant.startTransaction(klant, IBAN1, IBAN2, value, description, bank)) {
+            if (klant.startTransaction(IBAN1, IBAN2, value, description, bank)) {
                 getTransactions(IBAN1);
                 gui.initSuccessMessage("Transaction successful");
             } else {

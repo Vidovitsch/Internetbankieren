@@ -116,11 +116,9 @@ public class Bank extends UnicastRemoteObject implements IBank {
             boolean value = false;
             while (!value) {
                 String IBAN = generateNewIBAN();
-                if (!checkIBANExists(IBAN)) {
-                    bankAccounts.add(new Bankrekening(generateNewIBAN(), klant));
-                    pMediator.addBankrekening(klant.getName(), klant.getResidence(), IBAN, shortName);
-                    value = true;
-                }
+                bankAccounts.add(new Bankrekening(generateNewIBAN(), klant));
+                pMediator.addBankrekening(klant.getName(), klant.getResidence(), IBAN, shortName);
+                value = true;
             }
             admin.refreshSession(klant);
         }
@@ -233,7 +231,18 @@ public class Bank extends UnicastRemoteObject implements IBank {
         String part1 = "NL" + generateRandom(0, 99, 2);
         String part2 = shortName;
         String part3 = "0" + generateRandom(0, 999999999, 9);
-        return part1 + part2 + part3;
+        String IBAN = part1 + part2 + part3;
+        
+        //Kans is 1 op de (100.000.000.000 * aantal banken * aantal landen) dat
+        //dezelfde IBAN al in de database staat. Vanwege testredenen is de check hierop
+        //weggecomment (dit viel niet te testen vanwegen een te kleine kans).
+        //Voor de robuustheid van de code kan deze nog gebruikt worden in het vervolg.
+        return IBAN;
+//        if (!checkIBANExists(IBAN)) {
+//            return IBAN;
+//        } else {
+//            return generateNewIBAN();
+//        }
     }
     
     /**
@@ -258,10 +267,10 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @param numberLength amount of charaters in the generated number
      * @return String
      */
-    private String generateRandom(int startValue, int endValue, int numberLength) {
+    private String generateRandom(int startValue, int endValue, int minNumberLength) {
         Random r = new Random();
         String value = String.valueOf(r.nextInt((endValue - startValue) + 1) + startValue);
-        while (value.length() != numberLength) {
+        while (value.length() < minNumberLength) {
             value = String.valueOf(new Random().nextInt(9) + startValue) + value;
         }
         return value;

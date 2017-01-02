@@ -136,7 +136,7 @@ public class BankTest {
     
     //Tests the inspection method getAccounts with a valid klant with a valid session
     @Test
-    public void getBankAccountsValidKlant() {
+    public void getBankAccountsValidKlantTest() {
         /**
         * Returns a list of Strings. Every String is
         * representing a bank account.
@@ -163,7 +163,7 @@ public class BankTest {
     
     //Tests the inspection method getAccounts with a null klant
     @Test
-    public void getBankAccountsNullKlant() {
+    public void getBankAccountsNullKlantTest() {
         try {
             Klant klant = null;
             bank.getAccounts(klant);
@@ -179,7 +179,7 @@ public class BankTest {
     
     //Tests the inspection method getAccounts with a logged-out klant
     @Test
-    public void getBankAccountsNoSessionKlant() {
+    public void getBankAccountsNoSessionKlantTest() {
         try {
             admin.logout(dummyKlant1);
             bank.getAccounts(dummyKlant1);
@@ -195,7 +195,7 @@ public class BankTest {
     
     //Tests the inspection method getTransactions with a valid klant
     @Test
-    public void getTransactionsValidKlant() {
+    public void getTransactionsValidKlantTest() {
         /**
         * Returns a list of Strings. Every String is
         * representing a transaction.
@@ -212,7 +212,7 @@ public class BankTest {
             //Get IBAN1 from dummyKlant1
             String IBAN1 = dummyKlant1.getBankAccounts(bank).get(0).split(";")[0];
             //Make a transaction
-            bank.startTransaction(dummyKlant1, IBAN1, IBAN2, 1.0, "iets");
+            dummyKlant1.startTransaction(IBAN1, IBAN2, 1.0, "iets", bank);
             //Get transaction
             ArrayList<String> transactions = bank.getTransactions(IBAN1, dummyKlant1);
             //Test list-size
@@ -232,7 +232,7 @@ public class BankTest {
     
     //Tests the inspection method getTransactions with an empty IBAN
     @Test
-    public void getTransactionsEmptyIBAN() {
+    public void getTransactionsEmptyIBANTest() {
         try {
             String IBAN = "";
             bank.getTransactions(IBAN, dummyKlant1);
@@ -248,7 +248,7 @@ public class BankTest {
     
     //Tests the inspection method getTransactions with a null klant
     @Test
-    public void getTransactionsNullKlant() {
+    public void getTransactionsNullKlantTest() {
         try {
             //Get IBAN from dummyKlant1
             String IBAN = dummyKlant1.getBankAccounts(bank).get(0).split(";")[0];
@@ -267,7 +267,7 @@ public class BankTest {
     
     //Tests the inspectionmethod getTransactions with a logged-out klant
     @Test
-    public void getTransactionsNoSession() {
+    public void getTransactionsNoSessionTest() {
         try {
             //Get IBAN from dummyKlant1
             String IBAN = dummyKlant1.getBankAccounts(bank).get(0).split(";")[0];
@@ -286,7 +286,7 @@ public class BankTest {
     
     //Tests the inspection method getTransactions with a invalid IBAN
     @Test
-    public void getTransactionsInvalidIBAN() {
+    public void getTransactionsInvalidIBANTest() {
         try {
             //Get IBAN from dummyKlant2
             String IBAN = dummyKlant2.getBankAccounts(bank).get(0).split(";")[0];
@@ -301,6 +301,69 @@ public class BankTest {
             fail();
         }
     }
+    
+    //Tests the method addBankAccount with a valid klant
+    @Test
+    public void addBankAccountValidKlantTest() {
+            /**
+            * Adds a bank account for a user.
+            * If session is over, SessionExpiredException.
+            * @param klant, if empty throws IllegalArgumentException.
+            * @throws Exceptions.SessionExpiredException
+            * @throws RemoteException
+            */
+        try {
+            ArrayList<String> accounts = dummyKlant1.getBankAccounts(bank);
+            //Test list-size before
+            assertEquals("The list-size is 1", accounts.size(), 1);
+            //Add a new account
+            bank.addBankAccount(dummyKlant1);
+            accounts = dummyKlant1.getBankAccounts(bank);
+            //Test list-size after
+            assertEquals("The list-size is 2", accounts.size(), 2);
+            //Test correct linked username
+            Bankrekening account = stringToBankrekening(accounts.get(1));
+            String username = account.getKlant().getUsername();
+            assertEquals("The linked username is DummyUserDummyUser", username, "DummyUserDummyUser");
+            //Remove bank account
+            dummyKlant1.removeBankAccount(account.toString().split(";")[0], bank);
+        } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
+            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    //Tests the method addBankAccount with a null klant
+    @Test
+    public void addBankAccountNullKlantTest() {
+        try {
+            Klant klant = null;
+            bank.addBankAccount(klant);
+            fail();
+        } catch (SessionExpiredException | RemoteException ex) {
+            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        }
+    }
+    
+    //Tests the method addBankAccount with logged-out user
+    @Test
+    public void addBankAccountNoSession() {
+        try {
+            admin.logout(dummyKlant1);
+            bank.addBankAccount(dummyKlant1);
+            fail();
+        } catch (RemoteException | IllegalArgumentException ex) {
+            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
+        } catch (SessionExpiredException ex) {
+            Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(true);
+        }
+    }
+    
     //Help methods
     
     /**

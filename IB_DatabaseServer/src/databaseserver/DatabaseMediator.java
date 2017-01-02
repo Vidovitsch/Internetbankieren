@@ -344,7 +344,6 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
             String query = "DELETE FROM Klant WHERE Naam = '" + name + "' AND Woonplaats = '" + residence
                     + "' AND Wachtwoord = '" + password + "'";
             int rowsManipulated = statement.executeUpdate(query);
-            System.out.println(rowsManipulated + " : " + name + ":" + residence + ":" + password);
             return rowsManipulated != 0;
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseMediator.class.getName()).log(Level.SEVERE, null, ex);

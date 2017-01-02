@@ -191,7 +191,7 @@ public class AdminTest {
     
     //Tests if the client gets a valid Klant object and session after login
     @Test
-    public void validKlantAndSessionOnLogin() {
+    public void validKlantAndSessionOnLoginTest() {
         try {
             Klant klant = admin.register("DummyUser3", "DummyUser3", "123456789");
             admin.logout(klant);
@@ -209,7 +209,7 @@ public class AdminTest {
     
     //Tests if the account has already a session running
     @Test
-    public void checkSessionRunningOnLogin() {
+    public void checkSessionRunningOnLoginTest() {
         try {
             admin.login("DummyUser", "DummyUser", "123456789");
             fail();
@@ -460,7 +460,7 @@ public class AdminTest {
     
     //Tests if a correct klant is returned after putting a incorrect username
     @Test
-    public void getKlantByFalseUsername() {
+    public void getKlantByFalseUsernameTest() {
         /**
         * Returns a klant object by a given username
         * @param username
@@ -472,7 +472,7 @@ public class AdminTest {
     
     //Tests if a correct klant is returned after putting a correct username
     @Test
-    public void getKlantByValidUsername() {
+    public void getKlantByValidUsernameTest() {
         String username = dummyKlant1.getUsername();
         Klant klant = admin.getKlantByUsername(username);
         assertEquals("This klant does exist", klant.getUsername(), username);
@@ -480,7 +480,7 @@ public class AdminTest {
     
     //Tests publish method with 2 users with running sessions
     @Test
-    public void publishTwoSessions() {
+    public void publishTwoSessionsTest() {
         try {
             /**
             * Publishes the updated list of transactions and bankaccounts to the
@@ -503,7 +503,7 @@ public class AdminTest {
     
     //Tests publish method with 2 users with no running session
     @Test
-    public void publishNoSessions() {
+    public void publishNoSessionsTest() {
         try {
             String username1 = dummyKlant1.getUsername();
             String username2 = dummyKlant2.getUsername();
@@ -519,7 +519,7 @@ public class AdminTest {
     
     //Tests publish method with 2 users with 1 running an 1 not running session
     @Test
-    public void publishOneSession1() {
+    public void publishOneSession1Test() {
         try {
             String username1 = dummyKlant1.getUsername();
             String username2 = dummyKlant2.getUsername();
@@ -534,7 +534,7 @@ public class AdminTest {
     
     //Tests publish method with 2 users with 1 not running an 1 running session
     @Test
-    public void publishOneSession2() {
+    public void publishOneSession2Test() {
         try {
             String username1 = dummyKlant1.getUsername();
             String username2 = dummyKlant2.getUsername();
