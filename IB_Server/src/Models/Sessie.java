@@ -58,6 +58,7 @@ public class Sessie {
         sessionTimer.schedule(new TimerTask() {
             @Override
             public void run() {
+                System.out.println(ticks);
                 if (ticks == maxTicks) {
                     try {
                         admin.logout(client);

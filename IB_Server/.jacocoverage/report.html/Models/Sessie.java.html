@@ -17,7 +17,7 @@ public class Sessie {
     private Administratie admin;
     private Timer sessionTimer;
     
-<span class="fc" id="L20">    private final int maxTicks = 60;</span>
+<span class="fc" id="L20">    private final int maxTicks = 5;</span>
 <span class="fc" id="L21">    private int ticks = 0;</span>
     
 <span class="fc" id="L23">    public Sessie(Klant client, Administratie admin) {</span>
@@ -38,7 +38,15 @@ public class Sessie {
      * @return amount of ticks
      */
     public int getTicks() {
-<span class="nc" id="L41">        return ticks;</span>
+<span class="fc" id="L41">        return ticks;</span>
+    }
+    
+    /**
+     * Test method for inspecting the max amount of ticks
+     * @return max amount of ticks
+     */
+    public int getMaxTicks() {
+<span class="fc" id="L49">        return maxTicks;</span>
     }
     
     /**
@@ -46,37 +54,53 @@ public class Sessie {
      * The max ticks is set in advance.
      */
     public void startSession() {
-<span class="fc" id="L49">        sessionTimer = new Timer();</span>
-<span class="fc" id="L50">        sessionTimer.schedule(new TimerTask() {</span>
+<span class="fc" id="L57">        sessionTimer = new Timer();</span>
+<span class="fc" id="L58">        sessionTimer.schedule(new TimerTask() {</span>
             @Override
             public void run() {
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">                if (ticks == maxTicks) {</span>
+<span class="fc" id="L61">                System.out.println(ticks);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">                if (ticks == maxTicks) {</span>
                     try {
-<span class="nc" id="L55">                        admin.logout(client);</span>
-<span class="nc" id="L56">                    } catch (RemoteException ex) {</span>
-<span class="nc" id="L57">                        Logger.getLogger(Sessie.class.getName()).log(Level.SEVERE, null, ex);</span>
-<span class="nc" id="L58">                    }</span>
+<span class="fc" id="L64">                        admin.logout(client);</span>
+<span class="nc" id="L65">                    } catch (RemoteException ex) {</span>
+<span class="nc" id="L66">                        Logger.getLogger(Sessie.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="pc" id="L67">                    }</span>
                 } else {
-<span class="fc" id="L60">                    ticks++;</span>
+<span class="fc" id="L69">                    ticks++;</span>
                 }
-<span class="fc" id="L62">            }</span>
+<span class="fc" id="L71">            }</span>
         }, 1000, 1000);
-<span class="fc" id="L64">    }</span>
+<span class="fc" id="L73">    }</span>
     
     /**
      * Refeshes the current session
      */
     public void refreshSession() {
-<span class="fc" id="L70">        stopSession();</span>
-<span class="fc" id="L71">        ticks = 0;</span>
-<span class="fc" id="L72">        startSession();</span>
-<span class="fc" id="L73">    }</span>
+<span class="fc" id="L79">        stopSession();</span>
+<span class="fc" id="L80">        ticks = 0;</span>
+<span class="fc" id="L81">        startSession();</span>
+<span class="fc" id="L82">    }</span>
     
     /**
      * Stops the session timer.
      */
     public void stopSession() {
-<span class="fc" id="L79">        sessionTimer.cancel();</span>
-<span class="fc" id="L80">    }</span>
+<span class="fc" id="L88">        sessionTimer.cancel();</span>
+<span class="fc" id="L89">    }</span>
+    
+<span class="nc" id="L91">    private class sessionTask extends TimerTask {</span>
+        @Override
+        public void run() {
+<span class="nc bnc" id="L94" title="All 2 branches missed.">            if (ticks == maxTicks) {</span>
+                    try {
+<span class="nc" id="L96">                        admin.logout(client);</span>
+<span class="nc" id="L97">                    } catch (RemoteException ex) {</span>
+<span class="nc" id="L98">                        Logger.getLogger(Sessie.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L99">                    }</span>
+                } else {
+<span class="nc" id="L101">                    ticks++;</span>
+                }
+<span class="nc" id="L103">        }</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

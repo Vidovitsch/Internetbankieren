@@ -129,7 +129,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     public void logout(Klant klant) throws RemoteException {
         removeSession(klant);
     }
-            
+    
     /**
      * Checks if a client has still a session running.
      * @param username
