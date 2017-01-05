@@ -127,7 +127,8 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     @Override
     public void logout(Klant klant) throws RemoteException {
-        removeSession(klant);
+        removeSessionDatabase(klant);
+        removeSessionLocal(klant);
     }
     
     /**
@@ -210,12 +211,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     /**
-     * Removes a session from this server
-     * and unregisters the user.
-     * A session is removed if a client is inactive for too long.
+     * Removes a session from this server locally
+     * A session is removed if a client is inactive for too long or a client
+     * logs out.
      * @param klant 
      */
-    private void removeSession(Klant klant) throws RemoteException {
+    public void removeSessionLocal(Klant klant) {
         Sessie sessie = null;
         for (Sessie s : sessies) {
             if (s.getClient().getUsername().equals(klant.getUsername())) {
@@ -225,7 +226,21 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         if (sessie != null) {
             sessie.stopSession();
             sessies.remove(sessie);
-            pMediator.endSession(klant.getName(), klant.getResidence());
+        }
+    }
+    
+    /**
+     * Removes a session from the database.
+     * A session is removed if a client is inactive for too long or a client
+     * logs out.
+     * Also the publisher unregisters the property of this client.
+     * This method has to be called before removeSessionLocal!
+     * @param klant
+     * @throws RemoteException 
+     */
+    private void removeSessionDatabase(Klant klant) throws RemoteException {
+        pMediator.endSession(klant.getName(), klant.getResidence());
+        if (this.checkSession(klant.getUsername())) {
             //Unregister a property for this user
             publisher.unregisterProperty(klant.getUsername());
         }

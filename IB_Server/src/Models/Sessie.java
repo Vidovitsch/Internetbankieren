@@ -60,11 +60,7 @@ public class Sessie {
             public void run() {
                 System.out.println(ticks);
                 if (ticks == maxTicks) {
-                    try {
-                        admin.logout(client);
-                    } catch (RemoteException ex) {
-                        Logger.getLogger(Sessie.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    admin.removeSessionLocal(client);
                 } else {
                     ticks++;
                 }

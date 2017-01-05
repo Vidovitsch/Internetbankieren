@@ -70,6 +70,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     public void logout() {
         try {
             admin.logout(klant);
+            gui.logoutScreen();
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -130,8 +131,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     public void getAccounts() {
         try {
             gui.setAccountList(klant.getBankAccounts(bank));
-        } catch (SessionExpiredException | IllegalArgumentException ex) {
+        } catch (SessionExpiredException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            logout();
             gui.initErrorMessage(ex.getMessage());
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,8 +143,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     public void getTransactions(String IBAN) {
         try {
             gui.setTransactionList(klant.getTransactions(IBAN, bank));
-        } catch (SessionExpiredException | IllegalArgumentException ex) {
+        } catch (SessionExpiredException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            logout();
             gui.initErrorMessage(ex.getMessage());
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
@@ -153,8 +156,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         try {
             klant.addBankAccount(bank);
             getAccounts();
-        } catch (SessionExpiredException | IllegalArgumentException ex) {
+        } catch (SessionExpiredException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            logout();
             gui.initErrorMessage(ex.getMessage());
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
@@ -165,8 +169,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         try {
             klant.removeBankAccount(IBAN, bank);
             getAccounts();
-        } catch (SessionExpiredException | IllegalArgumentException ex) {
+        } catch (SessionExpiredException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            logout();
             gui.initErrorMessage(ex.getMessage());
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
@@ -181,11 +186,15 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             } else {
                 gui.initErrorMessage("Transaction failed");
             }
-        } catch (SessionExpiredException | IllegalArgumentException | LimitReachedException ex) {
+        } catch (SessionExpiredException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            logout();
             gui.initErrorMessage(ex.getMessage());
         } catch (RemoteException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException | LimitReachedException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            gui.initErrorMessage(ex.getMessage());
         }
     }
 

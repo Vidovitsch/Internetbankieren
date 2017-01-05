@@ -93,6 +93,10 @@ public class GUI extends Application
         alert.showAndWait();
     }
     
+    public void logoutScreen() {
+        
+    }
+    
     /**
      * Convert Bankaccount.toString() to IBAN
      * @param account (String value)
