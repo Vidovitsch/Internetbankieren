@@ -26,19 +26,24 @@ public class Bankrekening {
     /**
      * Adds a value of money to this bank account.
      * @param value of money.
-     * @return True if succesful, else false.
      */
-    public boolean addToBalance(double value) {
-        return true;
+    public void addToBalance(double value) {
+        balance += value;
     }
     
     /**
      * Removes a value of money from this bank account.
      * @param value of money
-     * @return True if succesful, else false.
+     * @return true if successful, else false.
      */
     public boolean removeFromBalance(double value) {
-        return true;
+        double newBalance = balance - value;
+        if (newBalance < credit * -1) {
+            return false;
+        } else {
+            balance = newBalance;
+            return true;
+        }
     }
     
     @Override

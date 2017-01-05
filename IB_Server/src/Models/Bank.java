@@ -44,13 +44,9 @@ public class Bank extends UnicastRemoteObject implements IBank {
         bankTrans = new BankTrans(this);
     }
 
-    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+    public void setPersistencyMediator(IPersistencyMediator pMediator) throws RemoteException {
         this.pMediator = pMediator;
-        try {
-            setDatabaseData();
-        } catch (RemoteException ex) {
-            Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        setDatabaseData();
     }
     
     @Override

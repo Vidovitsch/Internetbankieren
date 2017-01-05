@@ -33,8 +33,10 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     
     @Override
     public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
-        bank.removeSaldo(IBAN1, value);
-        bank.addSaldo(IBAN2, value);
+        if (bank.removeSaldo(IBAN1, value)) {
+            bank.addSaldo(IBAN2, value);
+            //Melding geven als het niet lukt!!!
+        }
         
         //Add a new transaction to the centrale
         Transactie transactie = new Transactie(IBAN1, IBAN2, getCurrentDateTime(), value);

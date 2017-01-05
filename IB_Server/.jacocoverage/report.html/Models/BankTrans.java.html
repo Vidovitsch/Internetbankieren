@@ -18,11 +18,11 @@ public class BankTrans extends UnicastRemoteObject implements IBankTrans {
     
     @Override
     public void addSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
-<span class="pc bpc" id="L21" title="2 of 4 branches missed.">        if (IBAN.isEmpty() || value &lt;= 0) {</span>
-<span class="nc" id="L22">            throw new IllegalArgumentException(&quot;Input can't be null&quot;);</span>
+<span class="fc bfc" id="L21" title="All 4 branches covered.">        if (IBAN.isEmpty() || value &lt;= 0) {</span>
+<span class="fc" id="L22">            throw new IllegalArgumentException(&quot;Input can't be null&quot;);</span>
         }
-<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        else if (!bank.checkIBANExists(IBAN)) {</span>
-<span class="nc" id="L25">            throw new IllegalArgumentException(&quot;IBAN doesn't exists&quot;);</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        else if (!bank.checkIBANExists(IBAN)) {</span>
+<span class="fc" id="L25">            throw new IllegalArgumentException(&quot;IBAN doesn't exists&quot;);</span>
         }
         else {
 <span class="fc" id="L28">            Bankrekening bankAccount = bank.IBANToBankAccount(IBAN);</span>
@@ -31,17 +31,21 @@ public class BankTrans extends UnicastRemoteObject implements IBankTrans {
 <span class="fc" id="L31">    }</span>
 
     @Override
-    public void removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
-<span class="pc bpc" id="L35" title="2 of 4 branches missed.">        if (IBAN.isEmpty() || value &lt;= 0) {</span>
-<span class="nc" id="L36">            throw new IllegalArgumentException(&quot;Input can't be null&quot;);</span>
+    public boolean removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
+<span class="fc bfc" id="L35" title="All 4 branches covered.">        if (IBAN.isEmpty() || value &lt;= 0) {</span>
+<span class="fc" id="L36">            throw new IllegalArgumentException(&quot;Input can't be null&quot;);</span>
         }
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        else if (!bank.checkIBANExists(IBAN)) {</span>
-<span class="nc" id="L39">            throw new IllegalArgumentException(&quot;IBAN doesn't exists&quot;);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        else if (!bank.checkIBANExists(IBAN)) {</span>
+<span class="fc" id="L39">            throw new IllegalArgumentException(&quot;IBAN doesn't exists&quot;);</span>
         }
         else {
 <span class="fc" id="L42">            Bankrekening bankAccount = bank.IBANToBankAccount(IBAN);</span>
-<span class="fc" id="L43">            bankAccount.removeFromBalance(value);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">            if (bankAccount.removeFromBalance(value)) {</span>
+<span class="fc" id="L44">                return true;</span>
+            } else {
+<span class="fc" id="L46">                return false;</span>
+            }
         }
-<span class="fc" id="L45">    }</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

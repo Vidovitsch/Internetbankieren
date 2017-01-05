@@ -31,7 +31,7 @@ public class BankTrans extends UnicastRemoteObject implements IBankTrans {
     }
 
     @Override
-    public void removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
+    public boolean removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
         if (IBAN.isEmpty() || value <= 0) {
             throw new IllegalArgumentException("Input can't be null");
         }
@@ -40,7 +40,11 @@ public class BankTrans extends UnicastRemoteObject implements IBankTrans {
         }
         else {
             Bankrekening bankAccount = bank.IBANToBankAccount(IBAN);
-            bankAccount.removeFromBalance(value);
+            if (bankAccount.removeFromBalance(value)) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }

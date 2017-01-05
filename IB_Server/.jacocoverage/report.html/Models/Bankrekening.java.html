@@ -26,24 +26,29 @@ public class Bankrekening {
     /**
      * Adds a value of money to this bank account.
      * @param value of money.
-     * @return True if succesful, else false.
      */
-    public boolean addToBalance(double value) {
-<span class="fc" id="L32">        return true;</span>
-    }
+    public void addToBalance(double value) {
+<span class="fc" id="L31">        balance += value;</span>
+<span class="fc" id="L32">    }</span>
     
     /**
      * Removes a value of money from this bank account.
      * @param value of money
-     * @return True if succesful, else false.
+     * @return true if successful, else false.
      */
     public boolean removeFromBalance(double value) {
-<span class="fc" id="L41">        return true;</span>
+<span class="fc" id="L40">        double newBalance = balance - value;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (newBalance &lt; credit * -1) {</span>
+<span class="fc" id="L42">            return false;</span>
+        } else {
+<span class="fc" id="L44">            balance = newBalance;</span>
+<span class="fc" id="L45">            return true;</span>
+        }
     }
     
     @Override
     public String toString() {
-<span class="fc" id="L46">        return IBAN + &quot;;&quot;  + String.valueOf(balance);</span>
+<span class="fc" id="L51">        return IBAN + &quot;;&quot;  + String.valueOf(balance);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -255,7 +255,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     private Klant stringToKlant(String values) {
 <span class="fc" id="L256">        String[] fields = values.split(&quot;;&quot;);</span>
 <span class="fc" id="L257">        Klant klant = new Klant(fields[0], fields[1]);</span>
-<span class="pc bpc" id="L258" title="1 of 2 branches missed.">        if (fields[2].equals(&quot;1&quot;)) {</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (fields[2].equals(&quot;1&quot;)) {</span>
 <span class="fc" id="L259">            sessies.add(new Sessie(klant, this));</span>
         }
 <span class="fc" id="L261">        return new Klant(fields[0], fields[1]);</span>
