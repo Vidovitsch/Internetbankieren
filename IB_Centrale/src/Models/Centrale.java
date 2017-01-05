@@ -1,5 +1,6 @@
 package Models;
 
+import Exceptions.LimitReachedException;
 import Shared_Centrale.ICentrale;
 import Shared_Centrale.IBankTrans;
 import Shared_Data.IPersistencyMediator;
@@ -32,10 +33,11 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     }
     
     @Override
-    public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
+    public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws LimitReachedException, RemoteException {
         if (bank.removeSaldo(IBAN1, value)) {
             bank.addSaldo(IBAN2, value);
-            //Melding geven als het niet lukt!!!
+        } else {
+            throw new LimitReachedException("The credit limit has been reached");
         }
         
         //Add a new transaction to the centrale

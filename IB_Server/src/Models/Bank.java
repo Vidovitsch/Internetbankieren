@@ -1,5 +1,6 @@
 package Models;
 
+import Exceptions.LimitReachedException;
 import Exceptions.SessionExpiredException;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IBank;
@@ -142,7 +143,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
     }
 
     @Override
-    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, LimitReachedException, RemoteException {
         boolean bool = false;
         if (IBAN1.isEmpty() || IBAN2.isEmpty() || klant == null) {
             throw new IllegalArgumentException("Input can't be null");

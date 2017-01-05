@@ -1,5 +1,6 @@
 package Shared_Client;
 
+import Exceptions.LimitReachedException;
 import Exceptions.SessionExpiredException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -83,7 +84,7 @@ public class Klant implements Serializable {
         return bank.getTransactions(IBAN, this);
     }
     
-    public boolean startTransaction(String IBAN1, String IBAN2, double value, String description, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+    public boolean startTransaction(String IBAN1, String IBAN2, double value, String description, IBank bank) throws SessionExpiredException, IllegalArgumentException, LimitReachedException, RemoteException {
         return bank.startTransaction(this, IBAN1, IBAN2, value, description);
     }
 }

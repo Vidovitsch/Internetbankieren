@@ -1,5 +1,6 @@
 package ib_client;
 
+import Exceptions.LimitReachedException;
 import Exceptions.LoginException;
 import Exceptions.RegisterException;
 import Exceptions.SessionExpiredException;
@@ -180,7 +181,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             } else {
                 gui.initErrorMessage("Transaction failed");
             }
-        } catch (SessionExpiredException | IllegalArgumentException ex) {
+        } catch (SessionExpiredException | IllegalArgumentException | LimitReachedException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
         } catch (RemoteException ex) {
