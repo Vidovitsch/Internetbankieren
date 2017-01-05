@@ -17,7 +17,7 @@ public class Sessie {
     private Administratie admin;
     private Timer sessionTimer;
     
-    private final int maxTicks = 60;
+    private final int maxTicks = 5;
     private int ticks = 0;
     
     public Sessie(Klant client, Administratie admin) {
@@ -39,6 +39,14 @@ public class Sessie {
      */
     public int getTicks() {
         return ticks;
+    }
+    
+    /**
+     * Test method for inspecting the max amount of ticks
+     * @return max amount of ticks
+     */
+    public int getMaxTicks() {
+        return maxTicks;
     }
     
     /**

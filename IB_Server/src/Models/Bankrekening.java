@@ -19,6 +19,10 @@ public class Bankrekening {
         this.klant = klant;
     }
     
+    /**
+     * Returns the owner of this bank account
+     * @return klant
+     */
     public Klant getKlant() {
         return klant;
     }
