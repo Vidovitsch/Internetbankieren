@@ -1,3 +1,4 @@
+import Exceptions.LimitReachedException;
 import Exceptions.RegisterException;
 import Exceptions.SessionExpiredException;
 import Models.Administratie;
@@ -225,7 +226,7 @@ public class BankTest {
             assertEquals("1 euro has been transferred", transactions.get(0).split(";")[1], "1.0");
             //Test description
             assertEquals("Description is 'iets'", transactions.get(0).split(";")[4], "iets");
-        } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
+        } catch (SessionExpiredException | IllegalArgumentException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -499,7 +500,7 @@ public class BankTest {
             //Transactions after
             transactions = dummyKlant1.getTransactions(IBAN1, bank);
             assertEquals("List size is 1", transactions.size(), 1);
-        } catch (SessionExpiredException | IllegalArgumentException | RemoteException ex) {
+        } catch (SessionExpiredException | IllegalArgumentException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -512,7 +513,7 @@ public class BankTest {
             String IBAN2 = "1";
             bank.startTransaction(dummyKlant1, IBAN1, IBAN2, 1, "iets");
             fail();
-        } catch (SessionExpiredException | RemoteException ex) {
+        } catch (SessionExpiredException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         } catch (IllegalArgumentException ex) {
@@ -529,7 +530,7 @@ public class BankTest {
             String IBAN2 = "";
             bank.startTransaction(dummyKlant1, IBAN1, IBAN2, 1, "iets");
             fail();
-        } catch (SessionExpiredException | RemoteException ex) {
+        } catch (SessionExpiredException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         } catch (IllegalArgumentException ex) {
@@ -547,7 +548,7 @@ public class BankTest {
             Klant klant = null;
             bank.startTransaction(klant, IBAN1, IBAN2, 1, "iets");
             fail();
-        } catch (SessionExpiredException | RemoteException ex) {
+        } catch (SessionExpiredException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         } catch (IllegalArgumentException ex) {
@@ -572,7 +573,7 @@ public class BankTest {
         } catch (SessionExpiredException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             assertTrue(true);
-        } catch (IllegalArgumentException | RemoteException ex) {
+        } catch (IllegalArgumentException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         }
@@ -589,7 +590,7 @@ public class BankTest {
             //Start transaction
             bank.startTransaction(dummyKlant1, IBAN1, IBAN2, 1, "iets");
             fail();
-        } catch (SessionExpiredException | RemoteException ex) {
+        } catch (SessionExpiredException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         } catch (IllegalArgumentException ex) {
@@ -609,7 +610,7 @@ public class BankTest {
             //Start transaction
             bank.startTransaction(dummyKlant1, IBAN1, IBAN2, 1, "iets");
             fail();
-        } catch (SessionExpiredException | RemoteException ex) {
+        } catch (SessionExpiredException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         } catch (IllegalArgumentException ex) {
@@ -630,7 +631,7 @@ public class BankTest {
             //Start transaction
             bank.startTransaction(dummyKlant1, IBAN1, IBAN2, 0, "iets");
             fail();
-        } catch (SessionExpiredException | RemoteException ex) {
+        } catch (SessionExpiredException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         } catch (IllegalArgumentException ex) {
@@ -651,7 +652,7 @@ public class BankTest {
             //Start transaction
             bank.startTransaction(dummyKlant1, IBAN1, IBAN2, -1, "iets");
             fail();
-        } catch (SessionExpiredException | RemoteException ex) {
+        } catch (SessionExpiredException | RemoteException | LimitReachedException ex) {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
             fail();
         } catch (IllegalArgumentException ex) {
