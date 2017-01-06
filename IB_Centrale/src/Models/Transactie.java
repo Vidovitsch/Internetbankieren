@@ -10,7 +10,7 @@ public class Transactie {
 
     private String date;
     private double amount;
-    private String description;
+    private String description = "";
     private String IBAN1;
     private String IBAN2;
             

@@ -132,15 +132,6 @@ public class GUI extends Application
     private String transactionToAmount(String transaction) {
         return transaction.split(";")[1];
     }
-        
-    /**
-     * Convert Transaction.toString() to IBANTo
-     * @param transaction (String value)
-     * @return IBANTo (String value)
-     */
-    private String transactionToIBANTo(String transaction) {
-        return transaction.split(";")[2];
-    }
     
     /**
      * Convert Transaction.toString() to IBANFrom
@@ -148,6 +139,15 @@ public class GUI extends Application
      * @return IBANFrom (String value)
      */
     private String transactionToIBANFrom(String transaction) {
+        return transaction.split(";")[2];
+    }
+    
+    /**
+     * Convert Transaction.toString() to IBANTo
+     * @param transaction (String value)
+     * @return IBANTo (String value)
+     */
+    private String transactionToIBANTo(String transaction) {
         return transaction.split(";")[3];
     }
     

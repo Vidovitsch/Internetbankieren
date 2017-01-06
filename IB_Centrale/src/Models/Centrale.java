@@ -16,6 +16,7 @@ import java.util.logging.Logger;
  * @author David
  */
 public class Centrale extends UnicastRemoteObject implements ICentrale {
+    
     private ArrayList<Transactie> transactions;
     private IPersistencyMediator pMediator;
     
@@ -23,13 +24,9 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         transactions = new ArrayList();
     }
 
-    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+    public void setPersistencyMediator(IPersistencyMediator pMediator) throws RemoteException {
         this.pMediator = pMediator;
-        try {
-            setDatabaseData();
-        } catch (RemoteException ex) {
-            Logger.getLogger(Centrale.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        setDatabaseData();
     }
     
     @Override
@@ -49,7 +46,6 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         pMediator.transferMoney(IBAN1, IBAN2, value);
         //Database add transactie
         pMediator.addTransaction(IBAN1, IBAN2, value, getCurrentDateTime(), description);
-        
     }
 
     @Override
@@ -69,21 +65,20 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
      * @return String representing a transaction
      */
     private String transactionToString(Transactie transaction) {
-        try {
-            String description = transaction.getDescription();
-            if (description.isEmpty()) {
-                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANTo() + ";" + transaction.getIBANFrom();
-            } else {
-                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANTo() + ";" + transaction.getIBANFrom() + ";" + transaction.getDescription();
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(Centrale.class.getName()).log(Level.SEVERE, null, ex);
+        String description = transaction.getDescription();
+        if (description.isEmpty()) {
+            return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
+                    transaction.getIBANFrom() + ";" + transaction.getIBANTo();
+        } else {
+            return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
+                    transaction.getIBANFrom() + ";" + transaction.getIBANTo() + ";" + transaction.getDescription();
         }
-        return null;
     }
     
+    /**
+     * Returns the local current date-time in String-value
+     * @return date-time String-value
+     */
     private String getCurrentDateTime() {
         LocalDateTime dateTime = LocalDateTime.now();
         return dateTime.toString();

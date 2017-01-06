@@ -324,7 +324,7 @@ public class DatabaseMediator extends UnicastRemoteObject implements IPersistenc
         ArrayList<String> transactions = new ArrayList<>();
         try {
             Statement statement = con.createStatement();
-            String query = "SELECT CONCAT_WS(';', Beschrijving, Bedrag, Datum, Bankrekening_IBAN_Naar, Bankrekening_IBAN_Van) AS Fields FROM Transactie";
+            String query = "SELECT CONCAT_WS(';', Beschrijving, Bedrag, Datum, Bankrekening_IBAN_Van, Bankrekening_IBAN_Naar) AS Fields FROM Transactie";
             myRs = statement.executeQuery(query);
             while (myRs.next()) {
                 fields = myRs.getString("Fields");

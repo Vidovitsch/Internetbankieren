@@ -218,10 +218,10 @@ public class BankTest {
             ArrayList<String> transactions = bank.getTransactions(IBAN1, dummyKlant1);
             //Test list-size
             assertEquals("Transacions' list size is 1", transactions.size(), 1);
-            //Test IBANTo
-            assertEquals(IBAN2, transactions.get(0).split(";")[2]);
             //Test IBANFrom
-            assertEquals(IBAN1, transactions.get(0).split(";")[3]);
+            assertEquals(IBAN1, transactions.get(0).split(";")[2]);
+            //Test IBANTo
+            assertEquals(IBAN2, transactions.get(0).split(";")[3]);
             //Test amount transferred
             assertEquals("1 euro has been transferred", transactions.get(0).split(";")[1], "1.0");
             //Test description

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Transactie.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;IB_Centrale&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Models</a> &gt; <span class="el_source">Transactie.java</span></div><h1>Transactie.java</h1><pre class="source lang-java linenums">package Models;
+
+import java.rmi.RemoteException;
+
+/**
+ *
+ * @author David
+ */
+public class Transactie {
+
+    private String date;
+    private double amount;
+<span class="fc" id="L13">    private String description = &quot;&quot;;</span>
+    private String IBAN1;
+    private String IBAN2;
+            
+    /**
+     * This class is used to represent the made transaction
+     * @param IBAN1
+     * @param IBAN2
+     * @param date
+     * @param amount 
+     */
+<span class="fc" id="L24">    public Transactie(String IBAN1, String IBAN2, String date, double amount) {</span>
+<span class="fc" id="L25">        this.date = date;</span>
+<span class="fc" id="L26">        this.amount = amount;</span>
+<span class="fc" id="L27">        this.IBAN1 = IBAN1;</span>
+<span class="fc" id="L28">        this.IBAN2 = IBAN2;</span>
+<span class="fc" id="L29">    }</span>
+    
+    /**
+     * Sets the description of a transaction.
+     * @param description 
+     */
+    public void setDescription(String description) {
+<span class="fc" id="L36">        this.description = description;</span>
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * Returns the date of creation (in text) of this transaction.
+     * @return the date as a String type. 
+     */
+    public String getDate() {
+<span class="fc" id="L44">        return date;</span>
+    }
+
+    /**
+     * Returns the amount of money transferred in this transaction.
+     * @return the amount of money. 
+     */
+    public double getAmount() {
+<span class="fc" id="L52">        return amount;</span>
+    }
+
+    /**
+     * Returns the description of this transaction.
+     * @return the description of this transaction. 
+     */
+    public String getDescription() {
+<span class="fc" id="L60">        return description;</span>
+    }
+
+    /**
+     * Returns the IBAN from the bank account who made the transaction.
+     * @return IBAN 
+     */
+    public String getIBANFrom() {
+<span class="fc" id="L68">        return IBAN1;</span>
+    }
+
+    /**
+     * Returns the IBAN from the bank account who received the transaction.
+     * @return IBAN 
+     */
+    public String getIBANTo() {
+<span class="fc" id="L76">        return IBAN2;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
