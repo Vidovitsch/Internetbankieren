@@ -57,7 +57,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public String login(String naam, String woonplaats, String password)
+    public boolean login(String naam, String woonplaats, String password)
     {
         String exMessage = "";
         try
@@ -71,8 +71,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             exMessage = ex.getMessage();
+            return false;
         }
-        return exMessage;
+        return true;
     }
 
     public void logout()
@@ -87,7 +88,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public void register(String naam, String woonplaats, String password)
+    public boolean register(String naam, String woonplaats, String password)
     {
         try
         {
@@ -100,10 +101,13 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
+            return false;
         } catch (RemoteException ex)
         {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
+        return true;
     }
 
     public void setBank()

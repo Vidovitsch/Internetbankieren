@@ -37,6 +37,8 @@ public class FXMLLoginController implements Initializable
     private String currentRegisterPassword;
     private boolean isRegistering = false;
     int loginPoging = 0;
+    boolean waitingForValidPassword = false;
+    boolean loginLast = true;
 
     public void setStage(Stage s)
     {
@@ -92,37 +94,65 @@ public class FXMLLoginController implements Initializable
     private Label label;
 
     @FXML
-    private void login()
+    private void handleLoginButton()
     {
         if (isRegistering)
         {
-            
+            completeSignUp();
         } else
         {
-            name = textFieldAccountName.getText();
-            residence = textFieldAccountResidence.getText();
-            String password = textFieldAccountPassword.getText();
-            loginPoging ++;
-            String loginmessage = controller.login(name, residence, password);
-            if (loginmessage == "")
-            {
-                OpenBankAccountManagement();
-            }
-            else{
-                initErrorMessage(name);
-            }
+            Login();
         }
 
         //controller.setBank();
     }
-    
-    public void initErrorMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+
+    public void completeSignUp()
+    {
+        if (textFieldPasswordGivenAccount.getText().equals(currentRegisterPassword))
+        {
+            if (controller.register(currentRegisterName, currentRegisterResidence, currentRegisterPassword))
+            {
+                OpenBankAccountManagement();
+                labelWelcomeText.setText("succesvol ingelogd!");
+            } else
+            {
+                waitingForValidPassword = true;
+                textFieldAccountPassword.setDisable(false);
+                textFieldPasswordGivenAccount.setDisable(true);
+                buttonLoginGivenAccount.setDisable(true);
+                labelWelcomeText.setText("Voer een geldig wachtwoord in");
+            }
+        } else
+        {
+            labelWelcomeText.setText("de wachtwoorden zijn niet gelijk");
+        }
     }
+
+    public void Login()
+    {
+        String password;
+        if (loginLast)
+        {
+            password = textFieldPasswordGivenAccount.getText();
+        } else
+        {
+            name = textFieldAccountName.getText();
+            residence = textFieldAccountResidence.getText();
+            password = textFieldAccountPassword.getText();
+        }
+
+        loginPoging++;
+        if (controller.login(name, residence, password))
+        {
+            labelWelcomeText.setText("succesvol ingelogd!");
+            OpenBankAccountManagement();
+        }
+        else{
+            labelWelcomeText.setText("Wachtwoord onjuist!");
+        }
+    }
+
     @FXML
     private void loginGivenAccount()
     {
@@ -134,24 +164,32 @@ public class FXMLLoginController implements Initializable
     @FXML
     private void RegisterAccount()
     {
-        try
+        if (waitingForValidPassword)
         {
-            //zet de huidig ingevoerde gegevens tijdelijk in onderstaande variabelen
-            currentRegisterName = textFieldAccountName.getText();
-            currentRegisterResidence = textFieldAccountResidence.getText();
             currentRegisterPassword = textFieldAccountPassword.getText();
-            isRegistering = true;
-            textFieldAccountName.setDisable(true);
-            textFieldAccountPassword.setDisable(true);
-            textFieldAccountPassword.setDisable(true);
-            buttonNotGivenAccount.setDisable(true);
-            labelWelcomeText.setText("Bevestig je wachtwoord om registratie te voltooien");
-            buttonLoginGivenAccount.setText("Voltooi Registratie");
-
-        } catch (Exception e)
+            textFieldPasswordGivenAccount.setDisable(false);
+            buttonLoginGivenAccount.setDisable(false);
+        } else
         {
-            //nog veranderen in logische errormessage
-            System.out.println("voer geldige gegevens in");
+            try
+            {
+                //zet de huidig ingevoerde gegevens in onderstaande variabelen
+                currentRegisterName = textFieldAccountName.getText();
+                currentRegisterResidence = textFieldAccountResidence.getText();
+                currentRegisterPassword = textFieldAccountPassword.getText();
+                isRegistering = true;
+                textFieldAccountName.setDisable(true);
+                textFieldAccountPassword.setDisable(true);
+                textFieldAccountResidence.setDisable(true);
+                labelWelcomeText.setText("Bevestig je wachtwoord om registratie te voltooien");
+                buttonLoginGivenAccount.setText("Voltooi");
+                buttonLoginGivenAccount.setDisable(false);
+                textFieldPasswordGivenAccount.setDisable(false);
+            } catch (Exception e)
+            {
+                //nog veranderen in logische errormessage
+                System.out.println("voer geldige gegevens in");
+            }
         }
     }
 
@@ -188,6 +226,7 @@ public class FXMLLoginController implements Initializable
             }
         }).start();
         disableWelcomeControls();
+        loginLast = false;
     }
 
     private void setLastLogged()
@@ -219,6 +258,7 @@ public class FXMLLoginController implements Initializable
     {
         buttonLoginGivenAccount.setDisable(true);
         textFieldPasswordGivenAccount.setDisable(true);
+        buttonNotGivenAccount.setDisable(true);
     }
 
     @Override
