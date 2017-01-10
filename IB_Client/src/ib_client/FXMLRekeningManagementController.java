@@ -132,11 +132,17 @@ public class FXMLRekeningManagementController implements Initializable
     //controls
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb)
-    {
+    public void initialize(URL url, ResourceBundle rb){
 
+    }
+    
+    @FXML
+    public void addBankAccount() {
+        controller.addBankAccount();
     }
     
     public void setBankAccounts(ArrayList<String> accounts) {
@@ -145,7 +151,8 @@ public class FXMLRekeningManagementController implements Initializable
         }
         for (String value : accounts) {
             String IBAN = accountToIBAN(value);
-            String saldo = accountToAmount(value);
+            System.out.println(accountToAmount(value));
+            String saldo = formatSaldo(accountToAmount(value));
             String bankAccount = IBAN + "\n" + saldo;
             listViewBankAccount.getItems().add(bankAccount);
         }
@@ -170,7 +177,15 @@ public class FXMLRekeningManagementController implements Initializable
     }
     
     private String formatSaldo(String saldo) {
-        String s = saldo.replace(".", ",");
-        return null;
+        String euros = "€" + saldo.substring(0, saldo.indexOf(".") + 1);
+        String cents = saldo.substring(saldo.indexOf(".") + 1);
+        if (cents.length() == 1) {
+            cents += "0";
+            if ("00".equals(cents)) {
+                cents = cents.replace("00", "-");
+            }
+        }
+        String result = euros + cents;
+        return result.replace(".", ",");
     }
 }
