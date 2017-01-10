@@ -124,10 +124,6 @@ public class FXMLRekeningManagementController implements Initializable
         
     }
     
-    public void setGui(GUI gui) {
-        gui.setManagementController(this);
-    }
-    
     //controls
     /**
      * Initializes the controller class.
