@@ -17,6 +17,7 @@ IB_Serverdist
 /IB_Client/build/
 
 /IB_Client/dist/
+/IB_Client/login.properties
 /IB_Client/nbproject/private/
 
 /IB_Server/nbproject/private/
