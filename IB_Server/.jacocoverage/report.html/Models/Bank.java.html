@@ -10,8 +10,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -35,46 +33,48 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @param centrale
      * @throws RemoteException, IllegalArgumentExcpetion
      */
-<span class="fc" id="L38">    public Bank(String name, String shortName, Administratie admin, ICentrale centrale) throws RemoteException {</span>
-<span class="fc" id="L39">        bankAccounts = new ArrayList();</span>
-<span class="fc" id="L40">        this.centrale = centrale;</span>
-<span class="fc" id="L41">        this.admin = admin;</span>
-<span class="fc" id="L42">        this.name = name;</span>
-<span class="fc" id="L43">        this.shortName = shortName;</span>
-        
-<span class="fc" id="L45">        bankTrans = new BankTrans(this);</span>
-<span class="fc" id="L46">    }</span>
+<span class="fc" id="L36">    public Bank(String name, String shortName, Administratie admin, ICentrale centrale) throws RemoteException {</span>
+<span class="fc" id="L37">        bankAccounts = new ArrayList();</span>
+<span class="fc" id="L38">        this.centrale = centrale;</span>
+<span class="fc" id="L39">        this.admin = admin;</span>
+<span class="fc" id="L40">        this.name = name;</span>
+<span class="fc" id="L41">        this.shortName = shortName;</span>
+<span class="fc" id="L42">        bankTrans = new BankTrans(this);</span>
+<span class="fc" id="L43">    }</span>
 
     public void setPersistencyMediator(IPersistencyMediator pMediator) throws RemoteException {
-<span class="fc" id="L49">        this.pMediator = pMediator;</span>
-<span class="fc" id="L50">        setDatabaseData();</span>
-<span class="fc" id="L51">    }</span>
+<span class="fc" id="L46">        this.pMediator = pMediator;</span>
+<span class="fc" id="L47">        setDatabaseData();</span>
+<span class="fc" id="L48">    }</span>
     
     @Override
     public String getName() throws RemoteException {
-<span class="fc" id="L55">        return name;</span>
+<span class="fc" id="L52">        return name;</span>
     }
 
     @Override
     public String getShortName() throws RemoteException {
-<span class="fc" id="L60">        return shortName;</span>
+<span class="fc" id="L57">        return shortName;</span>
     }
     
     @Override
     public ArrayList&lt;String&gt; getAccounts(Klant klant) throws SessionExpiredException, IllegalArgumentException, RemoteException {
-<span class="fc" id="L65">        ArrayList&lt;String&gt; accounts = new ArrayList();</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (klant == null) {</span>
-<span class="fc" id="L67">            throw new IllegalArgumentException(&quot;Client can't be null&quot;);</span>
+<span class="fc" id="L62">        ArrayList&lt;String&gt; accounts = new ArrayList();</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (klant == null) {</span>
+<span class="fc" id="L64">            throw new IllegalArgumentException(&quot;Client can't be null&quot;);</span>
         }
-<span class="fc bfc" id="L69" title="All 2 branches covered.">        else if (!admin.checkSession(klant.getUsername())) {</span>
-<span class="fc" id="L70">            throw new SessionExpiredException(&quot;Session has expired&quot;);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        else if (!admin.checkSession(klant.getUsername())) {</span>
+<span class="fc" id="L67">            throw new SessionExpiredException(&quot;Session has expired&quot;);</span>
         }
         else {
-<span class="fc bfc" id="L73" title="All 2 branches covered.">            for (Bankrekening b : bankAccounts) {</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">                if (b.getKlant().getUsername().equals(klant.getUsername())) {</span>
-<span class="fc" id="L75">                    accounts.add(b.toString());</span>
-                }
-<span class="fc" id="L77">            }</span>
+            //Synchronize the list to prevent manipulation while iterating
+<span class="fc" id="L71">            synchronized(bankAccounts) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                for (Bankrekening b : bankAccounts) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">                    if (b.getKlant().getUsername().equals(klant.getUsername())) {</span>
+<span class="fc" id="L74">                        accounts.add(b.toString());</span>
+                    }
+<span class="fc" id="L76">                }</span>
+<span class="pc" id="L77">            }</span>
         }
         //Refresh session on button click
 <span class="fc" id="L80">        admin.refreshSession(klant);</span>
@@ -113,7 +113,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
 <span class="fc" id="L113">            boolean value = false;</span>
 <span class="fc bfc" id="L114" title="All 2 branches covered.">            while (!value) {</span>
 <span class="fc" id="L115">                String IBAN = generateNewIBAN();</span>
-<span class="fc" id="L116">                bankAccounts.add(new Bankrekening(generateNewIBAN(), klant));</span>
+<span class="fc" id="L116">                bankAccounts.add(new Bankrekening(IBAN, klant));</span>
 <span class="fc" id="L117">                pMediator.addBankrekening(klant.getName(), klant.getResidence(), IBAN, shortName);</span>
 <span class="fc" id="L118">                value = true;</span>
 <span class="fc" id="L119">            }</span>
@@ -179,12 +179,16 @@ public class Bank extends UnicastRemoteObject implements IBank {
         //Deze methode staat in klasse bank, omdat we ervan uitgaan dat er maar 1 bank is.
         //Als we dit gaan uitbreiden met meer dan 1 bank, dan moet deze methode in de administatie staan.
         //Het ophalen van bankrekeningen wordt dan gedaan uit de database i.p.v. (in dit geval) de klasse Bank.
-<span class="fc bfc" id="L182" title="All 2 branches covered.">        for (Bankrekening b : bankAccounts) {</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (b.toString().split(&quot;;&quot;)[0].equals(IBAN)) {</span>
-<span class="fc" id="L184">                return true;</span>
-            }
-<span class="fc" id="L186">        }</span>
-<span class="fc" id="L187">        return false;</span>
+        
+        //Synchronize the list to prevent manipulation while iterating
+<span class="fc" id="L184">        synchronized(bankAccounts) {</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">            for (Bankrekening b : bankAccounts) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">                if (b.toString().split(&quot;;&quot;)[0].equals(IBAN)) {</span>
+<span class="fc" id="L187">                    return true;</span>
+                }
+<span class="fc" id="L189">            }</span>
+<span class="pc" id="L190">        }</span>
+<span class="fc" id="L191">        return false;</span>
     }
     
      /**
@@ -195,14 +199,17 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @return True if it exists, else false.
      */
     private boolean checkIBANProperty(String IBAN, Klant klant) {
-<span class="fc bfc" id="L198" title="All 2 branches covered.">        for (Bankrekening b : bankAccounts) {</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">            if (b.toString().split(&quot;;&quot;)[0].equals(IBAN)) {</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">                if (b.getKlant().getUsername().equals(klant.getUsername())) {</span>
-<span class="fc" id="L201">                    return true;</span>
+        //Synchronize the list to prevent manipulation while iterating
+<span class="fc" id="L203">        synchronized(bankAccounts) {</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">            for (Bankrekening b : bankAccounts) {</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">                if (b.toString().split(&quot;;&quot;)[0].equals(IBAN)) {</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">                    if (b.getKlant().getUsername().equals(klant.getUsername())) {</span>
+<span class="fc" id="L207">                        return true;</span>
+                    }
                 }
-            }
-<span class="fc" id="L204">        }</span>
-<span class="fc" id="L205">        return false;</span>
+<span class="fc" id="L210">            }</span>
+<span class="pc" id="L211">        }</span>
+<span class="fc" id="L212">        return false;</span>
     }
     
     /**
@@ -211,13 +218,16 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @return username of the client.
      */
     private String getUsernameByIBAN(String IBAN) {
-<span class="fc" id="L214">        String username = null;</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">        for (Bankrekening b : bankAccounts) {</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">            if (b.toString().split(&quot;;&quot;)[0].equals(IBAN)) {</span>
-<span class="fc" id="L217">                username = b.getKlant().getUsername();</span>
-            }
-<span class="fc" id="L219">        }</span>
-<span class="fc" id="L220">        return username;</span>
+<span class="fc" id="L221">        String username = null;</span>
+        //Synchronize the list to prevent manipulation while iterating
+<span class="fc" id="L223">        synchronized(bankAccounts) {</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">            for (Bankrekening b : bankAccounts) {</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">                if (b.toString().split(&quot;;&quot;)[0].equals(IBAN)) {</span>
+<span class="fc" id="L226">                    username = b.getKlant().getUsername();</span>
+                }
+<span class="fc" id="L228">            }</span>
+<span class="pc" id="L229">        }</span>
+<span class="fc" id="L230">        return username;</span>
     }
     
     /**
@@ -225,16 +235,16 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @return IBAN as String
      */
     private String generateNewIBAN() {
-<span class="fc" id="L228">        String part1 = &quot;NL&quot; + generateRandom(0, 99, 2);</span>
-<span class="fc" id="L229">        String part2 = shortName;</span>
-<span class="fc" id="L230">        String part3 = &quot;0&quot; + generateRandom(0, 999999999, 9);</span>
-<span class="fc" id="L231">        String IBAN = part1 + part2 + part3;</span>
+<span class="fc" id="L238">        String part1 = &quot;NL&quot; + generateRandom(0, 99, 2);</span>
+<span class="fc" id="L239">        String part2 = shortName;</span>
+<span class="fc" id="L240">        String part3 = &quot;0&quot; + generateRandom(0, 99999999, 8);</span>
+<span class="fc" id="L241">        String IBAN = part1 + part2 + part3;</span>
         
         //Kans is 1 op de (100.000.000.000 * aantal banken * aantal landen) dat
         //dezelfde IBAN al in de database staat. Vanwege testredenen is de check hierop
         //weggecomment (dit viel niet te testen vanwegen een te kleine kans).
         //Voor de robuustheid van de code kan deze nog gebruikt worden in het vervolg.
-<span class="fc" id="L237">        return IBAN;</span>
+<span class="fc" id="L247">        return IBAN;</span>
 //        if (!checkIBANExists(IBAN)) {
 //            return IBAN;
 //        } else {
@@ -248,13 +258,16 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @return Bankrekening
      */
     public Bankrekening IBANToBankAccount(String IBAN) {
-<span class="fc" id="L251">        Bankrekening bankAccount = null;</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">        for (Bankrekening b : bankAccounts) {</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">            if (b.toString().split(&quot;;&quot;)[0].equals(IBAN)) {</span>
-<span class="fc" id="L254">                bankAccount = b;</span>
-            }
-<span class="fc" id="L256">        }</span>
-<span class="fc" id="L257">        return bankAccount;</span>
+<span class="fc" id="L261">        Bankrekening bankAccount = null;</span>
+        //Synchronize the list to prevent manipulation while iterating
+<span class="fc" id="L263">        synchronized(bankAccounts) {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">            for (Bankrekening b : bankAccounts) {</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">                if (b.toString().split(&quot;;&quot;)[0].equals(IBAN)) {</span>
+<span class="fc" id="L266">                    bankAccount = b;</span>
+                }
+<span class="fc" id="L268">            }</span>
+<span class="pc" id="L269">        }</span>
+<span class="fc" id="L270">        return bankAccount;</span>
     }
     
     /**
@@ -265,12 +278,12 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @return String
      */
     private String generateRandom(int startValue, int endValue, int minNumberLength) {
-<span class="fc" id="L268">        Random r = new Random();</span>
-<span class="fc" id="L269">        String value = String.valueOf(r.nextInt((endValue - startValue) + 1) + startValue);</span>
-<span class="fc bfc" id="L270" title="All 2 branches covered.">        while (value.length() &lt; minNumberLength) {</span>
-<span class="fc" id="L271">            value = String.valueOf(new Random().nextInt(9) + startValue) + value;</span>
+<span class="fc" id="L281">        Random r = new Random();</span>
+<span class="fc" id="L282">        String value = String.valueOf(r.nextInt((endValue - startValue) + 1) + startValue);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">        while (value.length() &lt; minNumberLength) {</span>
+<span class="fc" id="L284">            value = String.valueOf(new Random().nextInt(9) + startValue) + value;</span>
         }
-<span class="fc" id="L273">        return value;</span>
+<span class="fc" id="L286">        return value;</span>
     }
     
     /**
@@ -278,10 +291,10 @@ public class Bank extends UnicastRemoteObject implements IBank {
      */
     private void setDatabaseData() throws RemoteException {
         //Set bankrekeningen
-<span class="fc bfc" id="L281" title="All 2 branches covered.">        for (String rekeningValues : pMediator.getAllBankrekeningen(shortName)) {</span>
-<span class="fc" id="L282">            bankAccounts.add(stringToBankrekening(rekeningValues));</span>
-<span class="fc" id="L283">        }</span>
-<span class="fc" id="L284">    }</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        for (String rekeningValues : pMediator.getAllBankrekeningen(shortName)) {</span>
+<span class="fc" id="L295">            bankAccounts.add(stringToBankrekening(rekeningValues));</span>
+<span class="fc" id="L296">        }</span>
+<span class="fc" id="L297">    }</span>
     
     /**
      * Converts the String of klant-values to a Klant object.
@@ -291,12 +304,12 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @return Bankrekening
      */
     private Bankrekening stringToBankrekening(String values) throws RemoteException {
-<span class="fc" id="L294">        String[] rFields = values.split(&quot;;&quot;);</span>
-<span class="fc" id="L295">        String[] klantFields = pMediator.getKlantByID(Integer.valueOf(rFields[1])).split(&quot;;&quot;);</span>
-<span class="fc" id="L296">        String username = klantFields[0] + klantFields[1];</span>
-<span class="fc" id="L297">        Klant klant = admin.getKlantByUsername(username);</span>
-<span class="fc" id="L298">        Bankrekening rekening = new Bankrekening(rFields[0], klant);</span>
-<span class="fc" id="L299">        return rekening; </span>
+<span class="fc" id="L307">        String[] rFields = values.split(&quot;;&quot;);</span>
+<span class="fc" id="L308">        String[] klantFields = pMediator.getKlantByID(Integer.valueOf(rFields[1])).split(&quot;;&quot;);</span>
+<span class="fc" id="L309">        String username = klantFields[0] + klantFields[1];</span>
+<span class="fc" id="L310">        Klant klant = admin.getKlantByUsername(username);</span>
+<span class="fc" id="L311">        Bankrekening rekening = new Bankrekening(rFields[0], klant);</span>
+<span class="fc" id="L312">        return rekening; </span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

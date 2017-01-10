@@ -100,6 +100,14 @@ public class FXMLRekeningManagementController implements Initializable
     @FXML
     private CheckBox checkBoxExtraCreditOn;
 
+    public void setStage() {
+        
+    }
+    
+    public void setGui(GUI gui) {
+        gui.setManagementController(this);
+    }
+    
     //controls
     /**
      * Initializes the controller class.

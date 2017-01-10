@@ -57,7 +57,7 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
                     transList.add(transactionToString(trans));
                 }
             }
-            }
+        }
         return transList;
     }
 
