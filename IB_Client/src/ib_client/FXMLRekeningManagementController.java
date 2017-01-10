@@ -18,6 +18,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -35,6 +36,7 @@ public class FXMLRekeningManagementController implements Initializable
     void setStage(Stage stage)
     {
         this.stage = stage;
+        stage.setHeight(mainPane.getHeight());
     }
 
     void setGuiController(GUIController controller)
@@ -47,6 +49,9 @@ public class FXMLRekeningManagementController implements Initializable
         this.gui = gui;
     }
 
+    @FXML
+    private Pane mainPane;
+    
     @FXML
     private ListView listViewBankAccount;
     @FXML
@@ -127,6 +132,6 @@ public class FXMLRekeningManagementController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
-        // TODO
+
     }
 }

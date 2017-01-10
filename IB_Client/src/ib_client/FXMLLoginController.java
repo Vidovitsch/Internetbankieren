@@ -270,10 +270,10 @@ public class FXMLLoginController implements Initializable
         try
         {
             myPane = (Pane) myLoader.load();
-            FXMLRekeningManagementController loginController = (FXMLRekeningManagementController) myLoader.getController();
-            loginController.setStage(stage);
-            loginController.setGuiController(controller);
-            loginController.setGui(gui);
+            FXMLRekeningManagementController rekeningManagementController = (FXMLRekeningManagementController) myLoader.getController();
+            rekeningManagementController.setStage(stage);
+            rekeningManagementController.setGuiController(controller);
+            rekeningManagementController.setGui(gui);
             Scene scene = new Scene(myPane);
             stage.setScene(scene);
             stage.setTitle("Rekening Management");
