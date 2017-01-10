@@ -18,6 +18,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -26,6 +27,25 @@ import javafx.scene.control.TextField;
  */
 public class FXMLRekeningManagementController implements Initializable
 {
+
+    private GUI gui;
+    private GUIController controller;
+    private Stage stage;
+
+    void setStage(Stage stage)
+    {
+        this.stage = stage;
+    }
+
+    void setGuiController(GUIController controller)
+    {
+        this.controller = controller;
+    }
+
+    void setGui(GUI gui)
+    {
+        this.gui = gui;
+    }
 
     @FXML
     private ListView listViewBankAccount;
@@ -117,5 +137,4 @@ public class FXMLRekeningManagementController implements Initializable
     {
         // TODO
     }
-
 }
