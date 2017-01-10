@@ -78,6 +78,6 @@
         </tabs>
       </TabPane>
       <ComboBox fx:id="comboBoxBankAccountType" layoutX="475.0" layoutY="25.0" prefWidth="150.0" />
-      <Button fx:id="buttonAddBankAccount" layoutX="638.0" layoutY="25.0" mnemonicParsing="false" text="Add" />
+      <Button fx:id="buttonAddBankAccount" layoutX="638.0" layoutY="25.0" mnemonicParsing="false" onAction="#addBankAccount" text="Add" />
    </children>
 </Pane>
