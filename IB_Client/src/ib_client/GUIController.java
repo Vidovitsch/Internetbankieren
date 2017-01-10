@@ -16,10 +16,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.layout.Pane;
 
 /**
  *
@@ -57,9 +55,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public boolean login(String naam, String woonplaats, String password)
-    {
-        String exMessage = "";
+    public boolean login(String naam, String woonplaats, String password) {
         try
         {
             klant = admin.login(naam, woonplaats, password);
@@ -70,7 +66,6 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         } catch (IllegalArgumentException | LoginException | RemoteException ex)
         {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
-            exMessage = ex.getMessage();
             return false;
         }
         return true;

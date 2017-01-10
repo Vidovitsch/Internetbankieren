@@ -14,7 +14,7 @@ public class Sessie {
     private Administratie admin;
     private Timer sessionTimer;
     
-    private final int maxTicks = 2000;
+    private final int maxTicks = 5;
     private int ticks = 0;
     
     public Sessie(Klant client, Administratie admin) {

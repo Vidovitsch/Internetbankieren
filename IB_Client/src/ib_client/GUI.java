@@ -1,30 +1,12 @@
-//Aanpassing t.o.v. architectuurdocument:
-//
-//IAdminCheck bestaat niet meer, wordt nu lokaal geregeld op de Server
-//Klant heeft geen attribuut password
-//IAdmin heeft een extra methode logout
-//BankAccount heeft een extra parameter in constructor: double credit
-//Bank heeft geen addTransactie meer (transacties worden opgeslagen op de overboekcentrale)
-//IBank illegalargumentexceptions toegevoegd
-//Bank heeft een extra parameter in constructor Administratie admin
-//Transacties 2 IBAN's toegevoegd
-//IBankTrans heeft geen addTransactie meer (transacties worden opgeslagen op de overboekcentrale)
-
 package ib_client;
 
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -33,6 +15,7 @@ import javafx.stage.Stage;
  */
 public class GUI extends Application
 {
+    private FXMLRekeningManagementController RMController;
     private GUIController controller;
     private Pane myPane;
     
@@ -52,17 +35,17 @@ public class GUI extends Application
         stage.show();
     }
 
+    public void setManagementController(FXMLRekeningManagementController RMController) {
+        this.RMController = RMController;
+    }
+    
     /**
      * Fills the list of this user's bank account.
      * Only gets called by the controller.
      * @param accounts 
      */
     public void setAccountList(ArrayList<String> accounts) {
-        //Testcode: kan vervangen worden
-        for (String fields : accounts) {
-            System.out.println("IBAN: " + accountToIBAN(fields));
-            System.out.println("Saldo: " + accountToAmount(fields));
-        }
+        
     }
 
     /**
