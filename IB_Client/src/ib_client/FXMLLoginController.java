@@ -8,12 +8,14 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jdk.nashorn.internal.parser.TokenType;
 
 /**
  *
@@ -30,21 +32,29 @@ public class FXMLLoginController implements Initializable
     private GUI gui;
     private String name;
     private String residence;
-    
-    public void setStage(Stage s) {
+    private String currentRegisterName;
+    private String currentRegisterResidence;
+    private String currentRegisterPassword;
+    private boolean isRegistering = false;
+    int loginPoging = 0;
+
+    public void setStage(Stage s)
+    {
         this.stage = s;
     }
 
-    void setGuiController(GUIController controller) {
+    void setGuiController(GUIController controller)
+    {
         this.controller = controller;
         setLastLogged();
         setWelcomeText(name, residence);
     }
-    
-    void setGui(GUI gui) {
+
+    void setGui(GUI gui)
+    {
         this.gui = gui;
     }
-    
+
     @FXML
     private Pane pane;
 
@@ -82,45 +92,96 @@ public class FXMLLoginController implements Initializable
     private Label label;
 
     @FXML
-    private void login() {
-        name = textFieldAccountName.getText();
-        residence = textFieldAccountResidence.getText();
-        String password = textFieldAccountPassword.getText();
-        controller.login(name, residence, password);
+    private void login()
+    {
+        if (isRegistering)
+        {
+            
+        } else
+        {
+            name = textFieldAccountName.getText();
+            residence = textFieldAccountResidence.getText();
+            String password = textFieldAccountPassword.getText();
+            loginPoging ++;
+            String loginmessage = controller.login(name, residence, password);
+            if (loginmessage == "")
+            {
+                OpenBankAccountManagement();
+            }
+            else{
+                initErrorMessage(name);
+            }
+        }
+
         //controller.setBank();
     }
     
+    public void initErrorMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
     @FXML
-    private void loginGivenAccount() {
+    private void loginGivenAccount()
+    {
         String password = textFieldPasswordGivenAccount.getText();
         controller.login(name, residence, password);
         controller.setBank();
     }
-    
+
     @FXML
-    private void openRegisterScreen() {
-        
+    private void RegisterAccount()
+    {
+        try
+        {
+            //zet de huidig ingevoerde gegevens tijdelijk in onderstaande variabelen
+            currentRegisterName = textFieldAccountName.getText();
+            currentRegisterResidence = textFieldAccountResidence.getText();
+            currentRegisterPassword = textFieldAccountPassword.getText();
+            isRegistering = true;
+            textFieldAccountName.setDisable(true);
+            textFieldAccountPassword.setDisable(true);
+            textFieldAccountPassword.setDisable(true);
+            buttonNotGivenAccount.setDisable(true);
+            labelWelcomeText.setText("Bevestig je wachtwoord om registratie te voltooien");
+            buttonLoginGivenAccount.setText("Voltooi Registratie");
+
+        } catch (Exception e)
+        {
+            //nog veranderen in logische errormessage
+            System.out.println("voer geldige gegevens in");
+        }
     }
 
     @FXML
-    private void rolloutAnchorPane(ActionEvent event) {
+    private void rolloutAnchorPane(ActionEvent event)
+    {
         anchorCurrentHeight = stage.getHeight();
-        new Thread(new Runnable() {
+        new Thread(new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
                 //anchorCurrentHeight = anchorPane.getHeight();
-                while (anchorCurrentHeight < anchorHeightMoreOptions) {
-                    try {
+                while (anchorCurrentHeight < anchorHeightMoreOptions)
+                {
+                    try
+                    {
                         anchorCurrentHeight++;
-                        Platform.runLater(new Runnable() {
+                        Platform.runLater(new Runnable()
+                        {
                             @Override
-                            public void run() {
+                            public void run()
+                            {
                                 pane.setPrefHeight(anchorCurrentHeight);
                                 stage.setHeight(anchorCurrentHeight);
                             }
                         });
                         Thread.currentThread().sleep(2);
-                    } catch (InterruptedException ex) {
+                    } catch (InterruptedException ex)
+                    {
                         Logger.getLogger(FXMLLoginController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -128,35 +189,46 @@ public class FXMLLoginController implements Initializable
         }).start();
         disableWelcomeControls();
     }
-    
-    private void setLastLogged() {
+
+    private void setLastLogged()
+    {
         name = "";
         residence = "";
         String[] properties = controller.getLastLogged();
-        if (properties != null) {
+        if (properties != null)
+        {
             name = properties[0];
             residence = properties[1];
         }
     }
-    
-    private void setWelcomeText(String name, String residence) {
-        if (name.isEmpty() || residence.isEmpty()) {
+
+    private void setWelcomeText(String name, String residence)
+    {
+        if (name.isEmpty() || residence.isEmpty())
+        {
             labelWelcomeText.setText("Authenticate to login");
             buttonNotGivenAccount.setText("Press to login");
             disableWelcomeControls();
-        } else {
+        } else
+        {
             labelWelcomeText.setText("Welcome " + name + residence + "!");
         }
     }
-    
-    private void disableWelcomeControls() {
+
+    private void disableWelcomeControls()
+    {
         buttonLoginGivenAccount.setDisable(true);
         textFieldPasswordGivenAccount.setDisable(true);
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
         // TODO
+    }
+
+    private void OpenBankAccountManagement()
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
