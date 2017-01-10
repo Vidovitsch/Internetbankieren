@@ -46,6 +46,7 @@ public class GUI extends Application
      */
     public void setAccountList(ArrayList<String> accounts) {
         RMController.setBankAccounts(accounts);
+        RMController.setComboBoxData(accounts);
     }
 
     /**
