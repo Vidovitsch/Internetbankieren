@@ -32,7 +32,6 @@ import static org.junit.Assert.*;
  *
  * @author David
  */
-
 //Test Coverage:
 //
 //addBankAccount functionality
@@ -42,13 +41,12 @@ import static org.junit.Assert.*;
 //GetResidence inspection method
 //GetBankAccounts inspection method
 //GetTransactions inspection method
-
 //Zet de centrale en de database aan voor deze tests
 //Almost all methods tested here are the same as in BankTest
 //Only difference is that an object of Bank has been replaced by an object of Klant
 //Note: Class Klant is used as a link between client and server.
 public class KlantTest {
-    
+
     private final String ipAddressDB = "localhost";
     private final String bindingName = "Database";
     private final int portNumber = 1088;
@@ -58,7 +56,7 @@ public class KlantTest {
     private ICentrale centrale;
     private IBank bank;
     private IPersistencyMediator database;
-    
+
     public KlantTest() {
         try {
             Registry centraleRegistry = LocateRegistry.getRegistry("localhost", 1100);
@@ -71,15 +69,15 @@ public class KlantTest {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
         try {
@@ -95,7 +93,7 @@ public class KlantTest {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @After
     public void tearDown() {
         try {
@@ -109,12 +107,13 @@ public class KlantTest {
 
     @Test
     public void addBankAccountValidKlantTest() {
-           /**
-            * Adds a bank account on the server linked with this Client.
-            * @param bank
-            * @throws Exceptions.SessionExpiredException
-            * @throws java.rmi.RemoteException
-            */
+        /**
+         * Adds a bank account on the server linked with this Client.
+         *
+         * @param bank
+         * @throws Exceptions.SessionExpiredException
+         * @throws java.rmi.RemoteException
+         */
         try {
             ArrayList<String> accounts = dummyKlant1.getBankAccounts(bank);
             //Test list-size before
@@ -134,7 +133,7 @@ public class KlantTest {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     //Tests the method addBankAccount with logged-out user
     @Test
     public void addBankAccountNoSession() {
@@ -150,19 +149,20 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the method removeBankAccount with a valid Klant and IBAN
     @Test
     public void removeBankAccountValidKlant() {
-            /**
-            * Removes a bank account on the server linked with this Client.
-            * @param IBAN
-            * @param bank
-            * @return True if succesful, else false
-            * @throws Exceptions.SessionExpiredException
-            * @throws java.rmi.RemoteException
-            */
-        try{
+        /**
+         * Removes a bank account on the server linked with this Client.
+         *
+         * @param IBAN
+         * @param bank
+         * @return True if succesful, else false
+         * @throws Exceptions.SessionExpiredException
+         * @throws java.rmi.RemoteException
+         */
+        try {
             //Add a bank account
             dummyKlant1.addBankAccount(bank);
             //Get list of bank accounts (String-value)
@@ -183,7 +183,7 @@ public class KlantTest {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     //Tests the method removeBankAccount with an empty IBAN
     @Test
     public void removeBankAccountEmptyIBAN() {
@@ -199,7 +199,7 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the method removeBankAccount with invalid session
     @Test
     public void removeBankAccountNoSession() {
@@ -219,7 +219,7 @@ public class KlantTest {
             fail();
         }
     }
-    
+
     //Tests the method removeBankAccount with false IBAN property
     @Test
     public void removeBankAccountFalseProperty() {
@@ -234,50 +234,54 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the inspection method getUsername
     @Test
     public void getUsernameTest() {
         /**
-        * Returns the username of this Client.
-        * The username is a combination of this user's name and residence.
-        * @return The user's username.
-        */
+         * Returns the username of this Client. The username is a combination of
+         * this user's name and residence.
+         *
+         * @return The user's username.
+         */
         assertEquals("The username is 'DummyUserDummyUser'", "DummyUserDummyUser", dummyKlant1.getUsername());
     }
-    
+
     //Tests the inspection method getName
     @Test
     public void getNameTest() {
         /**
-        * Returns the name of this Client.
-        * @return The user's name.
-        */
+         * Returns the name of this Client.
+         *
+         * @return The user's name.
+         */
         assertEquals("The username is 'DummyUser'", "DummyUser", dummyKlant1.getName());
     }
-    
+
     //Tests the inspection method getResidence
     @Test
     public void getResidence() {
         /**
-        * Returns the current residence of this client.
-        * @return The user's current residence.
-        */
+         * Returns the current residence of this client.
+         *
+         * @return The user's current residence.
+         */
         assertEquals("This user's residence is 'DummyUser'", "DummyUser", dummyKlant1.getResidence());
     }
-    
+
     //Tests the inspection method getAccounts with a valid klant with a valid session
     @Test
     public void getBankAccountsValidKlantTest() {
         /**
-        * Returns a list of Strings. Every String is
-        * representing a bank account.
-        * @param bank
-        * @return A list of Strings representing a bank account.
-        * @throws Exceptions.SessionExpiredException
-        * @throws java.rmi.RemoteException
-        */
-        
+         * Returns a list of Strings. Every String is representing a bank
+         * account.
+         *
+         * @param bank
+         * @return A list of Strings representing a bank account.
+         * @throws Exceptions.SessionExpiredException
+         * @throws java.rmi.RemoteException
+         */
+
         //IBAN is random generated, so it can't be tested
         try {
             ArrayList<String> bankAccounts = dummyKlant1.getBankAccounts(bank);
@@ -292,7 +296,7 @@ public class KlantTest {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     //Tests the inspection method getAccounts with a logged-out klant
     @Test
     public void getBankAccountsNoSessionKlantTest() {
@@ -308,19 +312,20 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the inspection method getTransactions with a valid klant
     @Test
     public void getTransactionsValidKlantTest() {
         /**
-        * Returns a list of Strings. Every String is
-        * representing a transaction.
-        * @param IBAN
-        * @param bank
-        * @return A list of Strings representing a transaction.
-        * @throws Exceptions.SessionExpiredException
-        * @throws java.rmi.RemoteException
-        */
+         * Returns a list of Strings. Every String is representing a
+         * transaction.
+         *
+         * @param IBAN
+         * @param bank
+         * @return A list of Strings representing a transaction.
+         * @throws Exceptions.SessionExpiredException
+         * @throws java.rmi.RemoteException
+         */
         try {
             //Get IBAN2 from dummyKlant2
             String IBAN2 = dummyKlant2.getBankAccounts(bank).get(0).split(";")[0];
@@ -333,9 +338,9 @@ public class KlantTest {
             //Test list-size
             assertEquals("Transacions' list size is 1", transactions.size(), 1);
             //Test IBANTo
-            assertEquals(IBAN2, transactions.get(0).split(";")[2]);
+            assertEquals(IBAN1, transactions.get(0).split(";")[2]);
             //Test IBANFrom
-            assertEquals(IBAN1, transactions.get(0).split(";")[3]);
+            assertEquals(IBAN2, transactions.get(0).split(";")[3]);
             //Test amount transferred
             assertEquals("1 euro has been transferred", transactions.get(0).split(";")[1], "1.0");
             //Test description
@@ -344,7 +349,7 @@ public class KlantTest {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     //Tests the inspection method getTransactions with an empty IBAN
     @Test
     public void getTransactionsEmptyIBANTest() {
@@ -360,14 +365,14 @@ public class KlantTest {
             fail();
         }
     }
-    
+
     //Tests the inspectionmethod getTransactions with a logged-out klant
     @Test
     public void getTransactionsNoSessionTest() {
         try {
             //Get IBAN from dummyKlant1
             String IBAN = dummyKlant1.getBankAccounts(bank).get(0).split(";")[0];
-            
+
             admin.logout(dummyKlant1);
             dummyKlant1.getTransactions(IBAN, bank);
             fail();
@@ -379,7 +384,7 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the inspection method getTransactions with a invalid IBAN
     @Test
     public void getTransactionsInvalidIBANTest() {
@@ -396,23 +401,27 @@ public class KlantTest {
             fail();
         }
     }
-    
+
     //Tests the method startTransaction with a valid klant
     @Test
     public void startTransactionValidKlantTest() {
-            /**
-            * Starts a transaction between two bank accounts.
-            * If session is over, SessionExpiredException.
-            * @param IBAN1 representing the bank account, if empty throws IllegalArgumentException.
-            * @param IBAN2 representing the bank account, if empty throws IllegalArgumentException.
-            * @param value of the money to be transferred. Has to be greater than 0 or not empty, else IllegalArgumentException.
-            * @param description
-            * @param bank
-            * @return True if succesful, else false.
-            * @throws Exceptions.SessionExpiredException
-            * @throws RemoteException
-            * @throws Exceptions.LimitReachedException
-            */
+        /**
+         * Starts a transaction between two bank accounts. If session is over,
+         * SessionExpiredException.
+         *
+         * @param IBAN1 representing the bank account, if empty throws
+         * IllegalArgumentException.
+         * @param IBAN2 representing the bank account, if empty throws
+         * IllegalArgumentException.
+         * @param value of the money to be transferred. Has to be greater than 0
+         * or not empty, else IllegalArgumentException.
+         * @param description
+         * @param bank
+         * @return True if succesful, else false.
+         * @throws Exceptions.SessionExpiredException
+         * @throws RemoteException
+         * @throws Exceptions.LimitReachedException
+         */
         try {
             //Get both IBANs
             ArrayList<String> accounts1 = dummyKlant1.getBankAccounts(bank);
@@ -432,7 +441,7 @@ public class KlantTest {
             Logger.getLogger(BankTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     //Tests the method startTransaction with a empty IBAN1
     @Test
     public void startTransactionEmptyIBAN1() {
@@ -449,7 +458,7 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the method startTransaction with a empty IBAN2
     @Test
     public void startTransactionEmptyIBAN2() {
@@ -466,7 +475,7 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the method startTransaction with no session
     @Test
     public void startTransactionNoSession() {
@@ -488,7 +497,7 @@ public class KlantTest {
             fail();
         }
     }
-    
+
     //Tests the method startTransaction with a false property
     @Test
     public void startTransactionFalseProperty() {
@@ -508,7 +517,7 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the method startTransaction with non-existing IBAN
     @Test
     public void startTransactionNotExisting() {
@@ -528,7 +537,7 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the method startTransaction with a zero value
     @Test
     public void startTransactionZeroValue() {
@@ -549,7 +558,7 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Tests the method startTransaction with a negative value
     @Test
     public void startTransactionNegativeValue() {
@@ -570,12 +579,13 @@ public class KlantTest {
             assertTrue(true);
         }
     }
-    
+
     //Help methods
     /**
-     * Converts the String of klant-values to a Klant object.
-     * Als de klant een geldige sessie heeft draaien wordt er ook
-     * voor deze klant een sessie gestart.
+     * Converts the String of klant-values to a Klant object. Als de klant een
+     * geldige sessie heeft draaien wordt er ook voor deze klant een sessie
+     * gestart.
+     *
      * @param values
      * @return Bankrekening
      */
@@ -585,6 +595,6 @@ public class KlantTest {
         String username = klantFields[0] + klantFields[1];
         Klant klant = admin.getKlantByUsername(username);
         Bankrekening rekening = new Bankrekening(rFields[0], klant);
-        return rekening; 
+        return rekening;
     }
 }

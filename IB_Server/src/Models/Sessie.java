@@ -1,11 +1,8 @@
 package Models;
 
 import Shared_Client.Klant;
-import java.rmi.RemoteException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -17,7 +14,7 @@ public class Sessie {
     private Administratie admin;
     private Timer sessionTimer;
     
-    private final int maxTicks = 5;
+    private final int maxTicks = 2000;
     private int ticks = 0;
     
     public Sessie(Klant client, Administratie admin) {

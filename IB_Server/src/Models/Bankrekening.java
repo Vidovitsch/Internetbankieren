@@ -2,7 +2,6 @@ package Models;
 
 import Shared_Client.Klant;
 
-
 /**
  *
  * @author David
@@ -31,7 +30,7 @@ public class Bankrekening {
      * Adds a value of money to this bank account.
      * @param value of money.
      */
-    public void addToBalance(double value) {
+    public synchronized void addToBalance(double value) {
         balance += value;
     }
     
@@ -40,7 +39,7 @@ public class Bankrekening {
      * @param value of money
      * @return true if successful, else false.
      */
-    public boolean removeFromBalance(double value) {
+    public synchronized boolean removeFromBalance(double value) {
         double newBalance = balance - value;
         if (newBalance < credit * -1) {
             return false;
