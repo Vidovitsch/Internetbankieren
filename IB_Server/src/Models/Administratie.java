@@ -111,11 +111,14 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     public boolean removeKlant(String name, String residence, String password) throws RemoteException {
         Klant klant = null;
         boolean bool = false;
-        for (Klant k : clients) {
-            if (k.getUsername().equals(name + residence)) {
-                if (pMediator.removeKlant(name, residence, password)) {
-                    klant = k;
-                    bool = true;
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(clients) {
+            for (Klant k : clients) {
+                if (k.getUsername().equals(name + residence)) {
+                    if (pMediator.removeKlant(name, residence, password)) {
+                        klant = k;
+                        bool = true;
+                    }
                 }
             }
         }
@@ -137,9 +140,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @return True if session is running, else false.
      */
     public boolean checkSession(String username) {
-        for (Sessie sessie : sessies) {
-            if (sessie.getClient().getUsername().equals(username)) {
-                return true;
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(sessies) {
+            for (Sessie sessie : sessies) {
+                if (sessie.getClient().getUsername().equals(username)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -152,9 +158,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      */
     public Klant getKlantByUsername(String username) {
         Klant klant = null;
-        for (Klant k : clients) {
-            if (k.getUsername().equals(username)) {
-                klant = k;
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(clients) {
+            for (Klant k : clients) {
+                if (k.getUsername().equals(username)) {
+                    klant = k;
+                }
             }
         }
         return klant;
@@ -166,9 +175,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant 
      */
     public void refreshSession(Klant klant) {
-        for (Sessie s : sessies) {
-            if (s.getClient().getUsername().equals(klant.getUsername())) {
-                s.refreshSession();
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(sessies) {
+            for (Sessie s : sessies) {
+                if (s.getClient().getUsername().equals(klant.getUsername())) {
+                    s.refreshSession();
+                }
             }
         }
     }
@@ -218,9 +230,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      */
     public void removeSessionLocal(Klant klant) {
         Sessie sessie = null;
-        for (Sessie s : sessies) {
-            if (s.getClient().getUsername().equals(klant.getUsername())) {
-                sessie = s;
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(sessies) {
+            for (Sessie s : sessies) {
+                if (s.getClient().getUsername().equals(klant.getUsername())) {
+                    sessie = s;
+                }
             }
         }
         if (sessie != null) {

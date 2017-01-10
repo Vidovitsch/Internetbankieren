@@ -8,8 +8,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -39,6 +37,7 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         
         //Add a new transaction to the centrale
         Transactie transactie = new Transactie(IBAN1, IBAN2, getCurrentDateTime(), value);
+        
         if (!description.isEmpty()) transactie.setDescription(description);
         transactions.add(transactie);
         
@@ -51,11 +50,14 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
     @Override
     public ArrayList<String> getTransactions(String IBAN) throws RemoteException {
         ArrayList<String> transList = new ArrayList();
-        for (Transactie trans : transactions) {
-            if (trans.getIBANTo().equals(IBAN) || trans.getIBANFrom().equals(IBAN)) {
-                transList.add(transactionToString(trans));
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(transactions) {
+            for (Transactie trans : transactions) {
+                if (trans.getIBANTo().equals(IBAN) || trans.getIBANFrom().equals(IBAN)) {
+                    transList.add(transactionToString(trans));
+                }
             }
-        }
+            }
         return transList;
     }
 

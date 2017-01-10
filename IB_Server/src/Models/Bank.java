@@ -10,8 +10,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -41,7 +39,6 @@ public class Bank extends UnicastRemoteObject implements IBank {
         this.admin = admin;
         this.name = name;
         this.shortName = shortName;
-        
         bankTrans = new BankTrans(this);
     }
 
@@ -70,9 +67,12 @@ public class Bank extends UnicastRemoteObject implements IBank {
             throw new SessionExpiredException("Session has expired");
         }
         else {
-            for (Bankrekening b : bankAccounts) {
-                if (b.getKlant().getUsername().equals(klant.getUsername())) {
-                    accounts.add(b.toString());
+            //Synchronize the list to prevent manipulation while iterating
+            synchronized(bankAccounts) {
+                for (Bankrekening b : bankAccounts) {
+                    if (b.getKlant().getUsername().equals(klant.getUsername())) {
+                        accounts.add(b.toString());
+                    }
                 }
             }
         }
@@ -113,7 +113,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
             boolean value = false;
             while (!value) {
                 String IBAN = generateNewIBAN();
-                bankAccounts.add(new Bankrekening(generateNewIBAN(), klant));
+                bankAccounts.add(new Bankrekening(IBAN, klant));
                 pMediator.addBankrekening(klant.getName(), klant.getResidence(), IBAN, shortName);
                 value = true;
             }
@@ -179,9 +179,13 @@ public class Bank extends UnicastRemoteObject implements IBank {
         //Deze methode staat in klasse bank, omdat we ervan uitgaan dat er maar 1 bank is.
         //Als we dit gaan uitbreiden met meer dan 1 bank, dan moet deze methode in de administatie staan.
         //Het ophalen van bankrekeningen wordt dan gedaan uit de database i.p.v. (in dit geval) de klasse Bank.
-        for (Bankrekening b : bankAccounts) {
-            if (b.toString().split(";")[0].equals(IBAN)) {
-                return true;
+        
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(bankAccounts) {
+            for (Bankrekening b : bankAccounts) {
+                if (b.toString().split(";")[0].equals(IBAN)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -195,10 +199,13 @@ public class Bank extends UnicastRemoteObject implements IBank {
      * @return True if it exists, else false.
      */
     private boolean checkIBANProperty(String IBAN, Klant klant) {
-        for (Bankrekening b : bankAccounts) {
-            if (b.toString().split(";")[0].equals(IBAN)) {
-                if (b.getKlant().getUsername().equals(klant.getUsername())) {
-                    return true;
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(bankAccounts) {
+            for (Bankrekening b : bankAccounts) {
+                if (b.toString().split(";")[0].equals(IBAN)) {
+                    if (b.getKlant().getUsername().equals(klant.getUsername())) {
+                        return true;
+                    }
                 }
             }
         }
@@ -212,9 +219,12 @@ public class Bank extends UnicastRemoteObject implements IBank {
      */
     private String getUsernameByIBAN(String IBAN) {
         String username = null;
-        for (Bankrekening b : bankAccounts) {
-            if (b.toString().split(";")[0].equals(IBAN)) {
-                username = b.getKlant().getUsername();
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(bankAccounts) {
+            for (Bankrekening b : bankAccounts) {
+                if (b.toString().split(";")[0].equals(IBAN)) {
+                    username = b.getKlant().getUsername();
+                }
             }
         }
         return username;
@@ -227,7 +237,7 @@ public class Bank extends UnicastRemoteObject implements IBank {
     private String generateNewIBAN() {
         String part1 = "NL" + generateRandom(0, 99, 2);
         String part2 = shortName;
-        String part3 = "0" + generateRandom(0, 999999999, 9);
+        String part3 = "0" + generateRandom(0, 99999999, 8);
         String IBAN = part1 + part2 + part3;
         
         //Kans is 1 op de (100.000.000.000 * aantal banken * aantal landen) dat
@@ -249,9 +259,12 @@ public class Bank extends UnicastRemoteObject implements IBank {
      */
     public Bankrekening IBANToBankAccount(String IBAN) {
         Bankrekening bankAccount = null;
-        for (Bankrekening b : bankAccounts) {
-            if (b.toString().split(";")[0].equals(IBAN)) {
-                bankAccount = b;
+        //Synchronize the list to prevent manipulation while iterating
+        synchronized(bankAccounts) {
+            for (Bankrekening b : bankAccounts) {
+                if (b.toString().split(";")[0].equals(IBAN)) {
+                    bankAccount = b;
+                }
             }
         }
         return bankAccount;
