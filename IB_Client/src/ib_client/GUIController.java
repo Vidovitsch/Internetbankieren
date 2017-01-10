@@ -193,7 +193,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         try {
             if (klant.startTransaction(IBAN1, IBAN2, value, description, bank)) {
                 getTransactions(IBAN1);
-                gui.initSuccessMessage("Transaction successful");
+                gui.initSuccessMessage("Transacion successful");
             } else {
                 gui.initErrorMessage("Transaction failed");
             }
@@ -205,7 +205,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException | LimitReachedException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
-            exMessage = ex.getMessage();s
+            exMessage = ex.getMessage();
         }
         return exMessage;
     }
