@@ -106,7 +106,7 @@ public class Klant implements Serializable {
      * @throws Exceptions.LimitReachedException
      */
     public boolean startTransaction(String IBAN1, String IBAN2, double value, String description, IBank bank) throws SessionExpiredException, IllegalArgumentException, LimitReachedException, RemoteException {
-<span class="fc" id="L109">        return bank.startTransaction(this, IBAN1, IBAN2, value, description);</span>
+<span class="nc" id="L109">        return bank.startTransaction(this, IBAN1, IBAN2, value, description);</span>
     }
 }
 
