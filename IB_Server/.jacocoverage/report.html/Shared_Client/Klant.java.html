@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Klant.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;IB_Server&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">Shared_Client</a> &gt; <span class="el_source">Klant.java</span></div><h1>Klant.java</h1><pre class="source lang-java linenums">package Shared_Client;
+
+import Exceptions.LimitReachedException;
+import Exceptions.SessionExpiredException;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author David
+ */
+public class Klant implements Serializable {
+
+    private String name;
+    private String residence;
+    
+<span class="fc" id="L18">    public Klant(String name, String residence) {</span>
+<span class="fc" id="L19">        this.name = name;</span>
+<span class="fc" id="L20">        this.residence = residence;</span>
+<span class="fc" id="L21">    }</span>
+    
+    /**
+     * Adds a bank account on the server linked with this Client.
+     * @param bank
+     * @throws Exceptions.SessionExpiredException
+     * @throws java.rmi.RemoteException
+     */
+    public void addBankAccount(IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+<span class="fc" id="L30">        bank.addBankAccount(this);</span>
+<span class="fc" id="L31">    }</span>
+    
+    /**
+     * Removes a bank account on the server linked with this Client.
+     * @param IBAN
+     * @param bank
+     * @return True if succesful, else false
+     * @throws Exceptions.SessionExpiredException
+     * @throws java.rmi.RemoteException
+     */
+    public boolean removeBankAccount(String IBAN, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+<span class="fc" id="L42">        return bank.removeBankAccount(IBAN, this);</span>
+    }
+    
+    /**
+     * Returns the username of this Client.
+     * The username is a combination of this user's name and residence.
+     * @return The user's username.
+     */
+    public String getUsername() {
+<span class="fc" id="L51">        return name + residence;</span>
+    }
+    
+    /**
+     * Returns the name of this Client.
+     * @return The user's name.
+     */
+    public String getName() {
+<span class="fc" id="L59">        return name;</span>
+    }
+    
+    /**
+     * Returns the current residence of this client.
+     * @return The user's current residence.
+     */
+    public String getResidence() {
+<span class="fc" id="L67">        return residence;</span>
+    }
+    
+    /**
+     * Returns a list of Strings. Every String is
+     * representing a bank account.
+     * @param bank
+     * @return A list of Strings representing a bank account.
+     * @throws Exceptions.SessionExpiredException
+     * @throws java.rmi.RemoteException
+     */
+    public ArrayList&lt;String&gt; getBankAccounts(IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+<span class="fc" id="L79">        return bank.getAccounts(this);</span>
+    }
+    
+    /**
+     * Returns a list of Strings. Every String is
+     * representing a transaction.
+     * @param IBAN
+     * @param bank
+     * @return A list of Strings representing a transaction.
+     * @throws Exceptions.SessionExpiredException
+     * @throws java.rmi.RemoteException
+     */
+    public ArrayList&lt;String&gt; getTransactions(String IBAN, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+<span class="fc" id="L92">        return bank.getTransactions(IBAN, this);</span>
+    }
+    
+    /**
+     * Starts a transaction between two bank accounts.
+     * If session is over, SessionExpiredException.
+     * @param IBAN1 representing the bank account, if empty throws IllegalArgumentException.
+     * @param IBAN2 representing the bank account, if empty throws IllegalArgumentException.
+     * @param value of the money to be transferred. Has to be greater than 0 or not empty, else IllegalArgumentException.
+     * @param description
+     * @param bank
+     * @return True if succesful, else false.
+     * @throws Exceptions.SessionExpiredException
+     * @throws RemoteException
+     * @throws Exceptions.LimitReachedException
+     */
+    public boolean startTransaction(String IBAN1, String IBAN2, double value, String description, IBank bank) throws SessionExpiredException, IllegalArgumentException, LimitReachedException, RemoteException {
+<span class="fc" id="L109">        return bank.startTransaction(this, IBAN1, IBAN2, value, description);</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

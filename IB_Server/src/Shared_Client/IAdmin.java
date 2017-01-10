@@ -45,11 +45,13 @@ public interface IAdmin extends Remote {
     
     /**
      * Removes a user from the administration. All data gets lost.
-     * @param klant
+     * @param username
+     * @param residence
+     * @param password
      * @return True if succesful, else false.
      * @throws RemoteException 
      */
-    boolean removeKlant(Klant klant) throws RemoteException;
+    boolean removeKlant(String username, String residence, String password) throws RemoteException;
     
     /**
      * Logs out a user.

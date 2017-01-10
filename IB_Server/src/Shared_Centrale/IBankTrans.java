@@ -23,7 +23,8 @@ public interface IBankTrans extends Remote {
      * with the IBAN parameter.
      * @param IBAN not empty, else IllegalArgumentException.
      * @param value of money to be removed, must be postive else IllegalArgumentException.
+     * @return true if successful, else false.
      * @throws RemoteException 
      */
-    void removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException;
+    boolean removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException;
 }

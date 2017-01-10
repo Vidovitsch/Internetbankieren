@@ -1,5 +1,6 @@
 package Shared_Client;
 
+import Exceptions.LimitReachedException;
 import Exceptions.SessionExpiredException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -44,10 +45,26 @@ public class Klant implements Serializable {
     /**
      * Returns the username of this Client.
      * The username is a combination of this user's name and residence.
-     * @return The user's username
+     * @return The user's username.
      */
     public String getUsername() {
         return name + residence;
+    }
+    
+    /**
+     * Returns the name of this Client.
+     * @return The user's name.
+     */
+    public String getName() {
+        return name;
+    }
+    
+    /**
+     * Returns the current residence of this client.
+     * @return The user's current residence.
+     */
+    public String getResidence() {
+        return residence;
     }
     
     /**
@@ -75,8 +92,21 @@ public class Klant implements Serializable {
         return bank.getTransactions(IBAN, this);
     }
     
-    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description, IBank bank) throws SessionExpiredException, IllegalArgumentException, RemoteException {
-        return bank.startTransaction(klant, IBAN1, IBAN2, value, description);
+    /**
+     * Starts a transaction between two bank accounts.
+     * If session is over, SessionExpiredException.
+     * @param IBAN1 representing the bank account, if empty throws IllegalArgumentException.
+     * @param IBAN2 representing the bank account, if empty throws IllegalArgumentException.
+     * @param value of the money to be transferred. Has to be greater than 0 or not empty, else IllegalArgumentException.
+     * @param description
+     * @param bank
+     * @return True if succesful, else false.
+     * @throws Exceptions.SessionExpiredException
+     * @throws RemoteException
+     * @throws Exceptions.LimitReachedException
+     */
+    public boolean startTransaction(String IBAN1, String IBAN2, double value, String description, IBank bank) throws SessionExpiredException, IllegalArgumentException, LimitReachedException, RemoteException {
+        return bank.startTransaction(this, IBAN1, IBAN2, value, description);
     }
 }
 

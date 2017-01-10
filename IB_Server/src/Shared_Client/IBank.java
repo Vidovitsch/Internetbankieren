@@ -1,5 +1,6 @@
 package Shared_Client;
 
+import Exceptions.LimitReachedException;
 import Exceptions.SessionExpiredException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -28,7 +29,6 @@ public interface IBank extends Remote {
     /**
      * Returns a list of Strings. Every String is
      * representing a bank account.
-     * NoDataFounException when client has no bank accounts.
      * @param klant, if null throws IllegalArgumentException.
      * @return A list of Strings representing a bank account.
      * @throws Exceptions.SessionExpiredException
@@ -40,7 +40,6 @@ public interface IBank extends Remote {
      * Returns a list of Strings. Every String is
      * representing a transaction.
      * If session is over, SessionExpiredException.
-     * NoDataFounException when client has no bank transactions.
      * @param IBAN, if empty throws IllegalArgumentException.
      * @param klant
      * @return A list of Strings representing a transaction.
@@ -80,6 +79,7 @@ public interface IBank extends Remote {
      * @return True if succesful, else false.
      * @throws Exceptions.SessionExpiredException
      * @throws RemoteException
+     * @throws Exceptions.LimitReachedException
      */
-    boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, RemoteException;
+    boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, LimitReachedException, RemoteException;
 }

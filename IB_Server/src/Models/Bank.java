@@ -1,7 +1,7 @@
 package Models;
 
+import Exceptions.LimitReachedException;
 import Exceptions.SessionExpiredException;
-import Shared_Centrale.IBankTrans;
 import Shared_Centrale.ICentrale;
 import Shared_Client.IBank;
 import Shared_Client.Klant;
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  *
  * @author David
  */
-public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
+public class Bank extends UnicastRemoteObject implements IBank {
 
     private IPersistencyMediator pMediator;
     private ArrayList<Bankrekening> bankAccounts;
@@ -25,6 +25,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
     private String shortName;
     private Administratie admin;
     private ICentrale centrale;
+    private BankTrans bankTrans;
     
     /**
      * A bank registered at the administration.
@@ -40,15 +41,13 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         this.admin = admin;
         this.name = name;
         this.shortName = shortName;
+        
+        bankTrans = new BankTrans(this);
     }
 
-    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+    public void setPersistencyMediator(IPersistencyMediator pMediator) throws RemoteException {
         this.pMediator = pMediator;
-        try {
-            setDatabaseData();
-        } catch (RemoteException ex) {
-            Logger.getLogger(Bank.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        setDatabaseData();
     }
     
     @Override
@@ -67,16 +66,18 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (klant == null) {
             throw new IllegalArgumentException("Client can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else {
             for (Bankrekening b : bankAccounts) {
-                if (b.getKlant().equals(klant)) {
+                if (b.getKlant().getUsername().equals(klant.getUsername())) {
                     accounts.add(b.toString());
                 }
             }
         }
+        //Refresh session on button click
+        admin.refreshSession(klant);
         return accounts;
     }
 
@@ -86,7 +87,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (IBAN.isEmpty() || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else if (!checkIBANProperty(IBAN, klant)) {
@@ -94,6 +95,8 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         }
         else {
             transactions = centrale.getTransactions(IBAN);
+            //Refresh session on button click
+            admin.refreshSession(klant);
         }
         return transactions;
     }
@@ -103,12 +106,18 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (klant == null) {
             throw new IllegalArgumentException("Client can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else {
-            bankAccounts.add(new Bankrekening(generateNewIBAN(), 0, 100, klant));
-            //DB code
+            boolean value = false;
+            while (!value) {
+                String IBAN = generateNewIBAN();
+                bankAccounts.add(new Bankrekening(generateNewIBAN(), klant));
+                pMediator.addBankrekening(klant.getName(), klant.getResidence(), IBAN, shortName);
+                value = true;
+            }
+            admin.refreshSession(klant);
         }
     }
 
@@ -118,7 +127,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         if (IBAN.isEmpty() || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else if (!checkIBANProperty(IBAN, klant)) {
@@ -126,18 +135,20 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         }
         else {
             bankAccounts.remove(IBANToBankAccount(IBAN));
+            pMediator.removeBankAccount(IBAN);
             bool = true;
+            admin.refreshSession(klant);
         }
         return bool;
     }
 
     @Override
-    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, RemoteException {
+    public boolean startTransaction(Klant klant, String IBAN1, String IBAN2, double value, String description) throws SessionExpiredException, IllegalArgumentException, LimitReachedException, RemoteException {
         boolean bool = false;
-        if (IBAN1.isEmpty() || IBAN2.isEmpty() || value <= 0 || klant == null) {
+        if (IBAN1.isEmpty() || IBAN2.isEmpty() || klant == null) {
             throw new IllegalArgumentException("Input can't be null");
         }
-        else if (!admin.checkSession(klant)) {
+        else if (!admin.checkSession(klant.getUsername())) {
             throw new SessionExpiredException("Session has expired");
         }
         else if (!checkIBANProperty(IBAN1, klant)) {
@@ -146,39 +157,16 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         else if (!checkIBANExists(IBAN2)) {
             throw new IllegalArgumentException("IBAN doesn't exist");
         }
+        else if (value <= 0) {
+            throw new IllegalArgumentException("Value must be higher than 0");
+        }
         else {
-            centrale.startTransaction(IBAN1, IBAN2, this, value, description);
+            centrale.startTransaction(IBAN1, IBAN2, bankTrans, value, description);
+            admin.publishTransaction(getUsernameByIBAN(IBAN1), getUsernameByIBAN(IBAN2), this);
             bool = true;
+            admin.refreshSession(klant);
         }
         return bool;
-    }
-
-    @Override
-    public void addSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
-        if (IBAN.isEmpty() || value <= 0) {
-            throw new IllegalArgumentException("Input can't be null");
-        }
-        else if (!checkIBANExists(IBAN)) {
-            throw new IllegalArgumentException("IBAN doesn't exists");
-        }
-        else {
-            Bankrekening bankAccount = IBANToBankAccount(IBAN);
-            bankAccount.addToBalance(value);
-        }
-    }
-
-    @Override
-    public void removeSaldo(String IBAN, double value) throws IllegalArgumentException, RemoteException {
-        if (IBAN.isEmpty() || value <= 0) {
-            throw new IllegalArgumentException("Input can't be null");
-        }
-        else if (!checkIBANExists(IBAN)) {
-            throw new IllegalArgumentException("IBAN doesn't exists");
-        }
-        else {
-            Bankrekening bankAccount = IBANToBankAccount(IBAN);
-            bankAccount.removeFromBalance(value);
-        }
     }
     
     /**
@@ -187,7 +175,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
      * @param IBAN
      * @return True if it exists, else false.
      */
-    private boolean checkIBANExists(String IBAN) {
+    public boolean checkIBANExists(String IBAN) {
         //Deze methode staat in klasse bank, omdat we ervan uitgaan dat er maar 1 bank is.
         //Als we dit gaan uitbreiden met meer dan 1 bank, dan moet deze methode in de administatie staan.
         //Het ophalen van bankrekeningen wordt dan gedaan uit de database i.p.v. (in dit geval) de klasse Bank.
@@ -209,12 +197,27 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
     private boolean checkIBANProperty(String IBAN, Klant klant) {
         for (Bankrekening b : bankAccounts) {
             if (b.toString().split(";")[0].equals(IBAN)) {
-                if (b.getKlant().equals(klant)) {
+                if (b.getKlant().getUsername().equals(klant.getUsername())) {
                     return true;
                 }
             }
         }
         return false;
+    }
+    
+    /**
+     * Returns the username of the client from this IBAN.
+     * @param IBAN of the client.
+     * @return username of the client.
+     */
+    private String getUsernameByIBAN(String IBAN) {
+        String username = null;
+        for (Bankrekening b : bankAccounts) {
+            if (b.toString().split(";")[0].equals(IBAN)) {
+                username = b.getKlant().getUsername();
+            }
+        }
+        return username;
     }
     
     /**
@@ -225,7 +228,18 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         String part1 = "NL" + generateRandom(0, 99, 2);
         String part2 = shortName;
         String part3 = "0" + generateRandom(0, 999999999, 9);
-        return part1 + part2 + part3;
+        String IBAN = part1 + part2 + part3;
+        
+        //Kans is 1 op de (100.000.000.000 * aantal banken * aantal landen) dat
+        //dezelfde IBAN al in de database staat. Vanwege testredenen is de check hierop
+        //weggecomment (dit viel niet te testen vanwegen een te kleine kans).
+        //Voor de robuustheid van de code kan deze nog gebruikt worden in het vervolg.
+        return IBAN;
+//        if (!checkIBANExists(IBAN)) {
+//            return IBAN;
+//        } else {
+//            return generateNewIBAN();
+//        }
     }
     
     /**
@@ -233,7 +247,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
      * @param IBAN as String
      * @return Bankrekening
      */
-    private Bankrekening IBANToBankAccount(String IBAN) {
+    public Bankrekening IBANToBankAccount(String IBAN) {
         Bankrekening bankAccount = null;
         for (Bankrekening b : bankAccounts) {
             if (b.toString().split(";")[0].equals(IBAN)) {
@@ -250,10 +264,10 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
      * @param numberLength amount of charaters in the generated number
      * @return String
      */
-    private String generateRandom(int startValue, int endValue, int numberLength) {
+    private String generateRandom(int startValue, int endValue, int minNumberLength) {
         Random r = new Random();
         String value = String.valueOf(r.nextInt((endValue - startValue) + 1) + startValue);
-        while (value.length() != numberLength) {
+        while (value.length() < minNumberLength) {
             value = String.valueOf(new Random().nextInt(9) + startValue) + value;
         }
         return value;
@@ -281,7 +295,7 @@ public class Bank extends UnicastRemoteObject implements IBank, IBankTrans {
         String[] klantFields = pMediator.getKlantByID(Integer.valueOf(rFields[1])).split(";");
         String username = klantFields[0] + klantFields[1];
         Klant klant = admin.getKlantByUsername(username);
-        Bankrekening rekening = new Bankrekening(rFields[0], Double.parseDouble(rFields[2]), Double.parseDouble(rFields[3]), klant);
-        return rekening;
+        Bankrekening rekening = new Bankrekening(rFields[0], klant);
+        return rekening; 
     }
 }

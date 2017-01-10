@@ -20,7 +20,7 @@ public interface IPersistencyMediator extends Remote
      * @return
      * @throws RemoteException
      */
-    public int Login(String naam, String woonplaats, String password) throws RemoteException;
+    public int login(String naam, String woonplaats, String password) throws RemoteException;
 
     /**
      * Geeft true terug als de username (naam+woonplaats) beschikbaar is, en false als dit niet zo is
@@ -35,10 +35,9 @@ public interface IPersistencyMediator extends Remote
      * @param name
      * @param Residence
      * @param Password
-     * @return
      * @throws RemoteException
      */
-    public boolean registerAccount(String name, String Residence, String Password) throws RemoteException;
+    public void registerAccount(String name, String Residence, String Password) throws RemoteException;
     
     /**
      * Voegt een bank toe aan de database, geeft true terug wanneer dit lukt, anders false
@@ -51,13 +50,14 @@ public interface IPersistencyMediator extends Remote
     
     /**
      * voegt een bankrekening toe bij de betreffende bank, voor de betreffende klant
-     * @param clientID      identifier voor de klant
+     * @param name
+     * @param residence
      * @param iban          uniek nummer voor de nieuwe rekening
      * @param bankShortName afkorting voor iban
      * @return
      * @throws RemoteException
      */
-    public boolean addBankrekening(int clientID, String iban, String bankShortName) throws RemoteException;
+    public boolean addBankrekening(String name, String residence, String iban, String bankShortName) throws RemoteException;
     
     /**
      * Geeft alle bankrekeningen van de betreffende klant terug in String-vorm
@@ -85,7 +85,7 @@ public interface IPersistencyMediator extends Remote
      * @return
      * @throws RemoteException
      */
-    public boolean addTransaction(String ibanFrom, String ibanTo, double amount, Date date, String description) throws RemoteException;
+    public boolean addTransaction(String ibanFrom, String ibanTo, double amount, String date, String description) throws RemoteException;
     
     /**
      * vraagt een lijst op van alle transacties die bij het meegegeven iban horen in String-vorm
@@ -115,4 +115,12 @@ public interface IPersistencyMediator extends Remote
     public ArrayList<String> getAllBanks() throws RemoteException;
     
     public ArrayList<String> getAllTransacties() throws RemoteException;
+    
+    public boolean removeKlant(String username, String residence, String password) throws RemoteException;
+    
+    public void endSession(String name, String residence) throws RemoteException;
+    
+    public void transferMoney(String IBANFrom, String IBANTo, double value) throws RemoteException;
+    
+    public void removeBankAccount(String IBAN) throws RemoteException;
 }

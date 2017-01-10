@@ -1,5 +1,6 @@
 package Shared_Centrale;
 
+import Exceptions.LimitReachedException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -18,9 +19,10 @@ public interface ICentrale extends Remote {
      * @param bank
      * @param value in money to be transferred.
      * @param description
+     * @throws Exceptions.LimitReachedException
      * @throws RemoteException 
      */
-    void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException;
+    void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws LimitReachedException, RemoteException;
     
     /**
      * Gives all the transaction of the bank account

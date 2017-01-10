@@ -1,5 +1,6 @@
 package Models;
 
+import Exceptions.LimitReachedException;
 import Shared_Centrale.ICentrale;
 import Shared_Centrale.IBankTrans;
 import Shared_Data.IPersistencyMediator;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
  * @author David
  */
 public class Centrale extends UnicastRemoteObject implements ICentrale {
+    
     private ArrayList<Transactie> transactions;
     private IPersistencyMediator pMediator;
     
@@ -22,24 +24,28 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         transactions = new ArrayList();
     }
 
-    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+    public void setPersistencyMediator(IPersistencyMediator pMediator) throws RemoteException {
         this.pMediator = pMediator;
-        try {
-            setDatabaseData();
-        } catch (RemoteException ex) {
-            Logger.getLogger(Centrale.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        setDatabaseData();
     }
     
     @Override
-    public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws RemoteException {
-        bank.removeSaldo(IBAN1, value);
-        bank.addSaldo(IBAN2, value);
+    public void startTransaction(String IBAN1, String IBAN2, IBankTrans bank, double value, String description) throws LimitReachedException, RemoteException {
+        if (bank.removeSaldo(IBAN1, value)) {
+            bank.addSaldo(IBAN2, value);
+        } else {
+            throw new LimitReachedException("The credit limit has been reached");
+        }
         
         //Add a new transaction to the centrale
         Transactie transactie = new Transactie(IBAN1, IBAN2, getCurrentDateTime(), value);
         if (!description.isEmpty()) transactie.setDescription(description);
         transactions.add(transactie);
+        
+        //Database transfer
+        pMediator.transferMoney(IBAN1, IBAN2, value);
+        //Database add transactie
+        pMediator.addTransaction(IBAN1, IBAN2, value, getCurrentDateTime(), description);
     }
 
     @Override
@@ -59,24 +65,22 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
      * @return String representing a transaction
      */
     private String transactionToString(Transactie transaction) {
-        try {
-            String description = transaction.getDescription();
-            if (description.isEmpty()) {
-                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANFrom() + ";" + transaction.getIBANTo();
-            } else {
-                return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
-                        transaction.getIBANFrom() + ";" + transaction.getIBANTo() + ";" + transaction.getDescription();
-            }
-        } catch (RemoteException ex) {
-            Logger.getLogger(Centrale.class.getName()).log(Level.SEVERE, null, ex);
+        String description = transaction.getDescription();
+        if (description.isEmpty()) {
+            return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
+                    transaction.getIBANFrom() + ";" + transaction.getIBANTo();
+        } else {
+            return transaction.getDate() + ";" + String.valueOf(transaction.getAmount()) + ";" +
+                    transaction.getIBANFrom() + ";" + transaction.getIBANTo() + ";" + transaction.getDescription();
         }
-        return null;
     }
     
+    /**
+     * Returns the local current date-time in String-value
+     * @return date-time String-value
+     */
     private String getCurrentDateTime() {
         LocalDateTime dateTime = LocalDateTime.now();
-        System.out.println(dateTime.toString());
         return dateTime.toString();
     }
     

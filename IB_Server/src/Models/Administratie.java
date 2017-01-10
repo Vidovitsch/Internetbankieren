@@ -2,17 +2,16 @@ package Models;
 
 import Exceptions.LoginException;
 import Exceptions.RegisterException;
+import Exceptions.SessionExpiredException;
 import Shared_Client.IAdmin;
 import Shared_Client.IBank;
 import Shared_Centrale.ICentrale;
 import Shared_Client.Klant;
 import Shared_Data.IPersistencyMediator;
+import fontyspublisher.IRemotePublisherForDomain;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  *
@@ -22,28 +21,39 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     private ICentrale centrale;
     private IPersistencyMediator pMediator;
+    private IRemotePublisherForDomain publisher;
     private ArrayList<Sessie> sessies;
     private ArrayList<Klant> clients;
     private ArrayList<Bank> banks;
     
-    public Administratie(ICentrale centrale) throws RemoteException {
+    //De publisher is er om de juiste gebruikers te subscriben
+    public Administratie(ICentrale centrale, IRemotePublisherForDomain publisher) throws RemoteException {
         sessies = new ArrayList();
         clients = new ArrayList();
         banks = new ArrayList();
         this.centrale = centrale;
+        this.publisher = publisher;
     }
 
-    public void setPersistencyMediator(IPersistencyMediator pMediator) {
+    public void setPersistencyMediator(IPersistencyMediator pMediator) throws RemoteException {
         this.pMediator = pMediator;
-        try {
-            setDatabaseData();
-        } catch (RemoteException ex) {
-            Logger.getLogger(Administratie.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        setDatabaseData();
     }
     
-    public void addBank(Bank bank) {
+    /**
+     * This method only gets called if there are more banks involved within this concept.
+     * @param bank 
+     * @return  
+     * @throws java.rmi.RemoteException  
+     */
+    public boolean addBank(Bank bank) throws RemoteException {
+        for (Bank b : banks) {
+            if (b.getName().equals(bank.getName())) {
+                return false;
+            }
+        }
         banks.add(bank);
+        return true;
     }
     
     @Override
@@ -52,18 +62,17 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         if (naam.isEmpty() || woonplaats.isEmpty() || password.isEmpty()) {
             throw new IllegalArgumentException("Fill all fields");
         }
-        else if (getKlantByUsername(naam + woonplaats) != null) {
-            throw new RegisterException("This username already exists");
-        }
         else if (password.length() <= 8) {
             throw new IllegalArgumentException("Password has to be larger than 8 characters");
         }
+        else if (getKlantByUsername(naam + woonplaats) != null) {
+            throw new RegisterException("This username already exists");
+        }
         else {
-            if (pMediator.registerAccount(naam, woonplaats, password)) {
-                klant = new Klant(naam, woonplaats);
-                clients.add(klant);
-                addSession(klant);
-            }
+            pMediator.registerAccount(naam, woonplaats, password);
+            klant = new Klant(naam, woonplaats);
+            clients.add(klant);
+            addSession(klant);
         }
         return klant;
     }
@@ -75,9 +84,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
             throw new IllegalArgumentException("Fill all fields");
         }
         else {
-            int userID = pMediator.Login(naam, woonplaats, password);
+            int userID = pMediator.login(naam, woonplaats, password);
             if (userID == -1) {
                 throw new LoginException("Invalid username or password");
+            }
+            else if (checkSession(naam + woonplaats)) {
+                throw new LoginException("This account has already a session running");
             }
             else {
                 klant = getKlantByUsername(naam + woonplaats);
@@ -89,36 +101,44 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
 
     @Override
     public IBank getBank(Klant klant) throws RemoteException {
-        //DB code (bank.getName() in database vergelijken of de klant daarop accounts heeft)
-        return null;
+        //Moet vervangen worden als er meerdere banken bestaan.
+        //Uit de database moet gekeken worden op welke banken de gebruiker
+        //subscribed is. Deze banken worden als een lijst teruggegeven.
+        return (IBank) banks.get(0);
     }
 
     @Override
-    public boolean removeKlant(Klant klant) throws RemoteException {
+    public boolean removeKlant(String name, String residence, String password) throws RemoteException {
+        Klant klant = null;
         boolean bool = false;
         for (Klant k : clients) {
-            if (k.equals(klant)) {
-                bool = true;
+            if (k.getUsername().equals(name + residence)) {
+                if (pMediator.removeKlant(name, residence, password)) {
+                    klant = k;
+                    bool = true;
+                }
             }
         }
-        if (bool) clients.remove(klant);
-        //DB code (ook uit de DB verwijderen)
+        if (bool) {
+            clients.remove(klant);
+        }
         return bool;
     }
 
     @Override
     public void logout(Klant klant) throws RemoteException {
-        removeSession(klant);
+        removeSessionDatabase(klant);
+        removeSessionLocal(klant);
     }
-            
+    
     /**
      * Checks if a client has still a session running.
-     * @param klant
+     * @param username
      * @return True if session is running, else false.
      */
-    public boolean checkSession(Klant klant) {
+    public boolean checkSession(String username) {
         for (Sessie sessie : sessies) {
-            if (sessie.getClient().equals(klant)) {
+            if (sessie.getClient().getUsername().equals(username)) {
                 return true;
             }
         }
@@ -141,28 +161,89 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
     }
     
     /**
-     * Adds a session on this server (only in local lists).
-     * A session is added if a client is logged in.
+     * Refreshing the session of a client on an action.
+     * The session timer resets.
      * @param klant 
      */
-    private void addSession(Klant klant) {
-        sessies.add(new Sessie(klant, this));
+    public void refreshSession(Klant klant) {
+        for (Sessie s : sessies) {
+            if (s.getClient().getUsername().equals(klant.getUsername())) {
+                s.refreshSession();
+            }
+        }
     }
     
     /**
-     * Removes a session from this server.
-     * A session is removed if a client is inactive for too long.
+     * Publishes the updated list of transactions and bankaccounts to the
+     * involved users with a running session.
+     * @param usernameTo
+     * @param usernameFrom
+     * @param bank
+     * @return true if succesfull, else false.
+     * @throws RemoteException 
+     * @throws Exceptions.SessionExpiredException 
+     */
+    public boolean publishTransaction(String usernameFrom, String usernameTo, Bank bank) throws RemoteException, SessionExpiredException {
+        ArrayList<String> updatedBankAccounts;
+        if (checkSession(usernameFrom)) {
+            updatedBankAccounts = getKlantByUsername(usernameFrom).getBankAccounts(bank);
+            publisher.inform(usernameFrom, null, updatedBankAccounts);
+        }     
+        if (checkSession(usernameTo)) {
+            updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);
+            publisher.inform(usernameTo, null, updatedBankAccounts);
+        }
+        return true;
+    }
+    
+    /**
+     * Adds a session on this server (only in local lists).
+     * and registers the user.
+     * A session is added if a client is logged in.
      * @param klant 
      */
-    private void removeSession(Klant klant) {
+    private void addSession(Klant klant) throws RemoteException {
+        Sessie session = new Sessie(klant, this);
+        session.startSession();
+        sessies.add(session);
+        //Register a property for this user
+        publisher.registerProperty(klant.getUsername());
+    }
+    
+    /**
+     * Removes a session from this server locally
+     * A session is removed if a client is inactive for too long or a client
+     * logs out.
+     * @param klant 
+     */
+    public void removeSessionLocal(Klant klant) {
         Sessie sessie = null;
         for (Sessie s : sessies) {
-            if (s.getClient().equals(klant)) {
+            if (s.getClient().getUsername().equals(klant.getUsername())) {
                 sessie = s;
             }
         }
-        sessies.remove(sessie);
-        //DB code (Sessie weghalen uit de DB)
+        if (sessie != null) {
+            sessie.stopSession();
+            sessies.remove(sessie);
+        }
+    }
+    
+    /**
+     * Removes a session from the database.
+     * A session is removed if a client is inactive for too long or a client
+     * logs out.
+     * Also the publisher unregisters the property of this client.
+     * This method has to be called before removeSessionLocal!
+     * @param klant
+     * @throws RemoteException 
+     */
+    private void removeSessionDatabase(Klant klant) throws RemoteException {
+        pMediator.endSession(klant.getName(), klant.getResidence());
+        if (this.checkSession(klant.getUsername())) {
+            //Unregister a property for this user
+            publisher.unregisterProperty(klant.getUsername());
+        }
     }
     
     /**
@@ -191,7 +272,7 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
         Klant klant = new Klant(fields[0], fields[1]);
         if (fields[2].equals("1")) {
             sessies.add(new Sessie(klant, this));
-        } 
+        }
         return new Klant(fields[0], fields[1]);
     }
     

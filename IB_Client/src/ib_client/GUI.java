@@ -15,9 +15,16 @@ package ib_client;
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -27,35 +34,66 @@ import javafx.stage.Stage;
 public class GUI extends Application
 {
     private GUIController controller;
+    private Pane myPane;
     
     @Override
     public void start(Stage stage) throws Exception {
         controller = new GUIController(this);
         FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLLogin.fxml"));
-        Pane myPane = (Pane) myLoader.load();
-        FXMLLoginController controller = (FXMLLoginController) myLoader.getController();
+        myPane = (Pane) myLoader.load();
+        FXMLLoginController loginController = (FXMLLoginController) myLoader.getController();
         Scene scene = new Scene(myPane);
-        controller.setStage(stage);
-        controller.setGuiController(controller);
-        
+        loginController.setStage(stage);
+        loginController.setGuiController(controller);
+        loginController.setGui(this);
+
         stage.setScene(scene);
         stage.setTitle("Login");
         stage.show();
-        
-        //controller.register("David", "Eindhoven", "123456789");
-        //controller.login("David", "Eindhoven", "123456789");
-
     }
 
+    /**
+     * Fills the list of this user's bank account.
+     * Only gets called by the controller.
+     * @param accounts 
+     */
     public void setAccountList(ArrayList<String> accounts) {
-        
+        //Testcode: kan vervangen worden
+        for (String fields : accounts) {
+            System.out.println("IBAN: " + accountToIBAN(fields));
+            System.out.println("Saldo: " + accountToAmount(fields));
+        }
+    }
+
+    /**
+     * Fills the list of this user's transactions of a bank account.
+     * Only gets called by the controller.
+     * @param transactions
+     */
+    public void setTransactionList(ArrayList<String> transactions) {
+        //Testcode: kan vervangen worden
+        for (String fields : transactions) {
+            System.out.println("Date: " + transactionToDate(fields));
+            System.out.println("Amount: " + transactionToAmount(fields));
+            System.out.println("IBANTo: " + transactionToIBANTo(fields));
+            System.out.println("IBANFrom: " + transactionToIBANFrom(fields));
+            System.out.println("Description: " + transactionToDescription(fields));
+        }
     }
     
-    public void setTransactionList(ArrayList<String> transactions) {
+    public void initSuccessMessage(String message) {
         
     }
     
     public void initErrorMessage(String message) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
+    public void logoutScreen() {
         
     }
     
@@ -94,15 +132,6 @@ public class GUI extends Application
     private String transactionToAmount(String transaction) {
         return transaction.split(";")[1];
     }
-        
-    /**
-     * Convert Transaction.toString() to IBANTo
-     * @param transaction (String value)
-     * @return IBANTo (String value)
-     */
-    private String transactionToIBANTo(String transaction) {
-        return transaction.split(";")[2];
-    }
     
     /**
      * Convert Transaction.toString() to IBANFrom
@@ -110,6 +139,15 @@ public class GUI extends Application
      * @return IBANFrom (String value)
      */
     private String transactionToIBANFrom(String transaction) {
+        return transaction.split(";")[2];
+    }
+    
+    /**
+     * Convert Transaction.toString() to IBANTo
+     * @param transaction (String value)
+     * @return IBANTo (String value)
+     */
+    private String transactionToIBANTo(String transaction) {
         return transaction.split(";")[3];
     }
     
@@ -131,8 +169,13 @@ public class GUI extends Application
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         launch(args);
+    }
+    
+    @Override
+    public void stop() {
+        controller.logout();
+        System.exit(0);
     }
 }
