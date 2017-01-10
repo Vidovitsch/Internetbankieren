@@ -269,8 +269,8 @@ public class FXMLLoginController implements Initializable
             myPane = (Pane) myLoader.load();
             FXMLRekeningManagementController rekeningManagementController = (FXMLRekeningManagementController) myLoader.getController();
             rekeningManagementController.setStage(stage);
-            rekeningManagementController.setGuiController(controller);
             rekeningManagementController.setGui(gui);
+            rekeningManagementController.setGuiController(controller);
             Scene scene = new Scene(myPane);
             stage.setScene(scene);
             stage.setTitle("Rekening Management");

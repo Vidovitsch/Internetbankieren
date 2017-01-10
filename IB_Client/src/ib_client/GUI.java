@@ -45,7 +45,7 @@ public class GUI extends Application
      * @param accounts 
      */
     public void setAccountList(ArrayList<String> accounts) {
-        
+        RMController.setBankAccounts(accounts);
     }
 
     /**
@@ -78,24 +78,6 @@ public class GUI extends Application
     
     public void logoutScreen() {
         
-    }
-    
-    /**
-     * Convert Bankaccount.toString() to IBAN
-     * @param account (String value)
-     * @return IBAN (String value)
-     */
-    private String accountToIBAN(String account) {
-        return account.split(";")[0];
-    }
-    
-    /**
-     * Convert Bankaccount.toString() to amount of money
-     * @param account (String value)
-     * @return amount of money (String value)
-     */
-    private String accountToAmount(String account) {
-        return account.split(";")[1];
     }
     
     /**

@@ -6,6 +6,7 @@
 package ib_client;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -33,27 +34,26 @@ public class FXMLRekeningManagementController implements Initializable
     private GUIController controller;
     private Stage stage;
 
-    void setStage(Stage stage)
-    {
+    void setStage(Stage stage) {
         this.stage = stage;
         stage.setHeight(mainPane.getHeight());
     }
 
-    void setGuiController(GUIController controller)
-    {
+    void setGuiController(GUIController controller) {
         this.controller = controller;
+        controller.getAccounts();
     }
 
-    void setGui(GUI gui)
-    {
+    void setGui(GUI gui) {
         this.gui = gui;
+        gui.setManagementController(this);
     }
 
     @FXML
     private Pane mainPane;
     
     @FXML
-    private ListView listViewBankAccount;
+    private ListView<String> listViewBankAccount;
     @FXML
     private ComboBox comboBoxBankAccountType;
     @FXML
@@ -137,5 +137,40 @@ public class FXMLRekeningManagementController implements Initializable
     public void initialize(URL url, ResourceBundle rb)
     {
 
+    }
+    
+    public void setBankAccounts(ArrayList<String> accounts) {
+        if (!listViewBankAccount.getItems().isEmpty()) {
+            listViewBankAccount.getItems().clear();
+        }
+        for (String value : accounts) {
+            String IBAN = accountToIBAN(value);
+            String saldo = accountToAmount(value);
+            String bankAccount = IBAN + "\n" + saldo;
+            listViewBankAccount.getItems().add(bankAccount);
+        }
+    }
+    
+    /**
+     * Convert Bankaccount.toString() to IBAN
+     * @param account (String value)
+     * @return IBAN (String value)
+     */
+    private String accountToIBAN(String account) {
+        return account.split(";")[0];
+    }
+    
+    /**
+     * Convert Bankaccount.toString() to amount of money
+     * @param account (String value)
+     * @return amount of money (String value)
+     */
+    private String accountToAmount(String account) {
+        return account.split(";")[1];
+    }
+    
+    private String formatSaldo(String saldo) {
+        String s = saldo.replace(".", ",");
+        return null;
     }
 }
