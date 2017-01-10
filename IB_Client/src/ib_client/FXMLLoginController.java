@@ -1,5 +1,6 @@
 package ib_client;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -7,7 +8,9 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -145,20 +148,13 @@ public class FXMLLoginController implements Initializable
         loginPoging++;
         if (controller.login(name, residence, password))
         {
+            controller.setBank();
             labelWelcomeText.setText("succesvol ingelogd!");
             OpenBankAccountManagement();
-        }
-        else{
+        } else
+        {
             labelWelcomeText.setText("Wachtwoord onjuist!");
         }
-    }
-
-    @FXML
-    private void loginGivenAccount()
-    {
-        String password = textFieldPasswordGivenAccount.getText();
-        controller.login(name, residence, password);
-        controller.setBank();
     }
 
     @FXML
@@ -269,6 +265,23 @@ public class FXMLLoginController implements Initializable
 
     private void OpenBankAccountManagement()
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLRekeningManagement.fxml"));
+        Pane myPane;
+        try
+        {
+            myPane = (Pane) myLoader.load();
+            FXMLRekeningManagementController loginController = (FXMLRekeningManagementController) myLoader.getController();
+            loginController.setStage(stage);
+            loginController.setGuiController(controller);
+            loginController.setGui(gui);
+            Scene scene = new Scene(myPane);
+            stage.setScene(scene);
+            stage.setTitle("Rekening Management");
+            stage.show();
+        } catch (IOException ex)
+        {
+            Logger.getLogger(FXMLLoginController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 }
