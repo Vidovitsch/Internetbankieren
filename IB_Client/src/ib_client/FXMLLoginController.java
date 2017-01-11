@@ -260,12 +260,10 @@ public class FXMLLoginController implements Initializable
 
     }
 
-    private void OpenBankAccountManagement()
-    {
+    private void OpenBankAccountManagement() {
         FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLRekeningManagement.fxml"));
         Pane myPane;
-        try
-        {
+        try {
             myPane = (Pane) myLoader.load();
             FXMLRekeningManagementController rekeningManagementController = (FXMLRekeningManagementController) myLoader.getController();
             rekeningManagementController.setStage(stage);
@@ -275,10 +273,8 @@ public class FXMLLoginController implements Initializable
             stage.setScene(scene);
             stage.setTitle("Rekening Management");
             stage.show();
-        } catch (IOException ex)
-        {
+        } catch (IOException ex){
             Logger.getLogger(FXMLLoginController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 }

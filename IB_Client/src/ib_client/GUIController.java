@@ -16,8 +16,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 
 /**
  *
@@ -257,6 +259,11 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     @Override
     public void propertyChange(PropertyChangeEvent pce) throws RemoteException
     {
-        //gui.setAccountList((ArrayList<String>) pce.getNewValue());
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                gui.setAccountList((ArrayList<String>) pce.getNewValue());
+            }
+        });
     }
 }

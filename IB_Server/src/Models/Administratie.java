@@ -197,13 +197,22 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      */
     public boolean publishTransaction(String usernameFrom, String usernameTo, Bank bank) throws RemoteException, SessionExpiredException {
         ArrayList<String> updatedBankAccounts;
-        if (checkSession(usernameFrom)) {
-            updatedBankAccounts = getKlantByUsername(usernameFrom).getBankAccounts(bank);
-            publisher.inform(usernameFrom, null, updatedBankAccounts);
-        }     
+        Klant klantIBANFrom = null;
+        
+        //No need to check for a running session
+        //The user making a transaction has always a running session
+        klantIBANFrom = getKlantByUsername(usernameFrom);
+        updatedBankAccounts = klantIBANFrom.getBankAccounts(bank);
+        publisher.inform(usernameFrom, null, updatedBankAccounts);
+            
         if (checkSession(usernameTo)) {
-            updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);
-            publisher.inform(usernameTo, null, updatedBankAccounts);
+            Klant klantIBANTo = getKlantByUsername(usernameTo);
+            //Check if user isn't making a transaction with himself. If he does, he doesn't need
+            //another updated list.
+            if (!klantIBANFrom.getUsername().equals(klantIBANTo.getUsername())) {
+                updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);
+                publisher.inform(usernameTo, null, updatedBankAccounts);
+            }
         }
         return true;
     }

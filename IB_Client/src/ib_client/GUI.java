@@ -1,12 +1,14 @@
 package ib_client;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -62,6 +64,16 @@ public class GUI extends Application {
         RMController.setTransactions(transactions);
     }
 
+    public boolean initAlertMessage(String message) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.get() == ButtonType.OK;
+    }
+    
     public void initSuccessMessage(String message) {
 
     }
@@ -156,6 +168,16 @@ public class GUI extends Application {
         }
     }
 
+    public double amountToDouble(String euros, String cents) {
+        if (euros.isEmpty()) {
+            euros = "0";
+        }
+        if (cents.isEmpty()) {
+            cents = "0";
+        }
+        return Double.parseDouble(euros + "." + cents);
+    }
+    
     public String formatSaldo(String saldo)
     {
         String euros = "€" + saldo.substring(0, saldo.indexOf(".") + 1);

@@ -32,7 +32,7 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
         if (bank.removeSaldo(IBAN1, value)) {
             bank.addSaldo(IBAN2, value);
         } else {
-            throw new LimitReachedException("The credit limit has been reached");
+            throw new LimitReachedException("The credit limit has been reached. Transaction failed");
         }
         
         //Add a new transaction to the centrale
