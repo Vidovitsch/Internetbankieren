@@ -11,20 +11,27 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -38,6 +45,7 @@ public class FXMLRekeningManagementController implements Initializable
     private GUI gui;
     private GUIController controller;
     private Stage stage;
+    private String activeIBAN;
 
     void setStage(Stage stage)
     {
@@ -49,6 +57,17 @@ public class FXMLRekeningManagementController implements Initializable
     {
         this.controller = controller;
         controller.getAccounts();
+        listViewBankAccount.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                int index = listViewBankAccount.getSelectionModel().getSelectedIndex();
+                activeIBAN = listViewBankAccount.getItems().get(index).split("\n")[0];
+                //Set transaction of activeIBAN
+                controller.getTransactions(activeIBAN);
+                //Select transaction tab
+                tabPaneBankAccountOptions.getSelectionModel().select(tabTransactionsList);
+            }
+        });
     }
 
     void setGui(GUI gui)
@@ -133,46 +152,46 @@ public class FXMLRekeningManagementController implements Initializable
     @FXML
     private CheckBox checkBoxExtraCreditOn;
 
-    public void setStage()
-    {
-
+    public FXMLRekeningManagementController() {
     }
 
     //controls
     /**
      * Initializes the controller class.
-     *
      * @param url
      * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb)
-    {
-
-    }
+    { }
 
     @FXML
-    public void addBankAccount()
-    {
+    public void addBankAccount() {
         controller.addBankAccount();
     }
 
-    public void setBankAccounts(ArrayList<String> accounts)
-    {
-        if (!listViewBankAccount.getItems().isEmpty())
-        {
+    public void setBankAccounts(ArrayList<String> accounts) {
+        if (!listViewBankAccount.getItems().isEmpty()) {
             listViewBankAccount.getItems().clear();
         }
-        for (String value : accounts)
-        {
+        for (String value : accounts) {
             String IBAN = accountToIBAN(value);
-            System.out.println(accountToAmount(value));
             String saldo = formatSaldo(accountToAmount(value));
             String bankAccount = IBAN + "\n" + saldo;
             listViewBankAccount.getItems().add(bankAccount);
         }
     }
 
+    public void setTransactions(ArrayList<String> transactions) {
+        if (!listViewTransactions.getItems().isEmpty()) {
+            listViewTransactions.getItems().clear();
+        }
+        for (String value : transactions) {
+            listViewTransactions.getItems().add(formatTransaction(value));
+        }
+        listViewTransactions.setCellFactory(t -> new customListCell());
+    }
+    
     public void setComboBoxData(ArrayList<String> accounts)
     {
         ArrayList<String> ibans = new ArrayList<>();
@@ -190,10 +209,73 @@ public class FXMLRekeningManagementController implements Initializable
         comboBoxInternalTransactionBankAccountFrom.setValue("Selecteer rekening");
     }
 
-    public FXMLRekeningManagementController()
+    private String formatTransaction(String value) {
+        String date = transactionToDate(value);
+        String amount = formatSaldo(transactionToAmount(value));
+        String IBANFrom = checkIBAN(transactionToIBANFrom(value));
+        String IBANTo = checkIBAN(transactionToIBANTo(value));
+        
+        return date + "\n" + IBANFrom + " → " + IBANTo + ";" + amount;
+    }
+    
+    private String formatSaldo(String saldo)
     {
+        String euros = "€" + saldo.substring(0, saldo.indexOf(".") + 1);
+        String cents = saldo.substring(saldo.indexOf(".") + 1);
+        if (cents.length() == 1)
+        {
+            cents += "0";
+            if ("00".equals(cents))
+            {
+                cents = cents.replace("00", "-");
+            }
+        }
+        String result = euros + cents;
+        return result.replace(".", ",");
     }
 
+    private String checkIBAN(String IBAN) {
+        if (activeIBAN.equals(IBAN)) {
+            return "Me";
+        } else {
+            return IBAN;
+        }
+    }
+    
+    private Color setTransactionColor(String values) {
+        int indexIBAN = values.indexOf("NL");
+        int indexArrow = values.indexOf("→");
+        if (indexIBAN < indexArrow) {
+            return Color.GREEN;
+        } else {
+            return Color.RED;
+        }
+    }
+    
+    public void openLoginScreen()
+    {
+        Stage st = new Stage();
+        st.setTitle("Login");
+
+        FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLLogin.fxml"));
+        Pane myPane;
+        try
+        {
+            myPane = (Pane) myLoader.load();
+            FXMLLoginController loginController = (FXMLLoginController) myLoader.getController();
+            loginController.setStage(stage);
+            loginController.setGuiController(controller);
+            loginController.setGui(gui);
+            Scene scene = new Scene(myPane);
+            st.setScene(scene);
+            stage.close();
+            st.show();
+        } catch (IOException ex)
+        {
+            Logger.getLogger(FXMLRekeningManagementController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     /**
      * Convert Bankaccount.toString() to IBAN
      *
@@ -215,45 +297,80 @@ public class FXMLRekeningManagementController implements Initializable
     {
         return account.split(";")[1];
     }
-
-    private String formatSaldo(String saldo)
-    {
-        String euros = "€" + saldo.substring(0, saldo.indexOf(".") + 1);
-        String cents = saldo.substring(saldo.indexOf(".") + 1);
-        if (cents.length() == 1)
-        {
-            cents += "0";
-            if ("00".equals(cents))
-            {
-                cents = cents.replace("00", "-");
-            }
-        }
-        String result = euros + cents;
-        return result.replace(".", ",");
+    
+    /**
+     * Convert Transaction.toString() to date
+     * @param transaction (String value)
+     * @return date (String value)
+     */
+    private String transactionToDate(String transaction) {
+        return transaction.split(";")[0];
     }
-
-    public void openLoginScreen()
-    {
-        Stage st = new Stage();
-        st.setTitle("Login");
-
-        FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLLogin.fxml"));
-        Pane myPane;
-        try
-        {
-            myPane = (Pane) myLoader.load();
-            FXMLLoginController loginController = (FXMLLoginController) myLoader.getController();
-            loginController.setStage(stage);
-            loginController.setGuiController(controller);
-            loginController.setGui(gui);
-            Scene scene = new Scene(myPane);
-            st.setScene(scene);
-            stage.close();
-            st.show();
-
-        } catch (IOException ex)
-        {
-            Logger.getLogger(FXMLRekeningManagementController.class.getName()).log(Level.SEVERE, null, ex);
+    
+    /**
+     * Convert Transaction.toString() to amount of money
+     * @param transaction (String value)
+     * @return amount of money transferred (String value)
+     */
+    private String transactionToAmount(String transaction) {
+        return transaction.split(";")[1];
+    }
+    
+    /**
+     * Convert Transaction.toString() to IBANFrom
+     * @param transaction (String value)
+     * @return IBANFrom (String value)
+     */
+    private String transactionToIBANFrom(String transaction) {
+        return transaction.split(";")[2];
+    }
+    
+    /**
+     * Convert Transaction.toString() to IBANTo
+     * @param transaction (String value)
+     * @return IBANTo (String value)
+     */
+    private String transactionToIBANTo(String transaction) {
+        return transaction.split(";")[3];
+    }
+    
+    /**
+     * Convert Transaction.toString() to description
+     * @param transaction (String value)
+     * @return "" if description is empty, else description (String value)
+     */
+    private String transactionToDescription(String transaction) {
+        String[] fields = transaction.split(";");
+        
+        if (fields.length < 5) {
+            return "";
+        } else {
+            return fields[4];
+        }
+    }
+    
+    private class customListCell extends ListCell<String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            Font font = new Font("Arial", 5);
+            Pane pane = null;
+            if (!empty) {
+                pane = new Pane();
+                // left-aligned text at position 0em
+                final Text leftText = new Text(item.split(";")[0]);
+                leftText.setTextOrigin(VPos.BOTTOM);
+                leftText.relocate(0, 0);
+                // left-aligned text at position 16em 
+                final Text middleText = new Text(item.split(";")[1]);
+                middleText.setTextOrigin(VPos.BOTTOM);
+                final double em = middleText.getLayoutBounds().getHeight();
+                middleText.relocate(16 * em, 0);
+                middleText.setFill(setTransactionColor(item));
+                pane.getChildren().addAll(leftText, middleText);
+            }
+            setText("");
+            setGraphic(pane);
         }
     }
 }

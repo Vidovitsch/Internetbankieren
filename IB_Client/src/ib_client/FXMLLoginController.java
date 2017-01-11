@@ -182,7 +182,7 @@ public class FXMLLoginController implements Initializable
             } catch (Exception e)
             {
                 //nog veranderen in logische errormessage
-                System.out.println("voer geldige gegevens in");
+                System.out.println("Voer geldige gegevens in");
             }
         }
     }
@@ -256,7 +256,7 @@ public class FXMLLoginController implements Initializable
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb){
+    public void initialize(URL url, ResourceBundle rb) {
 
     }
 
