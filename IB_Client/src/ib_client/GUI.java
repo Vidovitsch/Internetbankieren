@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
@@ -78,12 +79,34 @@ public class GUI extends Application {
     }
 
     /**
+     * Convert Bankaccount.toString() to IBAN
+     *
+     * @param account (String value)
+     * @return IBAN (String value)
+     */
+    public String accountToIBAN(String account)
+    {
+        return account.split(";")[0];
+    }
+
+    /**
+     * Convert Bankaccount.toString() to amount of money
+     *
+     * @param account (String value)
+     * @return amount of money (String value)
+     */
+    public String accountToAmount(String account)
+    {
+        return account.split(";")[1];
+    }
+    
+    /**
      * Convert Transaction.toString() to date
      *
      * @param transaction (String value)
      * @return date (String value)
      */
-    private String transactionToDate(String transaction) {
+    public String transactionToDate(String transaction) {
         return transaction.split(";")[0];
     }
 
@@ -93,7 +116,7 @@ public class GUI extends Application {
      * @param transaction (String value)
      * @return amount of money transferred (String value)
      */
-    private String transactionToAmount(String transaction) {
+    public String transactionToAmount(String transaction) {
         return transaction.split(";")[1];
     }
 
@@ -103,7 +126,7 @@ public class GUI extends Application {
      * @param transaction (String value)
      * @return IBANFrom (String value)
      */
-    private String transactionToIBANFrom(String transaction) {
+    public String transactionToIBANFrom(String transaction) {
         return transaction.split(";")[2];
     }
 
@@ -113,7 +136,7 @@ public class GUI extends Application {
      * @param transaction (String value)
      * @return IBANTo (String value)
      */
-    private String transactionToIBANTo(String transaction) {
+    public String transactionToIBANTo(String transaction) {
         return transaction.split(";")[3];
     }
 
@@ -123,7 +146,7 @@ public class GUI extends Application {
      * @param transaction (String value)
      * @return "" if description is empty, else description (String value)
      */
-    private String transactionToDescription(String transaction) {
+    public String transactionToDescription(String transaction) {
         String[] fields = transaction.split(";");
 
         if (fields.length < 5) {
@@ -133,6 +156,49 @@ public class GUI extends Application {
         }
     }
 
+    public String formatSaldo(String saldo)
+    {
+        String euros = "€" + saldo.substring(0, saldo.indexOf(".") + 1);
+        String cents = saldo.substring(saldo.indexOf(".") + 1);
+        if (cents.length() == 1)
+        {
+            cents += "0";
+            if ("00".equals(cents))
+            {
+                cents = cents.replace("00", "-");
+            }
+        }
+        String result = euros + cents;
+        return result.replace(".", ",");
+    }
+
+    public String checkIBAN(String IBAN, String activeIBAN) {
+        if (activeIBAN.equals(IBAN)) {
+            return "Me";
+        } else {
+            return IBAN;
+        }
+    }
+    
+    public Color setTransactionColor(String values) {
+        int indexIBAN = values.indexOf("NL");
+        int indexArrow = values.indexOf("→");
+        if (indexIBAN < indexArrow) {
+            return Color.GREEN;
+        } else {
+            return Color.RED;
+        }
+    }
+    
+    public String formatTransaction(String value, String activeIBAN) {
+        String date = transactionToDate(value);
+        String amount = formatSaldo(transactionToAmount(value));
+        String IBANFrom = checkIBAN(transactionToIBANFrom(value), activeIBAN);
+        String IBANTo = checkIBAN(transactionToIBANTo(value), activeIBAN);
+        
+        return date + "\n" + IBANFrom + " → " + IBANTo + ";" + amount;
+    }
+    
     /**
      * @param args the command line arguments
      */

@@ -48,83 +48,6 @@ public class FXMLRekeningManagementController implements Initializable
     private String activeIBAN = "";
 
     private ArrayList<String[]> transactionCollection = new ArrayList();
-    
-    void setStage(Stage stage)
-    {
-        this.stage = stage;
-        stage.setHeight(mainPane.getHeight());
-    }
-
-    void setGuiController(GUIController controller)
-    {
-        this.controller = controller;
-        controller.getAccounts();
-        listViewBankAccount.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                int index = listViewBankAccount.getSelectionModel().getSelectedIndex();
-                if (index != -1) {
-                    activeIBAN = listViewBankAccount.getItems().get(index).split("\n")[0];
-                    //Set transaction of activeIBAN
-                    controller.getTransactions(activeIBAN);
-                    //Select transaction tab
-                    tabPaneBankAccountOptions.getSelectionModel().select(tabTransactionsList);
-                    updateComboBoxIBAN();
-                }
-            }
-        });
-        
-        listViewTransactions.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                int index = listViewTransactions.getSelectionModel().getSelectedIndex();
-                if (index != -1) {
-                    String formattedTransaction = (String) listViewTransactions.getItems().get(index);
-                    for (String[] fields : transactionCollection) {
-                        if (fields[1].equals(formattedTransaction)) {
-                            //Setting all variables
-                            String date = transactionToDate(fields[0]);
-                            String description = transactionToDescription(fields[0]);
-                            String IBANFrom = checkIBAN(transactionToIBANFrom(fields[0]));
-                            String IBANTo = checkIBAN(transactionToIBANTo(fields[0]));
-                            String IBAN;
-                            if (IBANFrom.contains("NL")) {
-                                IBAN = IBANFrom;
-                            } else {
-                                IBAN = IBANTo;
-                            }
-                            //Setting fields in the gui
-                            labelTransactionDate.setText(date);
-                            labelTransactionsBankaccount.setText(IBAN);
-                            labelTransactionsDescription.setText(description);
-                        }
-                    }
-                }
-            }
-        });
-        
-        comboBoxTransactionsBankAccount.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                int index = comboBoxTransactionsBankAccount.getSelectionModel().getSelectedIndex();
-                if (index != -1) {
-                    activeIBAN = comboBoxTransactionsBankAccount.getItems().get(index).toString();
-                    //Set transaction of activeIBAN
-                    controller.getTransactions(activeIBAN);
-                    //Select transaction tab
-                    tabPaneBankAccountOptions.getSelectionModel().select(tabTransactionsList);
-                    updateComboBoxIBAN();
-                }
-            }
-        });
-    }
-
-    void setGui(GUI gui)
-    {
-        this.gui = gui;
-        gui.setManagementController(this);
-    }
 
     @FXML
     private Pane mainPane;
@@ -205,6 +128,83 @@ public class FXMLRekeningManagementController implements Initializable
     public FXMLRekeningManagementController() {
     }
 
+    void setStage(Stage stage)
+    {
+        this.stage = stage;
+        stage.setHeight(mainPane.getHeight());
+    }
+
+    void setGuiController(GUIController controller)
+    {
+        this.controller = controller;
+        controller.getAccounts();
+        listViewBankAccount.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                int index = listViewBankAccount.getSelectionModel().getSelectedIndex();
+                if (index != -1) {
+                    activeIBAN = listViewBankAccount.getItems().get(index).split("\n")[0];
+                    //Set transaction of activeIBAN
+                    controller.getTransactions(activeIBAN);
+                    //Select transaction tab
+                    tabPaneBankAccountOptions.getSelectionModel().select(tabTransactionsList);
+                    updateComboBoxIBAN();
+                }
+            }
+        });
+        
+        listViewTransactions.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                int index = listViewTransactions.getSelectionModel().getSelectedIndex();
+                if (index != -1) {
+                    String formattedTransaction = (String) listViewTransactions.getItems().get(index);
+                    for (String[] fields : transactionCollection) {
+                        if (fields[1].equals(formattedTransaction)) {
+                            //Setting all variables
+                            String date = gui.transactionToDate(fields[0]);
+                            String description = gui.transactionToDescription(fields[0]);
+                            String IBANFrom = gui.checkIBAN(gui.transactionToIBANFrom(fields[0]), activeIBAN);
+                            String IBANTo = gui.checkIBAN(gui.transactionToIBANTo(fields[0]), activeIBAN);
+                            String IBAN;
+                            if (IBANFrom.contains("NL")) {
+                                IBAN = IBANFrom;
+                            } else {
+                                IBAN = IBANTo;
+                            }
+                            //Setting fields in the gui
+                            labelTransactionDate.setText(date);
+                            labelTransactionsBankaccount.setText(IBAN);
+                            labelTransactionsDescription.setText(description);
+                        }
+                    }
+                }
+            }
+        });
+        
+        comboBoxTransactionsBankAccount.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                int index = comboBoxTransactionsBankAccount.getSelectionModel().getSelectedIndex();
+                if (index != -1) {
+                    activeIBAN = comboBoxTransactionsBankAccount.getItems().get(index).toString();
+                    //Set transaction of activeIBAN
+                    controller.getTransactions(activeIBAN);
+                    //Select transaction tab
+                    tabPaneBankAccountOptions.getSelectionModel().select(tabTransactionsList);
+                    updateComboBoxIBAN();
+                }
+            }
+        });
+    }
+
+    void setGui(GUI gui)
+    {
+        this.gui = gui;
+        gui.setManagementController(this);
+    }
+    
     //controls
     /**
      * Initializes the controller class.
@@ -225,8 +225,8 @@ public class FXMLRekeningManagementController implements Initializable
             listViewBankAccount.getItems().clear();
         }
         for (String value : accounts) {
-            String IBAN = accountToIBAN(value);
-            String saldo = formatSaldo(accountToAmount(value));
+            String IBAN = gui.accountToIBAN(value);
+            String saldo = gui.formatSaldo(gui.accountToAmount(value));
             String bankAccount = IBAN + "\n" + saldo;
             listViewBankAccount.getItems().add(bankAccount);
         }
@@ -237,8 +237,8 @@ public class FXMLRekeningManagementController implements Initializable
             listViewTransactions.getItems().clear();
         }
         for (String value : transactions) {
-            transactionCollection.add(new String[]{value, formatTransaction(value)});
-            listViewTransactions.getItems().add(formatTransaction(value));
+            transactionCollection.add(new String[]{value, gui.formatTransaction(value, activeIBAN)});
+            listViewTransactions.getItems().add(gui.formatTransaction(value, activeIBAN));
         }
         listViewTransactions.setCellFactory(t -> new transactionListCell());
     }
@@ -255,7 +255,7 @@ public class FXMLRekeningManagementController implements Initializable
         
         ArrayList<String> ibans = new ArrayList<>();
         for (String s : accounts) {
-            ibans.add(accountToIBAN(s));
+            ibans.add(gui.accountToIBAN(s));
         }
         comboBoxExternalTransactionBankAccountFrom.getItems().addAll(ibans);
         comboBoxExternalTransactionBankAccountFrom.setValue("Selecteer rekening");
@@ -272,49 +272,6 @@ public class FXMLRekeningManagementController implements Initializable
         //If IBAN is selected previously, this IBAN gets selected automaticly on update
         if (!activeIBAN.isEmpty()) {
             updateComboBoxIBAN();
-        }
-    }
-
-    private String formatTransaction(String value) {
-        String date = transactionToDate(value);
-        String amount = formatSaldo(transactionToAmount(value));
-        String IBANFrom = checkIBAN(transactionToIBANFrom(value));
-        String IBANTo = checkIBAN(transactionToIBANTo(value));
-        
-        return date + "\n" + IBANFrom + " → " + IBANTo + ";" + amount;
-    }
-    
-    private String formatSaldo(String saldo)
-    {
-        String euros = "€" + saldo.substring(0, saldo.indexOf(".") + 1);
-        String cents = saldo.substring(saldo.indexOf(".") + 1);
-        if (cents.length() == 1)
-        {
-            cents += "0";
-            if ("00".equals(cents))
-            {
-                cents = cents.replace("00", "-");
-            }
-        }
-        String result = euros + cents;
-        return result.replace(".", ",");
-    }
-
-    private String checkIBAN(String IBAN) {
-        if (activeIBAN.equals(IBAN)) {
-            return "Me";
-        } else {
-            return IBAN;
-        }
-    }
-    
-    private Color setTransactionColor(String values) {
-        int indexIBAN = values.indexOf("NL");
-        int indexArrow = values.indexOf("→");
-        if (indexIBAN < indexArrow) {
-            return Color.GREEN;
-        } else {
-            return Color.RED;
         }
     }
     
@@ -348,79 +305,6 @@ public class FXMLRekeningManagementController implements Initializable
         comboBoxTransactionsBankAccount.getSelectionModel().select(activeIBAN);
     }
     
-    /**
-     * Convert Bankaccount.toString() to IBAN
-     *
-     * @param account (String value)
-     * @return IBAN (String value)
-     */
-    private String accountToIBAN(String account)
-    {
-        return account.split(";")[0];
-    }
-
-    /**
-     * Convert Bankaccount.toString() to amount of money
-     *
-     * @param account (String value)
-     * @return amount of money (String value)
-     */
-    private String accountToAmount(String account)
-    {
-        return account.split(";")[1];
-    }
-    
-    /**
-     * Convert Transaction.toString() to date
-     * @param transaction (String value)
-     * @return date (String value)
-     */
-    private String transactionToDate(String transaction) {
-        return transaction.split(";")[0];
-    }
-    
-    /**
-     * Convert Transaction.toString() to amount of money
-     * @param transaction (String value)
-     * @return amount of money transferred (String value)
-     */
-    private String transactionToAmount(String transaction) {
-        return transaction.split(";")[1];
-    }
-    
-    /**
-     * Convert Transaction.toString() to IBANFrom
-     * @param transaction (String value)
-     * @return IBANFrom (String value)
-     */
-    private String transactionToIBANFrom(String transaction) {
-        return transaction.split(";")[2];
-    }
-    
-    /**
-     * Convert Transaction.toString() to IBANTo
-     * @param transaction (String value)
-     * @return IBANTo (String value)
-     */
-    private String transactionToIBANTo(String transaction) {
-        return transaction.split(";")[3];
-    }
-    
-    /**
-     * Convert Transaction.toString() to description
-     * @param transaction (String value)
-     * @return "" if description is empty, else description (String value)
-     */
-    private String transactionToDescription(String transaction) {
-        String[] fields = transaction.split(";");
-        
-        if (fields.length < 5) {
-            return "";
-        } else {
-            return fields[4];
-        }
-    }
-    
     private class transactionListCell extends ListCell<String> {
         @Override
         protected void updateItem(String item, boolean empty) {
@@ -437,7 +321,7 @@ public class FXMLRekeningManagementController implements Initializable
                 middleText.setTextOrigin(VPos.BOTTOM);
                 final double em = middleText.getLayoutBounds().getHeight();
                 middleText.relocate(16 * em, 0);
-                middleText.setFill(setTransactionColor(item));
+                middleText.setFill(gui.setTransactionColor(item));
                 pane.getChildren().addAll(leftText, middleText);
             }
             setText("");
