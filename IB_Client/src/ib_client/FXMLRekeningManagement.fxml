@@ -54,10 +54,10 @@
                         <ListView fx:id="listViewTransactions" layoutX="12.0" layoutY="14.0" prefHeight="219.0" prefWidth="331.0" />
                         <ComboBox fx:id="comboBoxTransactionsBankAccount" layoutX="376.0" layoutY="20.0" prefHeight="25.0" prefWidth="251.0" />
                         <Label layoutX="376.0" layoutY="88.0" text="Datum:" />
-                        <Label fx:id="labelTransactionDate" layoutX="454.0" layoutY="88.0" text="Label" />
+                        <Label fx:id="labelTransactionDate" layoutX="454.0" layoutY="88.0" />
                         <Label layoutX="376.0" layoutY="115.0" text="Rekening:" />
-                        <Label fx:id="labelTransactionsBankaccount" layoutX="454.0" layoutY="115.0" text="Label" />
-                        <Label fx:id="labelTransactionsDescription" layoutX="376.0" layoutY="138.0" text="beschrijving" />
+                        <Label fx:id="labelTransactionsBankaccount" layoutX="454.0" layoutY="115.0" />
+                        <Label fx:id="labelTransactionsDescription" layoutX="376.0" layoutY="139.0" />
                      </children></AnchorPane>
               </content>
             </Tab>

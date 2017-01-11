@@ -45,8 +45,10 @@ public class FXMLRekeningManagementController implements Initializable
     private GUI gui;
     private GUIController controller;
     private Stage stage;
-    private String activeIBAN;
+    private String activeIBAN = "";
 
+    private ArrayList<String[]> transactionCollection = new ArrayList();
+    
     void setStage(Stage stage)
     {
         this.stage = stage;
@@ -61,11 +63,59 @@ public class FXMLRekeningManagementController implements Initializable
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 int index = listViewBankAccount.getSelectionModel().getSelectedIndex();
-                activeIBAN = listViewBankAccount.getItems().get(index).split("\n")[0];
-                //Set transaction of activeIBAN
-                controller.getTransactions(activeIBAN);
-                //Select transaction tab
-                tabPaneBankAccountOptions.getSelectionModel().select(tabTransactionsList);
+                if (index != -1) {
+                    activeIBAN = listViewBankAccount.getItems().get(index).split("\n")[0];
+                    //Set transaction of activeIBAN
+                    controller.getTransactions(activeIBAN);
+                    //Select transaction tab
+                    tabPaneBankAccountOptions.getSelectionModel().select(tabTransactionsList);
+                    updateComboBoxIBAN();
+                }
+            }
+        });
+        
+        listViewTransactions.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                int index = listViewTransactions.getSelectionModel().getSelectedIndex();
+                if (index != -1) {
+                    String formattedTransaction = (String) listViewTransactions.getItems().get(index);
+                    for (String[] fields : transactionCollection) {
+                        if (fields[1].equals(formattedTransaction)) {
+                            //Setting all variables
+                            String date = transactionToDate(fields[0]);
+                            String description = transactionToDescription(fields[0]);
+                            String IBANFrom = checkIBAN(transactionToIBANFrom(fields[0]));
+                            String IBANTo = checkIBAN(transactionToIBANTo(fields[0]));
+                            String IBAN;
+                            if (IBANFrom.contains("NL")) {
+                                IBAN = IBANFrom;
+                            } else {
+                                IBAN = IBANTo;
+                            }
+                            //Setting fields in the gui
+                            labelTransactionDate.setText(date);
+                            labelTransactionsBankaccount.setText(IBAN);
+                            labelTransactionsDescription.setText(description);
+                        }
+                    }
+                }
+            }
+        });
+        
+        comboBoxTransactionsBankAccount.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                int index = comboBoxTransactionsBankAccount.getSelectionModel().getSelectedIndex();
+                if (index != -1) {
+                    activeIBAN = comboBoxTransactionsBankAccount.getItems().get(index).toString();
+                    //Set transaction of activeIBAN
+                    controller.getTransactions(activeIBAN);
+                    //Select transaction tab
+                    tabPaneBankAccountOptions.getSelectionModel().select(tabTransactionsList);
+                    updateComboBoxIBAN();
+                }
             }
         });
     }
@@ -187,26 +237,42 @@ public class FXMLRekeningManagementController implements Initializable
             listViewTransactions.getItems().clear();
         }
         for (String value : transactions) {
+            transactionCollection.add(new String[]{value, formatTransaction(value)});
             listViewTransactions.getItems().add(formatTransaction(value));
         }
-        listViewTransactions.setCellFactory(t -> new customListCell());
+        listViewTransactions.setCellFactory(t -> new transactionListCell());
     }
     
     public void setComboBoxData(ArrayList<String> accounts)
     {
+        //Clear lists if filled
+        if (!comboBoxExternalTransactionBankAccountFrom.getItems().isEmpty()) {
+            comboBoxExternalTransactionBankAccountFrom.getItems().clear();
+            comboBoxExtraBankAccount.getItems().clear();
+            comboBoxInternalTransactionBankAccountFrom.getItems().clear();
+            comboBoxTransactionsBankAccount.getItems().clear();
+        }
+        
         ArrayList<String> ibans = new ArrayList<>();
-        for (String s : accounts)
-        {
+        for (String s : accounts) {
             ibans.add(accountToIBAN(s));
         }
         comboBoxExternalTransactionBankAccountFrom.getItems().addAll(ibans);
         comboBoxExternalTransactionBankAccountFrom.setValue("Selecteer rekening");
+        
         comboBoxExtraBankAccount.getItems().addAll(ibans);
         comboBoxExtraBankAccount.setValue("Selecteer rekening");
+        
         comboBoxTransactionsBankAccount.getItems().addAll(ibans);
         comboBoxTransactionsBankAccount.setValue("Selecteer rekening");
+        
         comboBoxInternalTransactionBankAccountFrom.getItems().addAll(ibans);
         comboBoxInternalTransactionBankAccountFrom.setValue("Selecteer rekening");
+        
+        //If IBAN is selected previously, this IBAN gets selected automaticly on update
+        if (!activeIBAN.isEmpty()) {
+            updateComboBoxIBAN();
+        }
     }
 
     private String formatTransaction(String value) {
@@ -274,6 +340,12 @@ public class FXMLRekeningManagementController implements Initializable
         {
             Logger.getLogger(FXMLRekeningManagementController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void updateComboBoxIBAN() {
+        comboBoxInternalTransactionBankAccountFrom.getSelectionModel().select(activeIBAN);
+        comboBoxExternalTransactionBankAccountFrom.getSelectionModel().select(activeIBAN);
+        comboBoxTransactionsBankAccount.getSelectionModel().select(activeIBAN);
     }
     
     /**
@@ -349,11 +421,10 @@ public class FXMLRekeningManagementController implements Initializable
         }
     }
     
-    private class customListCell extends ListCell<String> {
+    private class transactionListCell extends ListCell<String> {
         @Override
         protected void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
-            Font font = new Font("Arial", 5);
             Pane pane = null;
             if (!empty) {
                 pane = new Pane();
