@@ -118,6 +118,17 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
+    public String getBankShortName() {
+        //Implemntation has to be changed if more banks a implemented
+        String shortName = "";
+        try {
+            return bank.getShortName();
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return shortName;
+    }
+    
     public void removeKlant()
     {
         try

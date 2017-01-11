@@ -92,6 +92,8 @@ public class FXMLRekeningManagementController implements Initializable {
     @FXML
     private TextField textFieldExternalTransactionAmountToTransfer;
     @FXML
+    private TextField textFieldExternalTransactionAmountToTransfer2;
+    @FXML
     private TextField textFieldExternalTransactionBankAccountToNumber;
     @FXML
     private TextArea textAreaExternalTransactionDesctiption;
@@ -139,6 +141,7 @@ public class FXMLRekeningManagementController implements Initializable {
     void setGuiController(GUIController controller) {
         this.controller = controller;
         controller.getAccounts();
+        setComboBoxBankData();
         
         buttonInternalTransactionTransferMoney.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -150,6 +153,29 @@ public class FXMLRekeningManagementController implements Initializable {
                 String description = textAreaInternalTransactionDesctiption.getText();
                 if (IBANFrom.isEmpty() || IBANTo.isEmpty()) {
                     gui.initErrorMessage("Fill all the fields first");
+                } else {
+                    startTransaction(IBANFrom, IBANTo, euros, cents, description);
+                }
+            }
+        });
+        
+        buttonExternalTransactionTransferMoney.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                String IBANFrom = activeIBAN;
+                
+                String prefix = textFieldExternalTransactionBankAccountToPrefix.getText();
+                String shortName = (String) comboBoxExternalTransactionBankAccountToBankShortName.getSelectionModel().getSelectedItem();
+                String number = textFieldExternalTransactionBankAccountToNumber.getText();
+                String IBANTo = prefix + shortName + number;
+                
+                String euros = textFieldExternalTransactionAmountToTransfer.getText();
+                String cents = textFieldExternalTransactionAmountToTransfer2.getText();
+                String description = textAreaExternalTransactionDesctiption.getText();
+                if (IBANFrom.isEmpty() || IBANTo.isEmpty()) {
+                    gui.initErrorMessage("Fill all the fields first");
+                } else if (IBANFrom.equals(IBANTo)) {
+                    gui.initErrorMessage("Can't transfer money to the same bank account");
                 } else {
                     startTransaction(IBANFrom, IBANTo, euros, cents, description);
                 }
@@ -238,6 +264,21 @@ public class FXMLRekeningManagementController implements Initializable {
                 .addListener(new textFieldLengthListener(textFieldInternalTransactionAmountToTransfer2, 2));
         textFieldInternalTransactionAmountToTransfer2.textProperty()
                 .addListener(new textFieldNumberListener(textFieldInternalTransactionAmountToTransfer2));
+        textFieldExternalTransactionAmountToTransfer.lengthProperty()
+                .addListener(new textFieldLengthListener(textFieldExternalTransactionAmountToTransfer, 6));
+        textFieldExternalTransactionAmountToTransfer.textProperty()
+                .addListener(new textFieldNumberListener(textFieldExternalTransactionAmountToTransfer));
+        textFieldExternalTransactionAmountToTransfer2.lengthProperty()
+                .addListener(new textFieldLengthListener(textFieldExternalTransactionAmountToTransfer2, 2));
+        textFieldExternalTransactionAmountToTransfer2.textProperty()
+                .addListener(new textFieldNumberListener(textFieldExternalTransactionAmountToTransfer2));
+        
+        textFieldExternalTransactionBankAccountToPrefix.lengthProperty()
+                .addListener(new textFieldLengthListener(textFieldExternalTransactionBankAccountToPrefix, 4));
+        textFieldExternalTransactionBankAccountToNumber.lengthProperty()
+                .addListener(new textFieldLengthListener(textFieldExternalTransactionBankAccountToNumber, 10));
+        textFieldExternalTransactionBankAccountToNumber.textProperty()
+                .addListener(new textFieldNumberListener(textFieldExternalTransactionBankAccountToNumber));
     }
 
     void setGui(GUI gui) {
@@ -305,6 +346,13 @@ public class FXMLRekeningManagementController implements Initializable {
         listViewTransactions.setCellFactory(t -> new transactionListCell());
     }
 
+    private void setComboBoxBankData() {
+        //Implemntation has to be changed if more banks a implemented
+        String shortName = controller.getBankShortName();
+        comboBoxExternalTransactionBankAccountToBankShortName.getItems().add(shortName);
+        comboBoxExternalTransactionBankAccountToBankShortName.setValue(shortName);
+    }
+    
     public void setComboBoxData(ArrayList<String> accounts) {
         //Clear lists if filled
         if (!comboBoxExternalTransactionBankAccountFrom.getItems().isEmpty()) {
