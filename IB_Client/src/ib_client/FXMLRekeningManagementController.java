@@ -156,6 +156,7 @@ public class FXMLRekeningManagementController implements Initializable {
                 } else {
                     startTransaction(IBANFrom, IBANTo, euros, cents, description);
                 }
+                emtpyFields();
             }
         });
         
@@ -179,6 +180,7 @@ public class FXMLRekeningManagementController implements Initializable {
                 } else {
                     startTransaction(IBANFrom, IBANTo, euros, cents, description);
                 }
+                emtpyFields();
             }
         });
         
@@ -207,7 +209,7 @@ public class FXMLRekeningManagementController implements Initializable {
                     for (String[] fields : transactionCollection) {
                         if (fields[1].equals(formattedTransaction)) {
                             //Setting all variables
-                            String date = gui.transactionToDate(fields[0]);
+                            String date = gui.formatDateTime(gui.transactionToDate(fields[0]));
                             String description = gui.transactionToDescription(fields[0]);
                             String IBANFrom = gui.checkIBAN(gui.transactionToIBANFrom(fields[0]), activeIBAN);
                             String IBANTo = gui.checkIBAN(gui.transactionToIBANTo(fields[0]), activeIBAN);
@@ -289,7 +291,6 @@ public class FXMLRekeningManagementController implements Initializable {
     //controls
     /**
      * Initializes the controller class.
-     *
      * @param url
      * @param rb
      */
@@ -323,6 +324,11 @@ public class FXMLRekeningManagementController implements Initializable {
         controller.addBankAccount();
     }
 
+    @FXML
+    public void logout() {
+        controller.logout();
+    }
+    
     public void setBankAccounts(ArrayList<String> accounts) {
         if (!listViewBankAccount.getItems().isEmpty()) {
             listViewBankAccount.getItems().clear();
@@ -412,6 +418,13 @@ public class FXMLRekeningManagementController implements Initializable {
         if (gui.initAlertMessage("Are you sure you want to transfer " + formattedAmount + " to " + IBANTo + "?")) {
             controller.startTransaction(IBANFrom, IBANTo, amount, description);
         }
+    }
+    
+    private void emtpyFields() {
+        textFieldInternalTransactionAmountToTransfer.setText("");
+        textFieldInternalTransactionAmountToTransfer2.setText("");
+        textFieldExternalTransactionAmountToTransfer.setText("");
+        textFieldExternalTransactionAmountToTransfer2.setText("");
     }
     
     private class transactionListCell extends ListCell<String> {

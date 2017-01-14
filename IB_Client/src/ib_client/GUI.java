@@ -178,6 +178,21 @@ public class GUI extends Application {
         return Double.parseDouble(euros + "." + cents);
     }
     
+    private String formatDate(String dateTime) {
+        //input format: yyyy-mm-ddThh:mm:ss:mmm
+        String d = dateTime.substring(0, dateTime.indexOf("T"));
+        String[] fields = d.split("-");
+        return fields[2] + "-" + fields[1] + "-" + fields[0];
+    }
+    
+    public String formatDateTime(String dateTime) {
+        String date = formatDate(dateTime);
+        String t = dateTime.substring(dateTime.indexOf("T") + 1);
+        String[] fields = t.split(":");
+        String time = fields[0] + ":" + fields[1];
+        return date + " (" + time + ")";
+    }
+    
     public String formatSaldo(String saldo)
     {
         String euros = "€" + saldo.substring(0, saldo.indexOf(".") + 1);
@@ -213,7 +228,7 @@ public class GUI extends Application {
     }
     
     public String formatTransaction(String value, String activeIBAN) {
-        String date = transactionToDate(value);
+        String date = formatDate(transactionToDate(value));
         String amount = formatSaldo(transactionToAmount(value));
         String IBANFrom = checkIBAN(transactionToIBANFrom(value), activeIBAN);
         String IBANTo = checkIBAN(transactionToIBANTo(value), activeIBAN);
