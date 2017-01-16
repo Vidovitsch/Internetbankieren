@@ -277,7 +277,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
                 gui.setAccountList((ArrayList<String>) pce.getNewValue());
                 
                 String changedIBAN = getChangedIBAN(currentIBANs, (ArrayList<String>) pce.getNewValue());
-                gui.initAlertMessage("A transacation has been made on " + changedIBAN + ".");
+                if (!changedIBAN.isEmpty()) {
+                    gui.initAlertMessage("A transacation has been made on " + changedIBAN + ".");
+                }
             }
         });
     }
@@ -289,6 +291,9 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             String nv = newValues.get(i);
             if (!ov.equals(nv)) {
                 value = nv;
+                if (gui.accountToAmount(value).contains("-")) {
+                    return "";
+                }
                 return gui.accountToIBAN(value);
             }
         }
