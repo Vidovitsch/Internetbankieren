@@ -75,7 +75,11 @@ public class GUI extends Application {
     }
     
     public void initSuccessMessage(String message) {
-
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        Optional<ButtonType> result = alert.showAndWait();
     }
 
     public void initErrorMessage(String message) {
@@ -205,6 +209,11 @@ public class GUI extends Application {
                 cents = cents.replace("00", "-");
             }
         }
+        
+        if (cents.length() > 2) {
+            cents = cents.substring(0, 2);
+        }
+        
         String result = euros + cents;
         return result.replace(".", ",");
     }
@@ -247,5 +256,9 @@ public class GUI extends Application {
     public void stop() {
         controller.logout();
         System.exit(0);
+    }
+    
+    public ArrayList<String> getCurrentIBANs() {
+        return RMController.getCurrentIBANs();
     }
 }

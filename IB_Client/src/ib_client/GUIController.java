@@ -242,7 +242,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             if (klant.startTransaction(IBAN1, IBAN2, value, description, bank))
             {
                 getTransactions(IBAN1);
-                gui.initSuccessMessage("Transaction successful");
+                gui.initSuccessMessage("Transaction successful!");
             } else
             {
                 gui.initErrorMessage("Transaction failed");
@@ -273,8 +273,25 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                ArrayList<String> currentIBANs = gui.getCurrentIBANs();
                 gui.setAccountList((ArrayList<String>) pce.getNewValue());
+                
+                String changedIBAN = getChangedIBAN(currentIBANs, (ArrayList<String>) pce.getNewValue());
+                gui.initAlertMessage("A transacation has been made on " + changedIBAN + ".");
             }
         });
+    }
+    
+    private String getChangedIBAN(ArrayList<String> oldValues, ArrayList<String> newValues) {
+        String value = "";
+        for (int i = 0; i < newValues.size(); i++) {
+            String ov = oldValues.get(i);
+            String nv = newValues.get(i);
+            if (!ov.equals(nv)) {
+                value = nv;
+                return gui.accountToIBAN(value);
+            }
+        }
+        return value;
     }
 }

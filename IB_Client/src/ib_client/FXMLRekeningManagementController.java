@@ -298,6 +298,16 @@ public class FXMLRekeningManagementController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }
 
+    public ArrayList<String> getCurrentIBANs() {
+        ArrayList<String> values = new ArrayList();
+        for (String item : listViewBankAccount.getItems()) {
+            String IBAN = item.split("\n")[0];
+            String saldo = item.split("\n")[1];
+            values.add(IBAN + ";" + saldo);
+        }
+        return values;
+    }
+    
     public void openLoginScreen() {
         Stage st = new Stage();
         st.setTitle("Login");
@@ -327,6 +337,38 @@ public class FXMLRekeningManagementController implements Initializable {
     @FXML
     public void logout() {
         controller.logout();
+    }
+    
+    @FXML void removeBankAccount() {
+        if (!activeIBAN.isEmpty()) {
+            if (gui.initAlertMessage("Are you sure you want to remove this bank account?" + "\n" + "Saldo gets transferred to one of you other accounts")) {
+                if (listViewBankAccount.getItems().size() > 1) {
+                    String IBANTo = null;
+                    String saldo = null;
+                    for (String item : listViewBankAccount.getItems()) {
+                        if (!item.split("\n")[0].equals(activeIBAN)) {
+                            IBANTo = item.split("\n")[0];
+                        } else {
+                            saldo = item.split("\n")[1];
+                        }
+                    }
+                    if (saldo != null && IBANTo != null) {
+                        saldo = saldo.replace("€", "");
+                        saldo = saldo.replace("-", "");
+                        double saldoDouble = gui.amountToDouble(saldo.split(",")[0], saldo.split(",")[1]);
+                        System.out.println(saldoDouble);
+                        if (saldoDouble > 0) {
+                            controller.startTransaction(activeIBAN, IBANTo, saldoDouble, "Because of IBAN removal");
+                            controller.removeBankAccount(activeIBAN);
+                        } else {
+                            gui.initErrorMessage("You can't remove a bank account with a saldo smaller or equal to 0!");
+                        }
+                    }
+                } else {
+                    gui.initErrorMessage("You have no other bank account to transfer you money on!");
+                }
+            }
+        }
     }
     
     public void setBankAccounts(ArrayList<String> accounts) {

@@ -85,6 +85,7 @@
                         <Label layoutX="326.0" layoutY="76.0" text="Stel nieuw kredietlimiet in:" />
                         <ComboBox fx:id="comboBoxExtraNewLimit" layoutX="477.0" layoutY="72.0" prefHeight="25.0" prefWidth="74.0" />
                         <Button fx:id="buttonExtraSubmitNewLimit" layoutX="326.0" layoutY="107.0" mnemonicParsing="false" text="Stel in" />
+                        <Button fx:id="btnRemoveRekening" layoutX="578.0" layoutY="14.0" mnemonicParsing="false" onAction="#removeBankAccount" text="Remove" />
                      </children></AnchorPane>
               </content>
             </Tab>
