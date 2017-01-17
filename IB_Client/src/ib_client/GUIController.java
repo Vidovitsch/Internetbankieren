@@ -73,8 +73,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         return true;
     }
 
-    public void logout()
-    {
+    public void logout() {
         try
         {
             admin.logout(klant);
@@ -85,17 +84,14 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
-    public boolean register(String naam, String woonplaats, String password)
-    {
-        try
-        {
+    public boolean register(String naam, String woonplaats, String password) {
+        try {
             klant = admin.register(naam, woonplaats, password);
             //Set properties
             pHandler.setLoginProperties(naam, woonplaats);
             //Subscribe to server
             publisher.subscribeRemoteListener(this, klant.getUsername());
-        } catch (IllegalArgumentException | RegisterException ex)
-        {
+        } catch (IllegalArgumentException | RegisterException ex) {
             Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
             gui.initErrorMessage(ex.getMessage());
             return false;
@@ -109,8 +105,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
 
     public void setBank()
     {
-        try
-        {
+        try {
             bank = admin.getBank(klant);
         } catch (RemoteException ex)
         {
