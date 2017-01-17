@@ -197,15 +197,24 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      */
     public boolean publishTransaction(String usernameFrom, String usernameTo, Bank bank) throws RemoteException, SessionExpiredException {
         ArrayList&lt;String&gt; updatedBankAccounts;
-<span class="fc bfc" id="L200" title="All 2 branches covered.">        if (checkSession(usernameFrom)) {</span>
-<span class="fc" id="L201">            updatedBankAccounts = getKlantByUsername(usernameFrom).getBankAccounts(bank);</span>
-<span class="fc" id="L202">            publisher.inform(usernameFrom, null, updatedBankAccounts);</span>
-        }     
-<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (checkSession(usernameTo)) {</span>
-<span class="fc" id="L205">            updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);</span>
-<span class="fc" id="L206">            publisher.inform(usernameTo, null, updatedBankAccounts);</span>
+<span class="fc" id="L200">        Klant klantIBANFrom = null;</span>
+        
+        //No need to check for a running session
+        //The user making a transaction has always a running session
+<span class="fc" id="L204">        klantIBANFrom = getKlantByUsername(usernameFrom);</span>
+<span class="fc" id="L205">        updatedBankAccounts = klantIBANFrom.getBankAccounts(bank);</span>
+<span class="fc" id="L206">        publisher.inform(usernameFrom, null, updatedBankAccounts);</span>
+            
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        if (checkSession(usernameTo)) {</span>
+<span class="fc" id="L209">            Klant klantIBANTo = getKlantByUsername(usernameTo);</span>
+            //Check if user isn't making a transaction with himself. If he does, he doesn't need
+            //another updated list.
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">            if (!klantIBANFrom.getUsername().equals(klantIBANTo.getUsername())) {</span>
+<span class="fc" id="L213">                updatedBankAccounts = getKlantByUsername(usernameTo).getBankAccounts(bank);</span>
+<span class="fc" id="L214">                publisher.inform(usernameTo, null, updatedBankAccounts);</span>
+            }
         }
-<span class="fc" id="L208">        return true;</span>
+<span class="fc" id="L217">        return true;</span>
     }
     
     /**
@@ -215,12 +224,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant 
      */
     private void addSession(Klant klant) throws RemoteException {
-<span class="fc" id="L218">        Sessie session = new Sessie(klant, this);</span>
-<span class="fc" id="L219">        session.startSession();</span>
-<span class="fc" id="L220">        sessies.add(session);</span>
+<span class="fc" id="L227">        Sessie session = new Sessie(klant, this);</span>
+<span class="fc" id="L228">        session.startSession();</span>
+<span class="fc" id="L229">        sessies.add(session);</span>
         //Register a property for this user
-<span class="fc" id="L222">        publisher.registerProperty(klant.getUsername());</span>
-<span class="fc" id="L223">    }</span>
+<span class="fc" id="L231">        publisher.registerProperty(klant.getUsername());</span>
+<span class="fc" id="L232">    }</span>
     
     /**
      * Removes a session from this server locally
@@ -229,20 +238,20 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @param klant 
      */
     public void removeSessionLocal(Klant klant) {
-<span class="fc" id="L232">        Sessie sessie = null;</span>
+<span class="fc" id="L241">        Sessie sessie = null;</span>
         //Synchronize the list to prevent manipulation while iterating
-<span class="fc" id="L234">        synchronized(sessies) {</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">            for (Sessie s : sessies) {</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">                if (s.getClient().getUsername().equals(klant.getUsername())) {</span>
-<span class="fc" id="L237">                    sessie = s;</span>
+<span class="fc" id="L243">        synchronized(sessies) {</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            for (Sessie s : sessies) {</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">                if (s.getClient().getUsername().equals(klant.getUsername())) {</span>
+<span class="fc" id="L246">                    sessie = s;</span>
                 }
-<span class="fc" id="L239">            }</span>
-<span class="pc" id="L240">        }</span>
-<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (sessie != null) {</span>
-<span class="fc" id="L242">            sessie.stopSession();</span>
-<span class="fc" id="L243">            sessies.remove(sessie);</span>
+<span class="fc" id="L248">            }</span>
+<span class="pc" id="L249">        }</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (sessie != null) {</span>
+<span class="fc" id="L251">            sessie.stopSession();</span>
+<span class="fc" id="L252">            sessies.remove(sessie);</span>
         }
-<span class="fc" id="L245">    }</span>
+<span class="fc" id="L254">    }</span>
     
     /**
      * Removes a session from the database.
@@ -254,26 +263,26 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @throws RemoteException 
      */
     private void removeSessionDatabase(Klant klant) throws RemoteException {
-<span class="fc" id="L257">        pMediator.endSession(klant.getName(), klant.getResidence());</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (this.checkSession(klant.getUsername())) {</span>
+<span class="fc" id="L266">        pMediator.endSession(klant.getName(), klant.getResidence());</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        if (this.checkSession(klant.getUsername())) {</span>
             //Unregister a property for this user
-<span class="fc" id="L260">            publisher.unregisterProperty(klant.getUsername());</span>
+<span class="fc" id="L269">            publisher.unregisterProperty(klant.getUsername());</span>
         }
-<span class="fc" id="L262">    }</span>
+<span class="fc" id="L271">    }</span>
     
     /**
      * Set all database to lists in this class
      */
     private void setDatabaseData() throws RemoteException {
         //Set clients
-<span class="fc bfc" id="L269" title="All 2 branches covered.">        for (String clientValues : pMediator.getAllKlanten()) {</span>
-<span class="fc" id="L270">            clients.add(stringToKlant(clientValues));</span>
-<span class="fc" id="L271">        }</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        for (String clientValues : pMediator.getAllKlanten()) {</span>
+<span class="fc" id="L279">            clients.add(stringToKlant(clientValues));</span>
+<span class="fc" id="L280">        }</span>
         //Set banks
-<span class="fc bfc" id="L273" title="All 2 branches covered.">        for (String bankValues : pMediator.getAllBanks()) {</span>
-<span class="fc" id="L274">            banks.add(stringToBank(bankValues));</span>
-<span class="fc" id="L275">        }</span>
-<span class="fc" id="L276">    }</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">        for (String bankValues : pMediator.getAllBanks()) {</span>
+<span class="fc" id="L283">            banks.add(stringToBank(bankValues));</span>
+<span class="fc" id="L284">        }</span>
+<span class="fc" id="L285">    }</span>
     
     /**
      * Converts the String of klant-values to a Klant object.
@@ -283,12 +292,12 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @return Klant
      */
     private Klant stringToKlant(String values) {
-<span class="fc" id="L286">        String[] fields = values.split(&quot;;&quot;);</span>
-<span class="fc" id="L287">        Klant klant = new Klant(fields[0], fields[1]);</span>
-<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (fields[2].equals(&quot;1&quot;)) {</span>
-<span class="fc" id="L289">            sessies.add(new Sessie(klant, this));</span>
+<span class="fc" id="L295">        String[] fields = values.split(&quot;;&quot;);</span>
+<span class="fc" id="L296">        Klant klant = new Klant(fields[0], fields[1]);</span>
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">        if (fields[2].equals(&quot;1&quot;)) {</span>
+<span class="nc" id="L298">            sessies.add(new Sessie(klant, this));</span>
         }
-<span class="fc" id="L291">        return new Klant(fields[0], fields[1]);</span>
+<span class="fc" id="L300">        return new Klant(fields[0], fields[1]);</span>
     }
     
     /**
@@ -297,10 +306,10 @@ public class Administratie extends UnicastRemoteObject implements IAdmin {
      * @return Bank
      */
     private Bank stringToBank(String values) throws RemoteException {
-<span class="fc" id="L300">        String[] fields = values.split(&quot;;&quot;);</span>
-<span class="fc" id="L301">        Bank bank = new Bank(fields[0], fields[1], this, centrale);</span>
-<span class="fc" id="L302">        bank.setPersistencyMediator(pMediator);</span>
-<span class="fc" id="L303">        return bank;</span>
+<span class="fc" id="L309">        String[] fields = values.split(&quot;;&quot;);</span>
+<span class="fc" id="L310">        Bank bank = new Bank(fields[0], fields[1], this, centrale);</span>
+<span class="fc" id="L311">        bank.setPersistencyMediator(pMediator);</span>
+<span class="fc" id="L312">        return bank;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -32,7 +32,7 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
 <span class="fc bfc" id="L32" title="All 2 branches covered.">        if (bank.removeSaldo(IBAN1, value)) {</span>
 <span class="fc" id="L33">            bank.addSaldo(IBAN2, value);</span>
         } else {
-<span class="fc" id="L35">            throw new LimitReachedException(&quot;The credit limit has been reached&quot;);</span>
+<span class="fc" id="L35">            throw new LimitReachedException(&quot;The credit limit has been reached. Transaction failed&quot;);</span>
         }
         
         //Add a new transaction to the centrale
@@ -57,8 +57,8 @@ public class Centrale extends UnicastRemoteObject implements ICentrale {
 <span class="fc" id="L57">                    transList.add(transactionToString(trans));</span>
                 }
 <span class="fc" id="L59">            }</span>
-<span class="fc" id="L60">            return transList;</span>
-<span class="nc" id="L61">        }</span>
+<span class="pc" id="L60">        }</span>
+<span class="fc" id="L61">        return transList;</span>
     }
 
     /**
