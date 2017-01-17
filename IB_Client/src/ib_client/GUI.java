@@ -39,6 +39,10 @@ public class GUI extends Application {
         stage.show();
     }
 
+    /**
+     * Sets the managementScreenController for this GUI class
+     * @param RMController 
+     */
     public void setManagementController(FXMLRekeningManagementController RMController) {
         this.RMController = RMController;
     }
@@ -172,6 +176,12 @@ public class GUI extends Application {
         }
     }
 
+    /**
+     * Converts a euro (String) and cents (String) to a double.
+     * @param euros
+     * @param cents
+     * @return Converted amount (double)
+     */
     public double amountToDouble(String euros, String cents) {
         if (euros.isEmpty()) {
             euros = "0";
@@ -182,6 +192,11 @@ public class GUI extends Application {
         return Double.parseDouble(euros + "." + cents);
     }
     
+    /**
+     * Formats a dateTime to a more readable date (without the time).
+     * @param dateTime
+     * @return Formatted date (without the time)
+     */
     private String formatDate(String dateTime) {
         //input format: yyyy-mm-ddThh:mm:ss:mmm
         String d = dateTime.substring(0, dateTime.indexOf("T"));
@@ -189,6 +204,11 @@ public class GUI extends Application {
         return fields[2] + "-" + fields[1] + "-" + fields[0];
     }
     
+    /**
+     * Fromats a dateTime to more a readable dateTime.
+     * @param dateTime
+     * @return Formatted dateTime.
+     */
     public String formatDateTime(String dateTime) {
         String date = formatDate(dateTime);
         String t = dateTime.substring(dateTime.indexOf("T") + 1);
@@ -197,6 +217,11 @@ public class GUI extends Application {
         return date + " (" + time + ")";
     }
     
+    /**
+     * Formats the saldo to a more readable format.
+     * @param saldo
+     * @return Formatted saldo.
+     */
     public String formatSaldo(String saldo)
     {
         String euros = "€" + saldo.substring(0, saldo.indexOf(".") + 1);
@@ -218,6 +243,14 @@ public class GUI extends Application {
         return result.replace(".", ",");
     }
 
+    /**
+     * Checks if the IBAN is your own IBAN or someone else's.
+     * If the IBAN is yours, returns "Me".
+     * If the IBAN is not yours, returns the IBAN set as the parameter.
+     * @param IBAN you want to check
+     * @param activeIBAN your own IBAN
+     * @return IBAN or "Me"
+     */
     public String checkIBAN(String IBAN, String activeIBAN) {
         if (activeIBAN.equals(IBAN)) {
             return "Me";
@@ -226,6 +259,12 @@ public class GUI extends Application {
         }
     }
     
+    /**
+     * If money has been removed from the bank account: color = red.
+     * If money has been added to the bank account: color = green.
+     * @param values (String of a formatted transaction).
+     * @return Color
+     */
     public Color setTransactionColor(String values) {
         int indexIBAN = values.indexOf("NL");
         int indexArrow = values.indexOf("→");
@@ -236,6 +275,13 @@ public class GUI extends Application {
         }
     }
     
+    /**
+     * Formats a transaction from values 'String value' and 'String IBAN'.
+     * This format is is loaded in a listview.
+     * @param value
+     * @param activeIBAN
+     * @return Formatted transaction
+     */
     public String formatTransaction(String value, String activeIBAN) {
         String date = formatDate(transactionToDate(value));
         String amount = formatSaldo(transactionToAmount(value));
@@ -252,13 +298,18 @@ public class GUI extends Application {
         launch(args);
     }
 
+    /**
+     * Gives a list of the current status of the IBAN's, before
+     * a transaction.
+     * @return 
+     */
+    public ArrayList<String> getCurrentIBANs() {
+        return RMController.getCurrentIBANs();
+    }
+    
     @Override
     public void stop() {
         controller.logout();
         System.exit(0);
-    }
-    
-    public ArrayList<String> getCurrentIBANs() {
-        return RMController.getCurrentIBANs();
     }
 }

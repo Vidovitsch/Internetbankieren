@@ -38,7 +38,7 @@ import javafx.stage.Stage;
 
 /**
  * FXML Controller class
- *
+ * 
  * @author Michiel van Eijkeren
  */
 public class FXMLRekeningManagementController implements Initializable {
@@ -313,14 +313,14 @@ public class FXMLRekeningManagementController implements Initializable {
         st.setTitle("Login");
 
         FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLLogin.fxml"));
-        Pane myPane;
+        Pane myPane0;
         try {
-            myPane = (Pane) myLoader.load();
+            myPane0 = (Pane) myLoader.load();
             FXMLLoginController loginController = (FXMLLoginController) myLoader.getController();
             loginController.setStage(stage);
             loginController.setGuiController(controller);
             loginController.setGui(gui);
-            Scene scene = new Scene(myPane);
+            Scene scene = new Scene(myPane0);
             st.setScene(scene);
             stage.close();
             st.show();

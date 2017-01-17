@@ -23,8 +23,7 @@ import javafx.stage.Stage;
  * @author David
  */
 public class FXMLLoginController implements Initializable
-{
-
+{   
     final double anchorHeightMoreOptions = 290;
     double anchorCurrentHeight = 0;
     double anchorWidth = 394;
