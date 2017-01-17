@@ -14,7 +14,7 @@ public class Sessie {
     private Administratie admin;
     private Timer sessionTimer;
     
-    private final int maxTicks = 60;
+    private final int maxTicks = 5;
     private int ticks = 0;
     
     public Sessie(Klant client, Administratie admin) {
@@ -55,7 +55,6 @@ public class Sessie {
         sessionTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println(ticks);
                 if (ticks == maxTicks) {
                     admin.removeSessionLocal(client);
                 } else {

@@ -2,9 +2,13 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+<<<<<<< HEAD
         <group>
             <file>file:/D:/School/S3/InternetBankierenGSO/IB_DatabaseServer/src/databaseserver/DatabaseServer.java</file>
             <file>file:/D:/School/S3/InternetBankierenGSO/IB_DatabaseServer/src/databaseserver/DatabaseMediator.java</file>
         </group>
+=======
+        <group/>
+>>>>>>> 2bb8e592cee6c908dd49c55c6e5f7187d04f3e31
     </open-files>
 </project-private>

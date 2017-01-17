@@ -16,8 +16,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 
 /**
  *
@@ -116,6 +118,17 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
         }
     }
 
+    public String getBankShortName() {
+        //Implemntation has to be changed if more banks a implemented
+        String shortName = "";
+        try {
+            return bank.getShortName();
+        } catch (RemoteException ex) {
+            Logger.getLogger(GUIController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return shortName;
+    }
+    
     public void removeKlant()
     {
         try
@@ -229,7 +242,7 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
             if (klant.startTransaction(IBAN1, IBAN2, value, description, bank))
             {
                 getTransactions(IBAN1);
-                gui.initSuccessMessage("Transaction successful");
+                gui.initSuccessMessage("Transaction successful!");
             } else
             {
                 gui.initErrorMessage("Transaction failed");
@@ -257,6 +270,33 @@ public class GUIController extends UnicastRemoteObject implements IRemotePropert
     @Override
     public void propertyChange(PropertyChangeEvent pce) throws RemoteException
     {
-        //gui.setAccountList((ArrayList<String>) pce.getNewValue());
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<String> currentIBANs = gui.getCurrentIBANs();
+                gui.setAccountList((ArrayList<String>) pce.getNewValue());
+                
+                String changedIBAN = getChangedIBAN(currentIBANs, (ArrayList<String>) pce.getNewValue());
+                if (!changedIBAN.isEmpty()) {
+                    gui.initAlertMessage("A transacation has been made on " + changedIBAN + ".");
+                }
+            }
+        });
+    }
+    
+    private String getChangedIBAN(ArrayList<String> oldValues, ArrayList<String> newValues) {
+        String value = "";
+        for (int i = 0; i < newValues.size(); i++) {
+            String ov = oldValues.get(i);
+            String nv = newValues.get(i);
+            if (!ov.equals(nv)) {
+                value = nv;
+                if (gui.accountToAmount(value).contains("-")) {
+                    return "";
+                }
+                return gui.accountToIBAN(value);
+            }
+        }
+        return value;
     }
 }

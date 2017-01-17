@@ -14,7 +14,7 @@ public class Sessie {
     private Administratie admin;
     private Timer sessionTimer;
     
-<span class="fc" id="L17">    private final int maxTicks = 5;</span>
+<span class="fc" id="L17">    private final int maxTicks = 600;</span>
 <span class="fc" id="L18">    private int ticks = 0;</span>
     
 <span class="fc" id="L20">    public Sessie(Klant client, Administratie admin) {</span>
@@ -55,30 +55,29 @@ public class Sessie {
 <span class="fc" id="L55">        sessionTimer.schedule(new TimerTask() {</span>
             @Override
             public void run() {
-<span class="fc" id="L58">                System.out.println(ticks);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">                if (ticks == maxTicks) {</span>
-<span class="fc" id="L60">                    admin.removeSessionLocal(client);</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">                if (ticks == maxTicks) {</span>
+<span class="nc" id="L59">                    admin.removeSessionLocal(client);</span>
                 } else {
-<span class="fc" id="L62">                    ticks++;</span>
+<span class="fc" id="L61">                    ticks++;</span>
                 }
-<span class="fc" id="L64">            }</span>
+<span class="fc" id="L63">            }</span>
         }, 1000, 1000);
-<span class="fc" id="L66">    }</span>
+<span class="fc" id="L65">    }</span>
     
     /**
      * Refeshes the current session
      */
     public void refreshSession() {
-<span class="fc" id="L72">        stopSession();</span>
-<span class="fc" id="L73">        ticks = 0;</span>
-<span class="fc" id="L74">        startSession();</span>
-<span class="fc" id="L75">    }</span>
+<span class="fc" id="L71">        stopSession();</span>
+<span class="fc" id="L72">        ticks = 0;</span>
+<span class="fc" id="L73">        startSession();</span>
+<span class="fc" id="L74">    }</span>
     
     /**
      * Stops the session timer.
      */
     public void stopSession() {
-<span class="fc" id="L81">        sessionTimer.cancel();</span>
-<span class="fc" id="L82">    }</span>
+<span class="fc" id="L80">        sessionTimer.cancel();</span>
+<span class="fc" id="L81">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

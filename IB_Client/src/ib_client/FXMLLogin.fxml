@@ -12,15 +12,15 @@
       <Button fx:id="buttonNotGivenAccount" layoutX="127.0" layoutY="64.0" mnemonicParsing="false" onAction="#rolloutAnchorPane" prefHeight="25.0" prefWidth="180.0" text="Dit ben ik niet" />
       <Label fx:id="labelWelcomeText" layoutX="131.0" layoutY="6.0" />
       <Label alignment="CENTER_RIGHT" layoutX="37.0" layoutY="113.0" prefHeight="17.0" prefWidth="66.0" text="Naam:" />
-      <TextField fx:id="textFieldPasswordGivenAccount" layoutX="127.0" layoutY="32.0" prefHeight="25.0" prefWidth="180.0" />
       <Label layoutX="25.0" layoutY="36.0" prefHeight="17.0" prefWidth="72.0" text="Wachtwoord:" />
       <Label alignment="CENTER_RIGHT" layoutX="25.0" layoutY="149.0" prefHeight="17.0" prefWidth="79.0" text="Woonplaats:" />
       <Label alignment="CENTER_RIGHT" layoutX="27.0" layoutY="184.0" prefHeight="17.0" prefWidth="79.0" text="Wachtwoord" />
       <TextField fx:id="textFieldAccountName" layoutX="126.0" layoutY="109.0" prefWidth="180.0" />
       <TextField fx:id="textFieldAccountResidence" layoutX="126.0" layoutY="145.0" prefWidth="180.0" />
-      <TextField fx:id="textFieldAccountPassword" layoutX="126.0" layoutY="180.0" prefWidth="180.0" />
       <Button fx:id="buttonLoginNew" layoutX="127.0" layoutY="214.0" mnemonicParsing="false" onAction="#handleLoginButton" prefHeight="25.0" prefWidth="72.0" text="Login" />
       <Button fx:id="buttonRegisterNew" layoutX="232.0" layoutY="214.0" mnemonicParsing="false" onAction="#RegisterAccount" prefHeight="25.0" prefWidth="72.0" text="Registreer" />
       <Button fx:id="buttonLoginGivenAccount" layoutX="314.0" layoutY="32.0" mnemonicParsing="false" onAction="#handleLoginButton" prefHeight="58.0" prefWidth="72.0" text="Login" />
+      <PasswordField fx:id="textFieldPasswordGivenAccount" layoutX="127.0" layoutY="32.0" prefHeight="25.0" prefWidth="180.0" />
+      <PasswordField fx:id="textFieldAccountPassword" layoutX="126.0" layoutY="180.0" prefHeight="25.0" prefWidth="180.0" />
    </children>
 </Pane>

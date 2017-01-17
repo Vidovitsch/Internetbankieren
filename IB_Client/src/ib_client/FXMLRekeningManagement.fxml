@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.net.*?>
 <?import java.util.*?>
@@ -21,10 +22,16 @@
                         <Label layoutX="21.0" layoutY="130.0" text="naar:" />
                         <ComboBox fx:id="comboBoxInternalTransactionBankAccountTo" layoutX="49.0" layoutY="126.0" prefHeight="25.0" prefWidth="251.0" />
                         <Label layoutX="325.0" layoutY="29.0" text="Bedrag:" />
-                        <TextField fx:id="textFieldInternalTransactionAmountToTransfer" layoutX="374.0" layoutY="25.0" prefHeight="25.0" prefWidth="74.0" />
+                        <TextField fx:id="textFieldInternalTransactionAmountToTransfer" alignment="CENTER_RIGHT" layoutX="374.0" layoutY="25.0" prefHeight="25.0" prefWidth="59.0" promptText="€" />
                         <Label layoutX="326.0" layoutY="62.0" text="Beschrijving:" />
                         <TextArea fx:id="textAreaInternalTransactionDesctiption" layoutX="326.0" layoutY="80.0" prefHeight="116.0" prefWidth="300.0" />
                         <Button fx:id="buttonInternalTransactionTransferMoney" layoutX="326.0" layoutY="199.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="302.0" text="Maak over" />
+                        <Label fx:id="lblInternalKomma" layoutX="438.0" layoutY="30.0" prefHeight="21.0" prefWidth="7.0" text=",">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="textFieldInternalTransactionAmountToTransfer2" layoutX="445.0" layoutY="25.0" prefHeight="25.0" prefWidth="29.0" promptText="00" />
                      </children>
                   </AnchorPane>
             </content>
@@ -36,14 +43,20 @@
                         <Button fx:id="buttonExternalTransactionTransferMoney" layoutX="326.0" layoutY="199.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="302.0" text="Maak over" />
                         <TextArea fx:id="textAreaExternalTransactionDesctiption" layoutX="326.0" layoutY="80.0" prefHeight="116.0" prefWidth="300.0" />
                         <Label layoutX="326.0" layoutY="62.0" text="Beschrijving:" />
-                        <TextField fx:id="textFieldExternalTransactionAmountToTransfer" layoutX="374.0" layoutY="25.0" prefHeight="25.0" prefWidth="74.0" />
                         <Label layoutX="325.0" layoutY="29.0" text="Bedrag:" />
                         <Label layoutX="23.0" layoutY="29.0" text="van:" />
                         <ComboBox fx:id="comboBoxExternalTransactionBankAccountFrom" layoutX="49.0" layoutY="25.0" prefHeight="25.0" prefWidth="251.0" />
                         <Label layoutX="21.0" layoutY="130.0" text="naar:" />
-                        <ComboBox fx:id="comboBoxExternalTransactionBankAccountToBankShortName" layoutX="109.0" layoutY="126.0" prefHeight="25.0" prefWidth="68.0" />
-                        <TextField fx:id="textFieldExternalTransactionBankAccountToPrefix" layoutX="49.0" layoutY="126.0" prefHeight="25.0" prefWidth="60.0" />
-                        <TextField fx:id="textFieldExternalTransactionBankAccountToNumber" layoutX="175.0" layoutY="126.0" prefHeight="25.0" prefWidth="133.0" />
+                        <ComboBox fx:id="comboBoxExternalTransactionBankAccountToBankShortName" layoutX="109.0" layoutY="126.0" prefHeight="25.0" prefWidth="75.0" />
+                        <TextField fx:id="textFieldExternalTransactionBankAccountToPrefix" alignment="CENTER_RIGHT" layoutX="49.0" layoutY="126.0" prefHeight="25.0" prefWidth="60.0" promptText="NL00" />
+                        <TextField fx:id="textFieldExternalTransactionBankAccountToNumber" layoutX="184.0" layoutY="126.0" prefHeight="25.0" prefWidth="124.0" promptText="0000000000" />
+                        <TextField fx:id="textFieldExternalTransactionAmountToTransfer" alignment="CENTER_RIGHT" layoutX="374.0" layoutY="25.0" prefHeight="25.0" prefWidth="59.0" promptText="€" />
+                        <Label fx:id="lblExternalKomma" layoutX="438.0" layoutY="30.0" prefHeight="21.0" prefWidth="7.0" text=",">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="textFieldExternalTransactionAmountToTransfer2" layoutX="445.0" layoutY="25.0" prefHeight="25.0" prefWidth="29.0" promptText="00" />
                      </children></AnchorPane>
             </content>
           </Tab>
@@ -54,10 +67,10 @@
                         <ListView fx:id="listViewTransactions" layoutX="12.0" layoutY="14.0" prefHeight="219.0" prefWidth="331.0" />
                         <ComboBox fx:id="comboBoxTransactionsBankAccount" layoutX="376.0" layoutY="20.0" prefHeight="25.0" prefWidth="251.0" />
                         <Label layoutX="376.0" layoutY="88.0" text="Datum:" />
-                        <Label fx:id="labelTransactionDate" layoutX="454.0" layoutY="88.0" text="Label" />
+                        <Label fx:id="labelTransactionDate" layoutX="454.0" layoutY="88.0" />
                         <Label layoutX="376.0" layoutY="115.0" text="Rekening:" />
-                        <Label fx:id="labelTransactionsBankaccount" layoutX="454.0" layoutY="115.0" text="Label" />
-                        <Label fx:id="labelTransactionsDescription" layoutX="376.0" layoutY="138.0" text="beschrijving" />
+                        <Label fx:id="labelTransactionsBankaccount" layoutX="454.0" layoutY="115.0" />
+                        <Label fx:id="labelTransactionsDescription" layoutX="376.0" layoutY="139.0" />
                      </children></AnchorPane>
               </content>
             </Tab>
@@ -72,12 +85,13 @@
                         <Label layoutX="326.0" layoutY="76.0" text="Stel nieuw kredietlimiet in:" />
                         <ComboBox fx:id="comboBoxExtraNewLimit" layoutX="477.0" layoutY="72.0" prefHeight="25.0" prefWidth="74.0" />
                         <Button fx:id="buttonExtraSubmitNewLimit" layoutX="326.0" layoutY="107.0" mnemonicParsing="false" text="Stel in" />
+                        <Button fx:id="btnRemoveRekening" layoutX="578.0" layoutY="14.0" mnemonicParsing="false" onAction="#removeBankAccount" text="Remove" />
                      </children></AnchorPane>
               </content>
             </Tab>
         </tabs>
       </TabPane>
-      <ComboBox fx:id="comboBoxBankAccountType" layoutX="475.0" layoutY="25.0" prefWidth="150.0" />
-      <Button fx:id="buttonAddBankAccount" layoutX="638.0" layoutY="25.0" mnemonicParsing="false" onAction="#addBankAccount" text="Add" />
+      <Button fx:id="buttonAddBankAccount" layoutX="439.0" layoutY="25.0" mnemonicParsing="false" onAction="#addBankAccount" text="Add" />
+      <Button fx:id="btnLogout" layoutX="628.0" layoutY="25.0" mnemonicParsing="false" onAction="#logout" text="Logout" />
    </children>
 </Pane>

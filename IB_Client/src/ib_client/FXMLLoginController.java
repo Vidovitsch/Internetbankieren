@@ -23,8 +23,7 @@ import javafx.stage.Stage;
  * @author David
  */
 public class FXMLLoginController implements Initializable
-{
-
+{   
     final double anchorHeightMoreOptions = 290;
     double anchorCurrentHeight = 0;
     double anchorWidth = 394;
@@ -182,7 +181,7 @@ public class FXMLLoginController implements Initializable
             } catch (Exception e)
             {
                 //nog veranderen in logische errormessage
-                System.out.println("voer geldige gegevens in");
+                System.out.println("Voer geldige gegevens in");
             }
         }
     }
@@ -256,16 +255,14 @@ public class FXMLLoginController implements Initializable
     }
 
     @Override
-    public void initialize(URL url, ResourceBundle rb){
+    public void initialize(URL url, ResourceBundle rb) {
 
     }
 
-    private void OpenBankAccountManagement()
-    {
+    private void OpenBankAccountManagement() {
         FXMLLoader myLoader = new FXMLLoader(getClass().getResource("FXMLRekeningManagement.fxml"));
         Pane myPane;
-        try
-        {
+        try {
             myPane = (Pane) myLoader.load();
             FXMLRekeningManagementController rekeningManagementController = (FXMLRekeningManagementController) myLoader.getController();
             rekeningManagementController.setStage(stage);
@@ -275,10 +272,8 @@ public class FXMLLoginController implements Initializable
             stage.setScene(scene);
             stage.setTitle("Rekening Management");
             stage.show();
-        } catch (IOException ex)
-        {
+        } catch (IOException ex){
             Logger.getLogger(FXMLLoginController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 }
