@@ -103,8 +103,6 @@ public class FXMLLoginController implements Initializable
         {
             Login();
         }
-
-        //controller.setBank();
     }
 
     public void completeSignUp()
@@ -113,10 +111,10 @@ public class FXMLLoginController implements Initializable
         {
             if (controller.register(currentRegisterName, currentRegisterResidence, currentRegisterPassword))
             {
+                controller.setBank();
                 OpenBankAccountManagement();
                 labelWelcomeText.setText("succesvol ingelogd!");
-            } else
-            {
+            } else {
                 waitingForValidPassword = true;
                 textFieldAccountPassword.setDisable(false);
                 textFieldPasswordGivenAccount.setDisable(true);
@@ -227,8 +225,7 @@ public class FXMLLoginController implements Initializable
         name = "";
         residence = "";
         String[] properties = controller.getLastLogged();
-        if (properties != null)
-        {
+        if (properties != null) {
             name = properties[0];
             residence = properties[1];
         }
@@ -251,7 +248,7 @@ public class FXMLLoginController implements Initializable
     {
         buttonLoginGivenAccount.setDisable(true);
         textFieldPasswordGivenAccount.setDisable(true);
-        buttonNotGivenAccount.setDisable(true);
+        //buttonNotGivenAccount.setDisable(true);
     }
 
     @Override
